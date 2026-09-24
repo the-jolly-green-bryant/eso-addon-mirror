@@ -1,0 +1,23 @@
+## Title: Preview Anywhere
+## Author: clubwratt
+## Version: 0.1.1
+## APIVersion: 101050
+## Description: Adds item previews to gamepad UIs that lack them: bank and Furnishing Vault withdraw lists, plus linked items in chat, mail, and guild descriptions.
+## SavedVariables: PreviewAnywhereSavedVars
+## OptionalDependsOn: LibConsoleLogger
+## DevId: bc6b3b76-f701-4533-9492-c50acb1783bc
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+PreviewAnywhere.lua
+PreviewAnywhereTypes.lua
+PreviewAnywhereState.lua
+PreviewAnywherePreviewUtils.lua
+PreviewAnywherePreviewActions.lua
+PreviewAnywhereBankUtils.lua
+PreviewAnywhereBankActions.lua
+PreviewAnywhereLinkUtils.lua
+PreviewAnywhereLinkActions.lua
+SlashCommandUtils.lua
+SlashCommandActions.lua
+Main.lua

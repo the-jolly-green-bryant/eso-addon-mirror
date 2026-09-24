@@ -1,8 +1,8 @@
 ## Title: PinkB's Tamriel Trade Game
 ## Author: PinkBanther
 ## Description: タムリエル交易戦 — campaign trade and acquisition game. Phase 5.
-## Version: 0.5.7
-## AddOnVersion: 507
+## Version: 0.16.3
+## AddOnVersion: 1603
 ## SavedVariables: PBsTradeGameSavedVariables
 ## APIVersion: 101050 101051
 
@@ -11,6 +11,7 @@ Assets.lua
 Data.lua
 World.lua
 Tactics.lua
+Story.lua
 Model.lua
 LiveCatalog.lua
 Engine.lua
@@ -25,6 +26,7 @@ Main.lua
 assets/coin.dds
 assets/coin_plinth.dds
 assets/treasury.dds
+assets/title_hall.dds
 assets/crest.dds
 assets/atlas.dds
 assets/wood_frame.dds

@@ -9,7 +9,7 @@ function WifeyDPSPositions_TogglePanel()
 end
 
 local function registerKeybinds()
-    ZO_CreateStringId("SI_BINDING_NAME_WIFEYDPSPOSITIONS_PANEL_KEYBIND", "Open/Close PanelUI")
+    ZO_CreateStringId("SI_BINDING_NAME_WIFEYDPSPOSITIONS_PANEL_KEYBIND", "Open/Close Wifey DPS Positions")
 end
 
 local hudFragment

@@ -1,4 +1,4 @@
-# Store listing copy — PB's ChatAssistant 1.4.0
+# Store listing copy — PB's ChatAssistant 1.29.1
 
 Text for the ZOS Console AddOn Uploader. Plain text, no markup, so it survives whatever the
 uploader does to it.
@@ -7,78 +7,89 @@ uploader does to it.
 
 ## Overview
 
-Press Enter to start chatting. On console the chat window only opens from the controller, so
-every message means letting go of the keyboard and reaching for the pad. This opens it from the
-keyboard instead — and brings up the console's text input screen with it, which is what makes
-Japanese input possible.
+PB's ChatAssistant makes console chat easier to open, organize and use with a USB keyboard. It
+raises the console text input screen for Japanese input, creates one chat tab for each guild, and
+lets you switch tabs from the HUD with L2 + D-pad Right. The selected tab and outgoing channel
+stay synchronized, while a customizable HUD label shows where your next message will go. An
+optional language-independent filter hides Guild Finder recruitment adverts carrying guild links.
 
 ---
 
 ## Description
 
-On console, a USB keyboard lets you type a message but not start one. The chat window opens only
-from the controller (Options + touchpad on PlayStation), and opening it that way is also what
-raises the console's own text input screen — the one that provides kana-to-kanji conversion.
-Without it there is no Japanese, only romaji. So every single message costs you a round trip:
-let go of the keyboard, pick up the controller, put it down again.
+On console, a USB keyboard can type into chat but cannot normally open the full chat workflow by
+itself. Japanese input also depends on the console's own text input screen for kana-to-kanji
+conversion. PB's ChatAssistant raises that screen when chat opens and can optionally arm the Enter
+key to start chatting without reaching for the controller.
 
-PB's ChatAssistant closes that gap.
+It also organizes guild conversations into real ESO chat tabs. The add-on creates exactly one tab
+for each guild you currently belong to, routes that guild's normal and officer chat into it, and
+removes stale or duplicate tabs when guild membership changes.
 
 WHAT IT DOES
 
-- Press Enter and the chat window opens, with the console's text input screen up and ready.
-- Open the chat window however you like — the controller combo included — and the input screen
-  comes up for it anyway. That part works on its own, all the time, with nothing to arm.
-- Type Japanese the way you would anywhere else on the console, and send.
-- Switch which channel your next message goes to -- say, zone, party, guild -- with the left and
-  right arrow keys, before you open the box.
+- Raises the console text input screen when chat is opened from the controller.
+- Optionally lets an armed Enter key open chat from a USB keyboard.
+- Creates a normal chat tab plus one tab for each joined guild.
+- Keeps guild and officer messages together in their guild's tab.
+- Lets you decide, separately for each named guild, whether its messages also appear in the normal
+  chat tab.
+- Optionally hides guild-link recruitment adverts before they enter the chat log.
+- Switches to the next tab with L2 + D-pad Right while on the HUD.
+- Keeps the selected tab and outgoing channel synchronized in both directions.
+- Restores a non-guild destination when the normal chat tab is selected.
+- Selects the matching tab when the configured login channel is applied.
+- Shows the active tab name on the HUD: white for normal chat and the game's guild-chat color for
+  a guild tab. The label can be disabled and is hidden in menus.
+- Lets you configure the active-tab label's position, text size and draw layer.
 
-ABOUT THE CONTROLLER
+ABOUT TAB SWITCHING
 
-Listening for the Enter key requires the add-on to hold keyboard focus, and while it does, the
-controller's buttons are paused. The analogue sticks keep working.
+On the HUD, hold L2 and press D-pad Right to move through the available tabs. L2 itself is read
+without being rebound. D-pad Right's normal quest-cycling action is blocked only while the chord
+is active. The shortcut is disabled during combat, in menus, while text entry is open and while
+the console keyboard is on screen.
 
-This is short-lived by design. Arming Enter is a deliberate act, and the add-on stands down the
-moment the input screen appears — so the buttons are back before you have typed a word, and stay
-back while you send the message and after.
+The number of guild tabs follows your actual guild membership. Joining, leaving or renaming a
+guild is reconciled automatically. Turning the feature off removes only the tabs created by this
+add-on and returns guild chat to the normal tab.
 
-  /pbchat enter   Arm Enter. Buttons pause until the input screen comes up.
-  /pbchat safe    Stand down now. Buttons work; open chat from the controller as usual.
+ABOUT GUILD RECRUITMENT
 
-You can leave it in "safe" and never arm Enter at all. The input screen still appears every time
-you open the chat window from the controller, which on its own removes most of the friction.
+Guild Finder's Link in Chat action inserts a real guild link into an advert. The optional filter
+matches that link markup rather than guessing words, so it works in every language. Plain-text
+adverts without a guild link and ordinary chat remain visible. Guild and officer channels and
+your own messages are always exempt. Whispers are exempt by default and have a separate opt-in.
+
+ABOUT ENTER INPUT
+
+Listening continuously for Enter can temporarily hold keyboard focus and pause controller buttons,
+so Enter capture is deliberately opt-in:
+
+  /pbchat enter   Arm Enter. Buttons pause until chat opens or the arm expires.
+  /pbchat safe    Stand down immediately and return normal controller input.
+
+You can leave Enter capture off and continue opening chat from the controller. The automatic
+console text-input-screen assistance still works independently.
 
 SETTINGS
 
-Settings -> Add-Ons -> PB's ChatAssistant holds the pause described below. The rest are
-chat commands.
+Settings -> Add-Ons -> PB's ChatAssistant includes:
 
-  /pbchat              Show current state
-  /pbchat delay <ms>   Pause before the window opens, 0-5000, default 100
-  /pbchat enter        Arm the Enter key
-  /pbchat safe         Stand down; controller buttons work
-  /pbchat autosafe off Keep Enter armed instead of standing down automatically
-  /pbchat channel off  Stop the arrow keys switching channel
-  /pbchat watch off    Stop raising the input screen automatically
-  /pbchat on | off     Master switch
-
-ABOUT THE DELAY
-
-The console raises its text input screen when the chat box takes keyboard focus fresh — not when
-it is handed focus in the same instant something else gave it up. The add-on therefore pauses
-briefly before opening the window. That pause is how the input screen is earned, not a safety
-margin, and how long it needs to be depends on your console's frame timing. If the chat window
-opens but the input screen does not follow, the pause is too short for your machine: raise it
-with /pbchat delay 300, then 500.
+- Enable or disable L2 + D-pad Right tab switching.
+- Enable or disable per-guild chat tabs.
+- Choose whether each guild's messages also appear in normal chat. Actual guild names are shown.
+- Hide guild-link recruitment adverts, with a separate option for whispers.
+- Show or hide the active-tab HUD label, and configure its position, text size and draw layer.
+- Choose the outgoing channel and matching active tab used at login.
+- Adjust the delay before opening the console text input screen.
 
 NOTES
 
-- Built and tested for console. On PC, bind a key to Controls -> PB's ChatAssistant -> Open Chat.
+- Built for the console UI. On PC, bind a key to Controls -> PB's ChatAssistant -> Open Chat.
 - Requires LibHarvensAddonSettings for the settings panel.
-- Next/Previous Chat Channel are also offered as bindable actions, for platforms that have a
-  keybinding screen. PlayStation does not, so there they cannot be bound and the arrow keys are
-  the way.
-- /pbchat reports the running version and settings.
+- The login channel and tab are applied once after add-on load, after guild data becomes available.
+- /pbchat reports the running version and diagnostic state.
 
 ---
 

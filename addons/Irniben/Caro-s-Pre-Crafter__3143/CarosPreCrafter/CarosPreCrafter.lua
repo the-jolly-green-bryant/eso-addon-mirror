@@ -98,7 +98,7 @@ local alchemyAlternatives = { -- Different itemlinks that all work for the daily
 	--[44815] = {262144, 265216,}, -- magicka savage (if ever needed)
 	[54339] = {66304,65536,66816,}, -- health
 	[76827] = {131072,132608,134400,131840,137472,132096,133888,}, --poison helath
-	[76829] = {262144,}, -- poison magicka -- 265216 not working as of update 51
+	[76829] = {262144, 265216}, -- poison magicka --265216  not working as of update 51
 	[76831] = {393216,396800,}, -- poison stamina
 	[76826] = {65536,66816,}, -- poison health drain
 	[54340] = {196608}, -- magicka
@@ -165,12 +165,12 @@ if GetAPIVersion() >= 101051 then
 	 [54339] = {65536, 66304, 66816}, --Essence of health
 	 [54340] = {196608}, --Essence of Magicka
 	 [54341] = {327680}, --Essence of stamina
-	 [44809] = {393216}, --Essence of Ravage Stamina
+	 [44809] = {393216, 396800}, --Essence of Ravage Stamina (396800 can not be created anymore)
 	 [76826] = {65536, 66304, 66816}, --Drain Health Poison IX
-	 [76827] = {132608, 131072, 132096, 131840}, --Damage Health Poison IX
-	 [44812] = {132608, 131072, 132096, 131840}, --Essence of Ravage Health
-	 [76829] = {262144}, --Damage Magicka Poison IX
-	 [76831] = {393216}, --Damage Stamina Poison IX
+	 [76827] = {132608, 131072, 132096, 131840, 134400, 137472, 133888}, --Damage Health Poison IX (134400, 137472, 133888 can not be created anymore)
+	 [44812] = {132608, 131072, 132096, 131840, 134400, 137472, 133888}, --Essence of Ravage Health (134400, 137472, 133888 can not be created anymore)
+	 [76829] = {262144, 265216}, --Damage Magicka Poison IX (265216 can not be created anymore but still works)
+	 [76831] = {393216, 396800}, --Damage Stamina Poison IX (396800 can not be created anymore)
 	}
 end
 
@@ -811,7 +811,7 @@ local function nextAlchemy()
 			local ingSlotCount =  GetSlotStackSize(ingredient.bagId, ingredient.slotIndex)
 			if key == "solvent" then 
 				table.insert(ingLinks, 1, GetItemLink(ingredient.bagId, ingredient.slotIndex))
-			else
+			elseif bagId and bagId ~= 0 then
 				table.insert(ingLinks, GetItemLink(ingredient.bagId, ingredient.slotIndex))
 			end
 			if ingSlotCount < myCountDoable then myCountDoable = ingSlotCount end
@@ -823,7 +823,14 @@ local function nextAlchemy()
 	end
 	
 	if nextItem.custom then d(string.format(GS(CPC_CustomCraftCombi), myCount, nextItem.link, table.concat(ingLinks, " + "))) end
-	
+
+	local expectedResult = GetAlchemyResultingItemLink(myCombination.solvent.bagId, myCombination.solvent.slotIndex, 
+		myCombination.reagent1.bagId, myCombination.reagent1.slotIndex, 
+		myCombination.reagent2.bagId, myCombination.reagent2.slotIndex,
+		myCombination.reagent3.bagId, myCombination.reagent3.slotIndex)
+	if GetItemLinkItemId(nextItem.link) ~= GetItemLinkItemId(expectedResult) then
+		d(string.format(GS(CPC_PleaseCheckCombi), nextItem.link, table.concat(ingLink, " + "), expectedResult))
+	end
 	CarosPreCrafter.hasCraftedWritItemsToDeposit = true 
 	CraftAlchemyItem(myCombination.solvent.bagId, myCombination.solvent.slotIndex, 
 		myCombination.reagent1.bagId, myCombination.reagent1.slotIndex, 

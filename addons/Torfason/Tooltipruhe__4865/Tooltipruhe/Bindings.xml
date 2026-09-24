@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|c7FC7FFTooltipruhe|r">
+            <Action name="TOOLTIPRUHE_TOGGLE_VISIBILITY">
+                <Down>Tooltipruhe_ToggleVisibility()</Down>
+            </Action>
+            <Action name="TOOLTIPRUHE_TOGGLE_EDIT">
+                <Down>Tooltipruhe_ToggleEditMode()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

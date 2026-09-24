@@ -14,7 +14,7 @@
 --
 -- If you'd like to submit a pull request on GitHub, I'd happily take a look.
 --
---      https://github.com/inimicus/cooldowns
+--      https://github.com/B7TxSpeed/Cooldowns
 --
 -- Here is some information that might be helpful:
 --
@@ -2006,6 +2006,21 @@ Cool.Data.Sets = {
     endTime = 0,
     cdStart = 0,
     cdEnd   = 0,
+  },
+["Soulcleaver"] = {
+    procType = "set",
+    event = EVENT_COMBAT_EVENT,
+    description = "While in combat, strengthens your Siphoning abilities at the cost of Ultimate.",
+    id = 211532,
+    enabled = false,
+    result = ACTION_RESULT_EFFECT_GAINED,
+    cooldownDurationMs = 0,
+    onCooldown = false,
+    timeOfProc = 0,
+    texture = "/esoui/art/icons/achievement_thievesguild_035.dds",
+    showFrame = true,
+    durationms = 20000,
+    stacks = nil,
   },
 
   -- Monster Sets

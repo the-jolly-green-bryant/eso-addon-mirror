@@ -1,0 +1,9 @@
+## Title: |cFFD700Quest Tracker Improved|r
+## APIVersion: 101050
+## Version: 1.0
+## Author: |cFFD700@Atharti|r
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: QuestTrackerImproved_SV
+
+QuestTrackerImproved.lua
+QuestTrackerImproved_Settings.lua

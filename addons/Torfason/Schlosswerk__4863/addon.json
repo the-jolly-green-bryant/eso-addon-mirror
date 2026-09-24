@@ -1,9 +1,8 @@
 {
-  "archive_error": "ESOUI returned an empty response",
+  "archive_format": "zip",
   "archive_path": "addons/Torfason/Schlosswerk__4863",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archive_status": "unavailable",
-  "archived": false,
+  "archived": true,
   "author": "Torfason",
   "canonical_id": "esoui:4863",
   "category_id": "17",
@@ -23,8 +22,9 @@
     "Schlosswerk"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4863/",
-  "fingerprint": "a189c901c90969b6bb36b8130f0746c2d00b963d22bca8ab60983d1d7f04cfa5",
+  "fingerprint": "ade264821a7d0570fc0c33d37d1015f95be627e57206dd57c480b2b1e45a7e6a",
   "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17522.png",
     "https://cdn-eso.mmoui.com/preview/pvw17490.png",
     "https://cdn-eso.mmoui.com/preview/pvw17491.png",
     "https://cdn-eso.mmoui.com/preview/pvw17492.png",
@@ -39,11 +39,11 @@
   "source_id": "4863",
   "source_url": "https://www.esoui.com/downloads/info4863-Schlosswerk.html",
   "stats": {
-    "downloads": 0,
+    "downloads": 8,
     "favorites": 0,
-    "monthly_downloads": 0
+    "monthly_downloads": 6
   },
   "title": "Schlosswerk",
-  "updated_at": 1790150282000,
+  "updated_at": 1790165732000,
   "version": "0.1.1"
 }

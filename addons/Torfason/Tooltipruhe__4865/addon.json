@@ -1,0 +1,44 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Torfason/Tooltipruhe__4865",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Torfason",
+  "canonical_id": "esoui:4865",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4865",
+  "deleted": false,
+  "directories": [
+    "Tooltipruhe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4865/",
+  "fingerprint": "da14d3c04020328b6729cd6b1bc3571c3a5cceaf4792d7037a5cf5b30205c760",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17517.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17508.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17509.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4865",
+  "source_url": "https://www.esoui.com/downloads/info4865-Tooltipruhe.html",
+  "stats": {
+    "downloads": 5,
+    "favorites": 1,
+    "monthly_downloads": 3
+  },
+  "title": "Tooltipruhe",
+  "updated_at": 1790164487000,
+  "version": "1.0.0"
+}

@@ -7,8 +7,8 @@
 ## Title: Loot Log
 ## Description: Searchable log of the items that you and your group members have looted
 ## Author: @code65536
-## Version: 4.9.6.2
-## AddOnVersion: 409062
+## Version: 4.9.7
+## AddOnVersion: 409070
 ## APIVersion: 101050 101051
 ## SavedVariables: LootLogSavedVariables LootLogHistory ACACUC_LootLog
 ## DependsOn: LibExtendedJournal>=205031
@@ -27,4 +27,4 @@ TreasureMapLeads.lua
 Tooltip.lua
 Bindings.xml
 
-pc/AntiClankerAddonConsortiumUpdateChecker.lua
+pc/LibForgottenAddons.lua

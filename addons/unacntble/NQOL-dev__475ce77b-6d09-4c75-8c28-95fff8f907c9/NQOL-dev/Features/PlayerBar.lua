@@ -1848,6 +1848,9 @@ InstallEvents = function()
             EVENT_MANAGER:AddFilterForEvent(PlayerBars.Group.EVENT_NAMESPACE, EVENT_GROUP_MEMBER_CONNECTED_STATUS, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
         end
     end
+    if EVENT_TARGET_MARKER_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(PlayerBars.Group.EVENT_NAMESPACE, EVENT_TARGET_MARKER_UPDATE, PlayerBars.Group.QueueRefresh)
+    end
     if EVENT_GROUP_SUPPORT_RANGE_UPDATE then
         EVENT_MANAGER:RegisterForEvent(PlayerBars.Group.EVENT_NAMESPACE, EVENT_GROUP_SUPPORT_RANGE_UPDATE, PlayerBars.Group.OnSupportRangeUpdate)
         if EVENT_MANAGER.AddFilterForEvent and REGISTER_FILTER_UNIT_TAG_PREFIX then
@@ -1968,6 +1971,7 @@ UninstallEvents = function()
     Unregister(PlayerBars.Group.EVENT_NAMESPACE, EVENT_GROUP_MEMBER_LEFT)
     Unregister(PlayerBars.Group.EVENT_NAMESPACE, EVENT_GROUP_MEMBER_ROLE_CHANGED)
     Unregister(PlayerBars.Group.EVENT_NAMESPACE, EVENT_GROUP_MEMBER_CONNECTED_STATUS)
+    Unregister(PlayerBars.Group.EVENT_NAMESPACE, EVENT_TARGET_MARKER_UPDATE)
     Unregister(PlayerBars.Group.EVENT_NAMESPACE, EVENT_GROUP_SUPPORT_RANGE_UPDATE)
     Unregister(PlayerBars.Group.EVENT_NAMESPACE, EVENT_UNIT_DEATH_STATE_CHANGED)
     Unregister(COMPANION.EVENT_NAMESPACE, EVENT_ACTIVE_COMPANION_STATE_CHANGED)

@@ -307,6 +307,12 @@ end
 local PrimaryTooltip = ItemTooltip
 local SecondaryTooltip = ItemTooltip
 
+local function AddTooltipExtension( module, ... )
+	if (module and module.AddTooltipExtension) then
+		module.AddTooltipExtension(PrimaryTooltip, ...)
+	end
+end
+
 function LootLogListRow_OnMouseEnter( control )
 	local data = ZO_ScrollList_GetData(control)
 	LootLog.list:Row_OnMouseEnter(control)
@@ -319,17 +325,14 @@ function LootLogListRow_OnMouseEnter( control )
 		SecondaryTooltip:SetLink(LootLog.GetAntiquityRewardLink(itemLink))
 	elseif (IsItemLinkSetCollectionPiece(itemLink)) then
 		PrimaryTooltip = LEJ.ItemTooltip(itemLink)
-		if (ItemBrowser and ItemBrowser.AddTooltipExtension) then
-			ItemBrowser.AddTooltipExtension(PrimaryTooltip, itemLink, nil, 0x0F)
-		end
+		AddTooltipExtension(ItemBrowser, itemLink, nil, 0x0F)
+		AddTooltipExtension(CharacterKnowledge, itemLink)
 	else
 		local itemType = GetItemLinkItemType(itemLink)
 		local collectibleId = GetItemLinkContainerCollectibleId(itemLink)
 		if (itemType == ITEMTYPE_RECIPE or itemType == ITEMTYPE_RACIAL_STYLE_MOTIF) then
 			PrimaryTooltip = LEJ.ItemTooltip(itemLink)
-			if (CharacterKnowledge and CharacterKnowledge.AddTooltipExtension) then
-				CharacterKnowledge.AddTooltipExtension(PrimaryTooltip, itemLink)
-			end
+			AddTooltipExtension(CharacterKnowledge, itemLink)
 			if (itemType == ITEMTYPE_RECIPE) then
 				InitializeTooltip(SecondaryTooltip, PrimaryTooltip, TOPRIGHT, 0, 0, TOPLEFT)
 				SecondaryTooltip:SetLink(GetItemLinkRecipeResultItemLink(itemLink))
@@ -338,9 +341,7 @@ function LootLogListRow_OnMouseEnter( control )
 			PrimaryTooltip = LEJ.ItemTooltip(itemLink)
 			InitializeTooltip(SecondaryTooltip, PrimaryTooltip, TOPRIGHT, 0, 0, TOPLEFT)
 			SecondaryTooltip:SetCollectible(collectibleId)
-			if (LMAC and LMAC.AddTooltipExtension) then
-				LMAC.AddTooltipExtension(PrimaryTooltip, collectibleId)
-			end
+			AddTooltipExtension(LMAC, collectibleId)
 		else
 			PrimaryTooltip = LEJ.ItemTooltip(itemLink, ItemTooltip)
 		end

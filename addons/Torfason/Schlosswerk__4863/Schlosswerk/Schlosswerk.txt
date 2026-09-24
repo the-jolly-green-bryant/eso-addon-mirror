@@ -1,0 +1,18 @@
+## Title: |c7FC7FFSchlosswerk|r
+## Description: Selectable lock designs for ESO lockpicking. The original lockpicking mechanics remain untouched.
+## Author: Atlas
+## Version: 0.1.1
+## APIVersion: 101050 101051
+## AddOnVersion: 1001
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: SchlosswerkSavedVariables
+
+Bootstrap.lua
+lang/en.lua
+lang/$(language).lua
+Localization.lua
+Styles.lua
+Selection.lua
+PinLighting.lua
+Settings.lua
+Schlosswerk.lua

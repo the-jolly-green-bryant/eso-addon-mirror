@@ -176,11 +176,11 @@ local ApplyGroupRowValue
 local ApplyGroupRowRangeStyle
 
 local PREVIEW_GROUP_ROWS = {
-    { playerId = "TankID01", customNameId = "@skinnycheeks", characterName = "Tank Character 1", roleKey = "tank", classId = 1, championPoints = 2410, companionName = "Bastian Hallix", current = 46605, maximum = 50000, deathCount = 1 },
+    { playerId = "TankID01", customNameId = "@skinnycheeks", characterName = "Tank Character 1", roleKey = "tank", classId = 1, targetMarkerType = TARGET_MARKER_TYPE_ONE, championPoints = 2410, companionName = "Bastian Hallix", current = 46605, maximum = 50000, deathCount = 1 },
     { playerId = "TankID02", customNameId = "@LokiClermeil", characterName = "Tank Character 2", roleKey = "tank", classId = 5, championPoints = 1895, companionName = "Isobel Veloise", current = 43712, maximum = 50000 },
-    { playerId = "HealerID01", customNameId = "@LikoXie", characterName = "Healer Character 1", roleKey = "heal", classId = 6, championPoints = 2217, companionName = "Ember", current = 33152, maximum = 37500, deathCount = 2, isBeingResurrected = true },
+    { playerId = "HealerID01", customNameId = "@LikoXie", characterName = "Healer Character 1", roleKey = "heal", classId = 6, targetMarkerType = TARGET_MARKER_TYPE_FIVE, championPoints = 2217, companionName = "Ember", current = 33152, maximum = 37500, deathCount = 2, isBeingResurrected = true },
     { playerId = "HealerID02", customNameId = "@WarfireX", characterName = "Healer Character 2", roleKey = "heal", classId = 4, championPoints = 1764, companionName = "Mirri Elendis", current = 30348, maximum = 37500 },
-    { playerId = "DamageID01", customNameId = "@Alcast", characterName = "Damage Character 1", roleKey = "dps", classId = 2, championPoints = 3600, companionName = "Sharp-as-Night", current = 26560, maximum = 30000 },
+    { playerId = "DamageID01", customNameId = "@Alcast", characterName = "Damage Character 1", roleKey = "dps", classId = 2, targetMarkerType = TARGET_MARKER_TYPE_EIGHT, championPoints = 3600, companionName = "Sharp-as-Night", current = 26560, maximum = 30000 },
     { playerId = "DamageID02", customNameId = "@andy.s", characterName = "Damage Character 2", roleKey = "dps", classId = 3, championPoints = 2142, companionName = "Azandar al-Cybiades", current = 25445, maximum = 30000 },
     { playerId = "DamageID03", customNameId = "@PK44", characterName = "Damage Character 3", roleKey = "dps", classId = 117, championPoints = 1428, companionName = "Tanlorin", current = 28380, maximum = 30000, deathCount = 4, hasResurrectPending = true },
     { playerId = "DamageID04", customNameId = "@Wheel5", characterName = "Damage Character 4", roleKey = "dps", classId = 1, championPoints = 980, companionName = "Zerith-var", current = 27240, maximum = 30000, inSupportRange = false },
@@ -682,13 +682,13 @@ function PlayerBars.Group.GetPreviewHealthVisuals(current, maximum, settings, in
     return visualValues
 end
 
-local function FormatGroupNameWithClassIcon(name, classIcon, height)
-    if not classIcon or classIcon == "" or not zo_iconFormat then
+local function FormatGroupNameWithIcon(name, icon, height)
+    if not icon or icon == "" or not zo_iconFormat then
         return name or ""
     end
 
     local iconSize = math.max(zo_floor((tonumber(height) or PlayerBars.Group.DEFAULT_HEIGHT) * 0.6336), 12)
-    return zo_iconFormat(classIcon, iconSize, iconSize) .. " " .. (name or "")
+    return zo_iconFormat(icon, iconSize, iconSize) .. " " .. (name or "")
 end
 
 function PlayerBars.Group.FormatNameWithCompanion(name, companionName, height)
@@ -735,7 +735,10 @@ function PlayerBars.Group.GetRowNameText(data, settings, height)
         nameText = PlayerBars.Group.FormatNameWithCompanion(nameText, data.companionName, height)
     end
     if settings.showClass == true then
-        nameText = FormatGroupNameWithClassIcon(nameText, data.classIcon, height)
+        nameText = FormatGroupNameWithIcon(nameText, data.classIcon, height)
+    end
+    if settings.showTargetMarker == true then
+        nameText = FormatGroupNameWithIcon(nameText, data.targetMarkerIcon, height)
     end
     return nameText
 end
@@ -794,6 +797,9 @@ local function GetGroupRowData(index, settings, data)
 
     local roleKey = exists and GetGroupRoleKey(unitTag) or GetPreviewGroupRoleKey(index)
     local classId = exists and GetUnitClassId and GetUnitClassId(unitTag) or GetPreviewGroupClassId(index)
+    local targetMarkerType = settings.showTargetMarker == true
+        and (exists and GetUnitTargetMarkerType and GetUnitTargetMarkerType(unitTag) or (previewRow and previewRow.targetMarkerType))
+        or nil
     local championPoints = exists and GetUnitEffectiveChampionPoints and GetUnitEffectiveChampionPoints(unitTag) or (previewRow and previewRow.championPoints)
     local level = exists and GetUnitLevel and GetUnitLevel(unitTag) or (previewRow and previewRow.level)
     local companionName = settings.showCompanions == true and (exists and PlayerBars.Group.GetCompanionName(unitTag) or (previewRow and previewRow.companionName)) or nil
@@ -820,6 +826,11 @@ local function GetGroupRowData(index, settings, data)
     data.deathCounterKeys = deathCounterKeys
     data.deathCounterKey = deathCounterKeys and deathCounterKeys[1] or nil
     data.classIcon = GetGroupClassIcon(classId)
+    data.targetMarkerIcon = targetMarkerType
+        and targetMarkerType ~= TARGET_MARKER_TYPE_NONE
+        and ZO_GetPlatformTargetMarkerIcon
+        and ZO_GetPlatformTargetMarkerIcon(targetMarkerType)
+        or nil
     data.championPoints = championPoints
     data.level = level
     data.companionName = companionName

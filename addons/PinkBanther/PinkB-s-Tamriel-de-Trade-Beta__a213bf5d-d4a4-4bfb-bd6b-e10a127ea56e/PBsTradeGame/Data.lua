@@ -40,6 +40,32 @@ D.groups = {
     hospitality={name="タムリエル酒造組合", minimum=3, bonus=1.7, discoveryChance=.12},
     roads={name="帝国交易路", minimum=3, bonus=1.8, discoveryChance=.10},
 }
+-- Ten-period board policies. Their trade-offs affect settlements, delegation and hostile bids.
+D.tradePolicies = {
+    {id="expansion",name="拡張路線",description="設備投資と支店開設を優先。資産成長と委任買収に強い反面、敵の注目を集めます。",
+        playerGrowthBonus=.004,delegateChance=.10,counterattackMultiplier=1.20},
+    {id="consolidation",name="基盤固め",description="既存事業の準備金と忠誠を回復。成長と委任速度を抑えて守りを固めます。",
+        profitMultiplier=.92,reserveRecoveryMultiplier=1.45,riskRecovery=6,delegateChance=-.06,counterattackMultiplier=.72},
+    {id="intelligence",name="情報優位",description="帳簿・伝令・相場情報へ投資。委任の成功率を高め、敵の買収予算を削ります。",
+        profitMultiplier=.96,delegateChance=.16,enemyBudgetMultiplier=.86,counterattackMultiplier=.90},
+    {id="dividend",name="利益還元",description="今期利益を最大化しますが、準備金と忠誠回復は遅れます。",
+        profitMultiplier=1.28,reserveRecoveryMultiplier=.72,riskRecovery=-2,delegateChance=-.04},
+}
+D.tradePolicyById={}; for _,p in ipairs(D.tradePolicies) do D.tradePolicyById[p.id]=p end
+-- One event is revealed before each policy choice. Category effects make the portfolio mix matter.
+D.marketEvents = {
+    {id="harvest",name="豊穣祭と大宴会",description="農牧・宿泊・酒造の需要が急増しています。",
+        categories={farm=true,ranch=true,inn=true,tavern=true},profitMultiplier=1.45,growthBonus=.004},
+    {id="ore_rush",name="新鉱脈の熱狂",description="鉱石と加工品へ投機資金が流れ込んでいます。",
+        categories={mine=true,forge=true,jewelry=true},profitMultiplier=1.35,growthBonus=.006},
+    {id="road_blockade",name="街道封鎖",description="輸送網が乱れ、港湾と隊商の利益が落ち、敵商会が攻勢を強めています。",
+        categories={port=true,caravan=true},profitMultiplier=.68,delegateChance=-.10,counterattackMultiplier=1.25},
+    {id="credit_fair",name="帝国信用市",description="資金が市場を巡り、全事業が活況です。ただし敵の買収資金も増えます。",
+        profitMultiplier=1.12,growthBonus=.002,enemyBudgetMultiplier=1.12},
+    {id="arcane_route",name="秘術物流網の開通",description="魔術・錬金・書籍の流通が急拡大しています。",
+        categories={mages=true,alchemy=true,books=true},profitMultiplier=1.40,growthBonus=.005},
+}
+D.marketEventById={}; for _,e in ipairs(D.marketEvents) do D.marketEventById[e.id]=e end
 -- Fictional businesses; only zone names are taken from the setting.
 local rows = {
     {"aur_farm","朝露の果樹園","auridon","farm",3400,190,"player",8,8,.8,{}},

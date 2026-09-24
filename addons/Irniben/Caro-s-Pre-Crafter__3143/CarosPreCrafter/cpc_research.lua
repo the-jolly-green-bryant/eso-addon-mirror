@@ -61,8 +61,8 @@ local weaponResearchLines = {
 
 local armorResearchLines = {
 	[ARMORTYPE_NONE] = {
-		[EQUIP_TYPE_NECK] = {CRAFTING_TYPE_JEWELRYCRAFTING, 1},
-		[EQUIP_TYPE_RING] = {CRAFTING_TYPE_JEWELRYCRAFTING, 2},
+		[EQUIP_TYPE_NECK] = {CRAFTING_TYPE_JEWELRYCRAFTING, 2},
+		[EQUIP_TYPE_RING] = {CRAFTING_TYPE_JEWELRYCRAFTING, 1},
 	},
 	[ARMORTYPE_LIGHT] = {
 		[EQUIP_TYPE_CHEST] = {CRAFTING_TYPE_CLOTHIER, 1},
@@ -581,7 +581,6 @@ local function cpcSetupLLC()
 	local styleTable = {true, true, true, true, true, true, true, true, true} -- just 1-9 for the standard racial styles
 	LLC = LibLazyCrafting:AddRequestingAddon(CarosPreCrafter.name, true, 
 		function(result, station, craftedItem) 
-			d(craftedItem)
 			local itemData = craftedItem and craftedItem.reference and itemsInLLCQueueByReference[craftedItem.reference]
 			if result == "success" and itemData then
 				cpcD(craftedItem)
@@ -665,8 +664,8 @@ function CarosPreCrafter.buildInternalLLCQueue(craft)
 						end
 					elseif itemData.craft == CRAFTING_TYPE_JEWELRYCRAFTING then
 						myTraitId = jewelryTraitIds[itemData.traitIndex] + 1
-						local changeLine = {[1]= 2, [2] = 1}
-						myPattern = changeLine[myPattern]
+						--local changeLine = {[1]= 2, [2] = 1} --not needed anymore
+						--myPattern = changeLine[myPattern]
 					else
 						if isNirn then
 							myTraitId = ITEM_TRAIT_TYPE_ARMOR_NIRNHONED + 1

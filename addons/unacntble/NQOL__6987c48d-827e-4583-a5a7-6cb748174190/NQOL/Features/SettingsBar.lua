@@ -2044,6 +2044,19 @@ function PlayerBars.SetGroupShowClass(value)
     PlayerBars.Group.QueueRefresh()
 end
 
+function PlayerBars.GetGroupShowTargetMarker()
+    return PlayerBars.Group.GetSettings().showTargetMarker
+end
+
+function PlayerBars.GetGroupShowTargetMarkerDefault()
+    return defaults.ui.customFrames.groupFrame.showTargetMarker
+end
+
+function PlayerBars.SetGroupShowTargetMarker(value)
+    PlayerBars.Group.GetSettings().showTargetMarker = value == true
+    PlayerBars.Group.QueueRefresh()
+end
+
 function PlayerBars.GetGroupShowChampionPoints()
     return PlayerBars.Group.GetSettings().showChampionPoints
 end

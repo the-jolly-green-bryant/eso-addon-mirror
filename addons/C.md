@@ -33,7 +33,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Caro's Enchantment Learner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Orejana/Caro-s-Enchantment-Learner__3059) | Orejana | PC / Mac | 1.0.0 |
 | [Caro's Last Online Workaround](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Last-Online-Workaround__2967) | Irniben | PC / Mac | 0.1.1 |
 | [Caro's Loot List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Loot-List__2898) | Irniben | PC / Mac | 3.14 |
-| [Caro's Pre-Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Pre-Crafter__3143) | Irniben | PC / Mac | 2.3.2 |
+| [Caro's Pre-Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Pre-Crafter__3143) | Irniben | PC / Mac | 2.3.3 |
 | [Caro's Skill Point Saver (Respec Skill Lines, Champion Points, Gear, Quickslots, Appearances)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Skill-Point-Saver-Respec-Skill-Lines-Champion-Points-Gear-Quickslots-Appe__2901) | Irniben | PC / Mac | 6.1.7 |
 | [Caro's Worn Sets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Irniben/Caro-s-Worn-Sets__3478) | Irniben | PC / Mac | 1.1.4 |
 | [CASE - Character Addon Settings Editor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/CASE---Character-Addon-Settings-Editor__4036) | atharti | PC / Mac | 6.8 |
@@ -67,7 +67,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Chaotic Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kanori/Chaotic-Tools__3686) | kanori | PC / Mac | 2.171 |
 | [Character Achievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Character-Achievements__3322) | silvereyes | PC / Mac | 1.0.2 |
 | [Character Homes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0thicicecream/Character-Homes__4654) | g0thicicecream | PC / Mac | 1.3.0 |
-| [Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938) | code65536 | PC / Mac | 3.1.2.1 |
+| [Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938) | code65536 | PC / Mac | 3.1.3 |
 | [Character Zone Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Character-Zone-Tracker__3323) | silvereyes | PC / Mac | 1.3.0 |
 | [CharacterGearUI (for alone or PerfectPixel)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trobo/CharacterGearUI-for-alone-or-PerfectPixel__4743) | Trobo | PC / Mac | 0.4.7 |
 | [CharacterMarkdown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/CharacterMarkdown__4279) | solaegis | PC / Mac | 2.3.0 |
@@ -115,7 +115,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Clan Cercone Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Josh-cr/Clan-Cercone-Addon__3735) | Josh-cr | PC / Mac | 4.4.0 |
 | [Clarity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/muenchhausen/Clarity__2874) | muenchhausen | PC / Mac | 1.1.2 |
 | [Classic TES Combat Skills](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thurderan/Classic-TES-Combat-Skills__4233) | Thurderan | PC / Mac | 3.0 |
-| [Clayladon's Friend Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Clayladon/Clayladon-s-Friend-Status__4855) | Clayladon | PC / Mac | 1.0.9 |
+| [Clayladon's Friend Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Clayladon/Clayladon-s-Friend-Status__4855) | Clayladon | PC / Mac | 1.1.0 |
 | [Clean My Chat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tyx/Clean-My-Chat__2544) | Tyx | PC / Mac | 1.2.0 |
 | [Cleaner HUD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Amerlite/Cleaner-HUD__1678) | Amerlite | PC / Mac | 12 |
 | [CleanLeadsUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akbosser/CleanLeadsUI__2150f7ed-d4e8-426c-b6e0-2df807f1db92) | akbosser | Console | — |
@@ -212,7 +212,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Cooldowns](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g4rr3t/Cooldowns__2164) | g4rr3t | PC / Mac | 1.6.1 |
 | [Cooldowns - HT Update Branch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/hacktank/Cooldowns---HT-Update-Branch__2879) | hacktank | PC / Mac | 1.8.0 |
 | [Cooldowns - Stonethorn Update](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BREADANDMlLK/Cooldowns---Stonethorn-Update__2776) | BREADANDMlLK | PC / Mac | 1.0.0 |
-| [Cooldowns Global](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/Cooldowns-Global__4603) | B7TxSpeed | PC / Mac | 2.5.1 |
+| [Cooldowns Global](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/B7TxSpeed/Cooldowns-Global__4603) | B7TxSpeed | PC / Mac | 2.5.2 |
 | [cOOLsp0t's Loot Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cOOLsp0T/cOOLsp0t-s-Loot-Manager__2433) | cOOLsp0T | PC / Mac | 1.6 |
 | [CoordsAndHeading](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Andre/CoordsAndHeading__2665) | Andre | PC / Mac | 1.0 |
 | [CoordsAndHeading OverHaul!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jord56/CoordsAndHeading-OverHaul__2877) | Jord56 | PC / Mac | 1.2 |

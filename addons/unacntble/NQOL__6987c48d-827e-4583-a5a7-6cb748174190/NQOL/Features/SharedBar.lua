@@ -460,6 +460,7 @@ local defaults = {
                 fontSize = C.CLASSIC_DEFAULT_FONT_SIZE,
                 nameDisplay = PlayerBars.Group.NAME_DISPLAY_CHARACTER,
                 showClass = true,
+                showTargetMarker = false,
                 showChampionPoints = true,
                 championPointsPlacement = PlayerBars.Group.CHAMPION_POINTS_BEFORE,
                 showCompanions = false,
@@ -915,6 +916,7 @@ function PlayerBars.Group.GetSettings()
         settings.nameDisplay = PlayerBars.Group.NAME_DISPLAY_CHARACTER
     end
     NQOL.Settings.Boolean(settings, groupDefaults, "showClass")
+    NQOL.Settings.Boolean(settings, groupDefaults, "showTargetMarker")
     NQOL.Settings.Boolean(settings, groupDefaults, "showChampionPoints")
     NQOL.Settings.Choice(settings, groupDefaults, "championPointsPlacement", PlayerBars.Group.CHAMPION_POINTS_PLACEMENT_VALID_CHOICES)
     NQOL.Settings.Boolean(settings, groupDefaults, "showCompanions")

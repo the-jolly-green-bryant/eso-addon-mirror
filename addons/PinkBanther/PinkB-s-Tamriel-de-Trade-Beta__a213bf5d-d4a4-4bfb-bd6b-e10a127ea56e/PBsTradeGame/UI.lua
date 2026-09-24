@@ -2,10 +2,25 @@ local U={}; U.__index=U; PBTrade.UI=U
 local C,D,M=PBTrade.Config,PBTrade.Data,PBTrade.Model
 local T=C.theme
 local ink=T.text; local light=T.text
+local COMPANY_NAME_DIALOG="PBTRADE_COMPANY_NAME_GAMEPAD"
 local layoutRecords
+-- Match PBsWarTable: resolve the localized font object to its actual descriptor.
+local function applyFont(control,size)
+    local valid={[18]=true,[20]=true,[22]=true,[25]=true,[27]=true,[34]=true,[36]=true,[42]=true,[54]=true,[61]=true}
+    size=valid[size] and size or 27
+    local name="ZoFontGamepad"..size
+    local source=_G[name]
+    if source and source.GetFontInfo then
+        local face,actualSize=source:GetFontInfo()
+        if type(face)=="string" and face~="" and type(actualSize)=="number" and actualSize>0 then
+            control:SetFont(face.."|"..actualSize.."|soft-shadow-thick")
+            return
+        end
+    end
+    control:SetFont(name)
+end
 local function gold(value)
-    local reversed=tostring(math.floor(value or 0)):reverse():gsub("(%d%d%d)","%1,")
-    return reversed:gsub(",$",""):reverse()
+    return M.FormatMoney(value)
 end
 local function remember(c,parent,x,y,w,h)
     layoutRecords[#layoutRecords+1]={control=c,parent=parent,x=x,y=y,w=w,h=h}
@@ -21,7 +36,8 @@ end
 local function label(parent,x,y,w,h,text,size,color)
     local c=WINDOW_MANAGER:CreateControl(nil,parent,CT_LABEL)
     c:SetAnchor(TOPLEFT,parent,TOPLEFT,x,y); c:SetDimensions(w,h)
-    c:SetFont("ZoFontGamepad"..(size or 22)); c:SetColor(unpack(color or light))
+    applyFont(c,size or 22); c:SetColor(unpack(color or light))
+    c:SetDrawLayer(DL_TEXT)
     c:SetText(text or ""); return remember(c,parent,x,y,w,h)
 end
 local function panel(parent,x,y,w,h)
@@ -50,6 +66,8 @@ function U.New(app)
     local p=panel(self.root,0,0,C.ui.width,C.ui.height); self.content=p
     -- Background is edge-to-edge; only the standard keybind strip has reserved space.
     layoutRecords={}
+    self.gameplay=panel(p,0,0,1240,780)
+    p=self.gameplay
     box(p,0,0,1240,108,{.02,.025,.02,.70},{0,0,0,0})
     box(p,40,104,1160,1,T.gold,{0,0,0,0})
     box(p,40,704,1160,1,T.edge,{0,0,0,0})
@@ -81,8 +99,9 @@ function U.New(app)
     self.ledgerHeading=label(self.ledger,22,12,670,35,"",27,ink)
     self.detail=label(self.ledger,758,22,376,454,"",22)
     for i=1,C.ui.pageSize do
-        local row=plaque(self.ledger,18,60+(i-1)*51,674,47)
-        local text=label(row,10,4,652,39,"",22,ink)
+        -- Ten rows per page: the nine domestic actions plus "finish" fit on one page.
+        local row=plaque(self.ledger,18,56+(i-1)*44,674,40)
+        local text=label(row,10,2,652,36,"",22,ink)
         row:SetMouseEnabled(true); row:SetHandler("OnMouseUp",function()
             self.app.index=(self.page or 0)*C.ui.pageSize+i; self.app:Act("confirm"); self:Refresh()
         end)
@@ -90,7 +109,7 @@ function U.New(app)
     end
     self.battle=panel(p,40,158,1160,500)
     box(self.battle,0,0,1160,500,{.025,.034,.03,.30},{.49,.39,.24,.55})
-    self.battleTitle=label(self.battle,24,8,1100,36,"",27)
+    self.battleTitle=label(self.battle,24,0,1100,34,"",27)
     self.bands={}
     for i=1,6 do
         local y=64+(i-1)*38
@@ -103,11 +122,9 @@ function U.New(app)
         enemyGlow:SetDrawLayer(DL_CONTROLS); ownGlow:SetDrawLayer(DL_CONTROLS)
         self.bands[i]={enemy=enemy,own=own,enemyTip=enemyTip,ownTip=ownTip,enemyGlow=enemyGlow,ownGlow=ownGlow,phase=(i-1)/6}
     end
-    self.coinAreas={}; self.floors={}; self.depthLabels={}
+    self.coinAreas={}; self.floors={}
     for side=1,2 do
         local bayX=side==1 and 74 or 674
-        texture(self.battle,bayX-40,30,52,52,"crest",side==1 and {.72,.84,.90,1} or {1,.86,.79,1}):SetDrawLayer(DL_CONTROLS)
-        self.depthLabels[side]=label(self.battle,bayX+30,38,420,25,"",18)
         local viewport=panel(self.battle,bayX,65,400,C.coins.viewportHeight)
         self.coinAreas[side]=viewport
         self.floors[side]=texture(viewport,0,C.coins.floorY+C.coins.plinthOffsetY,C.coins.plinthWidth,C.coins.plinthHeight,"coin_plinth")
@@ -125,13 +142,89 @@ function U.New(app)
     self.log=label(self.battle,735,417,398,78,"",18)
     -- Tactic banner: two slim lines over the title row, clear of the bands, coins and bids.
     local function overlay(c,level) c:SetDrawLayer(DL_OVERLAY); c:SetDrawLevel(level); return c end
-    self.cutin=overlay(box(self.battle,14,4,1132,56,{.018,.024,.02,.90},T.gold),15)
-    self.cutinStripe=overlay(box(self.cutin,0,53,1132,3,T.gold,{0,0,0,0}),16)
-    self.cutinLine=overlay(label(self.cutin,14,2,1104,27,"",18),17)
-    self.cutinVerdict=overlay(label(self.cutin,14,27,1104,27,"",18),17)
+    -- Popup strip above the coin bays (y 36-62): one lane per side for moves and status,
+    -- and a full-width strip for day summaries and the player's tactic cut-in.
+    self.lanes={}
+    for _,spec in ipairs({{"enemy",20},{"player",600}}) do
+        local lane=overlay(box(self.battle,spec[2],38,540,24,{.02,.028,.024,.86},T.edge),14)
+        local text=overlay(label(lane,12,0,516,24,"",18),15)
+        lane:SetHidden(true)
+        self.lanes[spec[1]]={box=lane,text=text,queue={},current=nil,time=0}
+    end
+    self.cutin=overlay(box(self.battle,14,38,1132,25,{.018,.024,.02,.92},T.gold),15)
+    self.cutinStripe=overlay(box(self.cutin,0,23,1132,2,T.gold,{0,0,0,0}),16)
+    self.cutinLine=overlay(label(self.cutin,14,0,1104,23,"",18),17)
+    self.cutinVerdict=overlay(label(self.cutin,14,0,1104,23,"",18),17)
     self.cutin:SetHidden(true)
+    self.wide={queue={},current=nil,time=0}
     self.notice=label(p,44,675,1150,32,"",18)
-    label(p,44,720,1150,30,"↑↓：選択    ←→：頁送り（交渉中は分類切替）    L1 / R1：帳簿・分類切替    ×：決定    ○：戻る / 中断    □：手引き（交渉中は撤退）    △：詳細",18)
+    self.helpLine=label(p,44,720,1150,30,"↑↓：選択    ←→：頁送り（交渉中は分類切替）    L1 / R1：帳簿・分類切替    ×：決定    ○：戻る / 中断    □：手引き（交渉中は撤退）    △：詳細",18)
+    -- Separate screens, rather than opaque overlay backdrops over the entire game.
+    -- Keep containers non-rendering. Text uses the normal TEXT layer, above all
+    -- stage artwork/shades in BACKGROUND; no type depends on OVERLAY sorting.
+    p=self.content
+    local function stageLayer(c,level)
+        c:SetDrawLayer(c:GetType()==CT_LABEL and DL_TEXT or DL_BACKGROUND)
+        c:SetDrawLevel(level)
+        return c
+    end
+    local openingLayer=stageLayer
+    self.openingPanel=panel(p,0,0,1240,780)
+    openingLayer(box(self.openingPanel,0,0,1240,780,{0,0,0,1},{0,0,0,0}),0)
+    self.openingArt=openingLayer(texture(self.openingPanel,0,0,1240,780,"treasury"),3)
+    openingLayer(box(self.openingPanel,0,0,1240,90,{0,0,0,.45},{0,0,0,0}),4)
+    openingLayer(box(self.openingPanel,0,485,1240,295,{.01,.012,.01,.88},{0,0,0,0}),4)
+    openingLayer(box(self.openingPanel,60,493,1120,2,T.gold,{0,0,0,0}),5)
+    self.openingText=openingLayer(label(self.openingPanel,80,512,1080,198,"",27,{1,.93,.78,1}),6)
+    self.openingNext=openingLayer(label(self.openingPanel,1150,678,40,36,"▼",27,T.gold),6)
+    self.openingHint=openingLayer(label(self.openingPanel,80,730,760,30,"×：次へ　　○：スキップ",18,T.gold),6)
+    self.openingPage=openingLayer(label(self.openingPanel,1040,730,140,30,"",18,T.gold),6)
+    self.openingPage:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    self.openingPanel:SetHidden(true)
+    -- Title and company-naming screens: a dedicated mercantile hall, above the ledger.
+    local titleLayer=stageLayer
+    local function centered(c) c:SetHorizontalAlignment(TEXT_ALIGN_CENTER); return c end
+    self.titlePanel=panel(p,0,0,1240,780)
+    titleLayer(box(self.titlePanel,0,0,1240,780,{.018,.024,.021,1},{0,0,0,0}),0)
+    self.titleBackdrop=titleLayer(texture(self.titlePanel,0,0,1240,780,"title_hall",{.88,.91,.90,1}),3)
+    -- The DDS is 2:1; crop its sides back to the 1240:780 stage without stretching the hall.
+    self.titleBackdrop:SetTextureCoords(.103,.897,0,1)
+    titleLayer(box(self.titlePanel,0,0,1240,780,{.008,.012,.011,.43},{0,0,0,0}),4)
+    titleLayer(box(self.titlePanel,218,20,804,742,{.014,.019,.017,.66},{.48,.38,.21,.68}),5)
+    titleLayer(box(self.titlePanel,246,42,748,2,T.gold,{0,0,0,0}),6)
+    titleLayer(box(self.titlePanel,246,330,748,1,T.gold,{0,0,0,0}),6)
+    titleLayer(texture(self.titlePanel,560,35,120,120,"crest"),6)
+    titleLayer(centered(label(self.titlePanel,270,72,220,28,"第二紀",18,T.gold)),7)
+    titleLayer(centered(label(self.titlePanel,750,72,220,28,"交易年代記",18,T.gold)),7)
+    self.titleName=titleLayer(centered(label(self.titlePanel,0,151,1240,64,C.displayTitle,54,{1,.86,.55,1})),7)
+    titleLayer(centered(label(self.titlePanel,0,214,1240,30,"PinkB's Tamriel Trade Game",22,T.gold)),7)
+    self.titleCompany=titleLayer(centered(label(self.titlePanel,0,258,1240,44,"",34,{1,.90,.68,1})),7)
+    self.titleStatus=titleLayer(centered(label(self.titlePanel,270,303,700,30,"",22)),7)
+    self.titleRows={}
+    for i=1,8 do
+        local rowBox=titleLayer(box(self.titlePanel,350,351+(i-1)*42,540,36,{.025,.045,.038,.78},{.34,.29,.19,.72}),7)
+        local text=titleLayer(centered(label(rowBox,0,3,540,30,"",22)),8)
+        self.titleRows[i]={box=rowBox,text=text}
+    end
+    titleLayer(box(self.titlePanel,240,716,760,38,{.012,.018,.016,.78},{.34,.29,.19,.55}),6)
+    self.titleNotice=titleLayer(centered(label(self.titlePanel,250,721,740,28,"",18)),7)
+    -- Name entry: focusing an edit control is what makes the console show its keyboard.
+    self.nameEditBox=titleLayer(box(self.titlePanel,350,298,540,42,{.01,.012,.01,.96},T.gold),9)
+    -- The gamepad template supplies Accept / Cancel keybinds while focused (Cancel restores the
+    -- previous text) and calls focusLostCallback afterwards; its own handlers stay untouched.
+    self.nameEdit=WINDOW_MANAGER:CreateControlFromVirtual("PBTradeCompanyNameEdit",self.nameEditBox,"ZO_DefaultEditForBackdrop_Gamepad")
+    remember(self.nameEdit,self.nameEditBox,12,5,516,30)
+    self.nameEdit:SetDrawLayer(DL_TEXT); self.nameEdit:SetDrawLevel(10)
+    applyFont(self.nameEdit,27); self.nameEdit:SetMaxInputChars(64); self.nameEdit:SetColor(unpack(light))
+    if self.nameEdit.SetTextType and TEXT_TYPE_ALL then self.nameEdit:SetTextType(TEXT_TYPE_ALL) end
+    if self.nameEdit.SetVirtualKeyboardType and VIRTUAL_KEYBOARD_TYPE_DEFAULT then
+        self.nameEdit:SetVirtualKeyboardType(VIRTUAL_KEYBOARD_TYPE_DEFAULT)
+    end
+    -- Japanese IME commits its composed text just after focus is released on console.
+    -- Queue the read instead of consuming the still-empty edit control in this callback.
+    self.nameEdit.focusLostCallback=function() self:QueueTypingFinish() end
+    self.nameEditBox:SetHidden(true); self.titlePanel:SetHidden(true)
+    self:RegisterCompanyNameDialog()
     self.modal,self.modalArt=plaque(p,225,155,790,510)
     self.modal:SetCenterColor(.025,.03,.02,1)
     self.modalArt:SetDrawLayer(DL_OVERLAY); self.modalArt:SetDrawLevel(11)
@@ -162,18 +255,43 @@ function U.New(app)
         if state==SCENE_SHOWING then
             -- The session state is built on first open, not during add-on load.
             if type(self.app)=="function" then self.app=self.app() end
-            self.app:BeginSession()
+            -- Ordinary ledger pages reopen at the title.  Story playback and other
+            -- pending flows resume exactly where they were when the scene was hidden.
+            local screen=self.app.screen
+            local resume={battle=true,result=true,rankings=true,admin=true,admin_pick=true,
+                opening=true,naming=true,strategy=true,delegate_pick=true}
+            if not resume[screen] then self.app:ShowTitle() end
             self:Resize()
             KEYBIND_STRIP:AddKeybindButtonGroup(self.keybinds); self:Refresh()
         elseif state==SCENE_SHOWN then
+            if PBTrade.Audio.SyncMusic then PBTrade.Audio.SyncMusic(self.app.screen) end
             self.active=true; self.nextMove=0; DIRECTIONAL_INPUT:Activate(self,self.root)
         elseif state==SCENE_HIDING then
+            self:FinishTyping(false)
+            if type(self.app)=="table" and self.app.FlushSave then self.app:FlushSave() end
+            if PBTrade.Audio.StopMusic then PBTrade.Audio.StopMusic() end
             self.active=false; self.keyDirection=nil; DIRECTIONAL_INPUT:Deactivate(self); KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybinds)
         end
     end)
     self.layout=layoutRecords; layoutRecords=nil
     self:Resize()
     return self
+end
+-- Read native controls when diagnosing a device-specific rendering failure.
+-- Does not modify the current screen or saved campaign.
+function U:DescribeDisplay()
+    local lines={"v"..C.version.." screen="..(type(self.app)=="table" and self.app.screen or "unopened")}
+    for _,name in ipairs({"gameplay","openingPanel","openingArt","openingText","titlePanel","titleName"}) do
+        local c=self[name]
+        local w,h=c:GetDimensions()
+        local detail=string.format("%s hidden=%s alpha=%.2f size=%.0fx%.0f tier=%s layer=%s level=%s",
+            name,tostring(c:IsHidden()),c:GetAlpha(),w,h,tostring(c:GetDrawTier()),
+            tostring(c:GetDrawLayer()),tostring(c:GetDrawLevel()))
+        if c:GetType()==CT_LABEL then detail=detail.." text="..c:GetText() end
+        if c:GetType()==CT_TEXTURE then detail=detail.." loaded="..tostring(PBTrade.Assets.IsUsable(c)) end
+        lines[#lines+1]=detail
+    end
+    return table.concat(lines,"\n")
 end
 function U:Resize()
     local w,h=GuiRoot:GetWidth(),GuiRoot:GetHeight()
@@ -226,7 +344,96 @@ function U:UpdateBattleBands(normalized)
         end
     end
 end
+-- Keyboard entry, done the way the base game's console screens do it (e.g. mail subject):
+-- focus the edit box once and let the platform keyboard serve it. No forced refocus.
+function U:OpenKeyboard()
+    if self:RegisterCompanyNameDialog() then
+        self.editing=false; self.keyboardCommitTime=nil
+        ZO_Dialogs_ShowGamepadDialog(COMPANY_NAME_DIALOG,{name=self.app.pendingName or ""})
+        return
+    end
+    self.editing=true; self.keyboardTime=0; self.keyboardCommitTime=nil
+    self.nameEditBox:SetHidden(false); self.titleStatus:SetHidden(true)
+    self.app.notice="文字を入力したら ×（決定）で確定します。○ で入力を取り消します"; self.titleNotice:SetText(self.app.notice)
+    self.nameEdit:SetText(self.app.pendingName or ""); self.nameEdit:TakeFocus()
+end
+-- Use ESO's own parametric gamepad dialog on console. Its text field is the same route used by
+-- outfit and guild-rank naming, so the platform IME delivers Japanese composition correctly.
+function U:RegisterCompanyNameDialog()
+    if self.companyNameDialogRegistered then return true end
+    if not (ZO_Dialogs_RegisterCustomDialog and ZO_Dialogs_ShowGamepadDialog
+        and ZO_GenericGamepadDialog_GetControl and GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.PARAMETRIC) then return false end
+    local ui=self
+    local parametricDialog=ZO_GenericGamepadDialog_GetControl(GAMEPAD_DIALOGS.PARAMETRIC)
+    local function release() ZO_Dialogs_ReleaseDialogOnButtonPress(COMPANY_NAME_DIALOG) end
+    ZO_Dialogs_RegisterCustomDialog(COMPANY_NAME_DIALOG,{
+        canQueue=true,
+        gamepadInfo={dialogType=GAMEPAD_DIALOGS.PARAMETRIC},
+        setup=function(dialog) dialog:setupFunc() end,
+        title={text="商会名を入力"},
+        mainText={text="日本語・英数字を使用できます（16文字まで）\n×：入力　□：この名前で決定"},
+        parametricList={{
+            template="ZO_Gamepad_GenericDialog_Parametric_TextFieldItem",
+            templateData={
+                nameField=true,
+                textChangedCallback=function(control)
+                    if parametricDialog.data then parametricDialog.data.name=control:GetText() end
+                end,
+                setup=function(control,data)
+                    local edit=control.editBoxControl
+                    data.control=control; edit.textChangedCallback=data.textChangedCallback
+                    edit:SetMaxInputChars(64); edit:SetTextType(TEXT_TYPE_ALL)
+                    if edit.SetVirtualKeyboardType and VIRTUAL_KEYBOARD_TYPE_DEFAULT then
+                        edit:SetVirtualKeyboardType(VIRTUAL_KEYBOARD_TYPE_DEFAULT)
+                    end
+                    edit:SetText((parametricDialog.data and parametricDialog.data.name) or "")
+                end,
+                narrationText=ZO_GetDefaultParametricListEditBoxNarrationText,
+            },
+        }},
+        blockDialogReleaseOnPress=true,
+        buttons={
+            {keybind="DIALOG_PRIMARY",text="入力",callback=function(dialog)
+                local data=dialog.entryList:GetTargetData()
+                if data and data.control then data.control.editBoxControl:TakeFocus() end
+            end},
+            {keybind="DIALOG_SECONDARY",text="この名前で決定",callback=function(dialog)
+                local name=dialog.data and dialog.data.name or ""
+                if ui.app:SubmitTypedName(name) then release(); ui:Refresh()
+                else KEYBIND_STRIP:UpdateCurrentKeybindButtonGroups() end
+            end},
+            {keybind="DIALOG_NEGATIVE",text="戻る",callback=release},
+        },
+        noChoiceCallback=release,
+    })
+    self.companyNameDialogRegistered=true
+    return true
+end
+function U:QueueTypingFinish()
+    if not self.editing or self.keyboardCommitTime then return end
+    self.keyboardCommitTime=0
+end
+-- Watchdog: however focus was lost (keyboard closed, Accept, Cancel, another control),
+-- wait briefly for the platform IME's final composition event, then read the text.
+function U:UpdateKeyboard(dt)
+    if not self.editing then return end
+    self.keyboardTime=self.keyboardTime+dt
+    if self.keyboardCommitTime then
+        self.keyboardCommitTime=self.keyboardCommitTime+dt
+        if self.keyboardCommitTime>=C.input.imeCommitDelay then self:FinishTyping(true) end
+    elseif self.keyboardTime>=.5 and not self.nameEdit:HasFocus() then self:QueueTypingFinish() end
+end
+function U:FinishTyping(submit)
+    if not self.editing then return end
+    self.editing=false; self.keyboardCommitTime=nil
+    local text=self.nameEdit:GetText()
+    if self.nameEdit:HasFocus() then self.nameEdit:LoseFocus() end
+    self.nameEditBox:SetHidden(true); self.titleStatus:SetHidden(false)
+    if submit and type(self.app)=="table" then self.app:SubmitTypedName(text) end
+    if self.active then self:Refresh() end
+end
 function U:Action(action)
+    if self.editing then return end
     self.app:Act(action)
     if self.app.closeRequested then self.app.closeRequested=false; SCENE_MANAGER:Hide(C.scene) end
     self:Refresh()
@@ -251,7 +458,7 @@ function U:MoveDirection(direction)
     end
 end
 function U:UpdateDirectionalInput()
-    if not self.active then return end
+    if not self.active or self.editing then return end
     local x,y=DIRECTIONAL_INPUT:GetXY(ZO_DI_LEFT_STICK)
     local direction=self.keyDirection
     if not direction then
@@ -263,12 +470,13 @@ end
 -- Anything that changes which texts or lists are shown forces a full Refresh.
 local function markers(a)
     local b=a.engine.battle
-    return a.screen,a.modal,a.fx,b,b and #b.log,b and b.result,a.tacticScene
+    return a.screen,a.modal,a.fx,b,b and #b.log,b and b.result,a.tacticScene,a.groupCall,a.notice,a.index
 end
 function U:Changed()
-    local screen,modal,fx,b,logs,result,scene=markers(self.app)
+    local screen,modal,fx,b,logs,result,scene,call,notice,index=markers(self.app)
     local m=self.refreshMarkers
-    return screen~=m[1] or modal~=m[2] or fx~=m[3] or b~=m[4] or logs~=m[5] or result~=m[6] or scene~=m[7]
+    return screen~=m[1] or modal~=m[2] or fx~=m[3] or b~=m[4] or logs~=m[5] or result~=m[6] or scene~=m[7] or call~=m[8]
+        or notice~=m[9] or index~=m[10]
 end
 -- Per-tick battle visuals only: gauge bands, bids, timers and coin piles.
 -- Row lists, ledgers and headings are rebuilt by the throttled full Refresh.
@@ -278,16 +486,19 @@ function U:RefreshBattleFrame()
     local normalized=(b.gauge+C.battle.gaugeLimit)/(2*C.battle.gaugeLimit)
     self:UpdateBattleBands(normalized)
     self.leftBid:SetText("相手の拠出　"..gold(b.enemyBid).." ゴールド")
-    self.rightBid:SetText("自社の拠出　"..gold(b.playerBid).." ゴールド")
+    -- Under a standing stance, show how much of the contribution actually pushes the border.
+    local force=self.app.engine:PlayerForce()
+    self.rightBid:SetText("自社の拠出　"..gold(b.playerBid).." ゴールド"..(force<b.playerBid and ("（実効 "..gold(math.floor(force)).."）") or ""))
     self.status:SetText(string.format("← %s    速度 %+.2f / 加速度 %+.2f    相手待ち %.1f秒    残り %.0f秒    %s →",
         b.mode=="defense" and "防衛成功" or "買収成立",-(b.gaugeSpeed or b.velocity),-b.acceleration,b.enemyWait,math.max(0,C.battle.duration-b.elapsed),b.mode=="defense" and "物件喪失" or "不成立"))
     if self.commandHintText then
         self.commandHint:SetText(string.format("伝令 %.1f秒  |  %s",b.playerWait,self.commandHintText))
     end
     if self.visualBattle~=b then self.visualBattle=b; self.coins=PBTrade.Coins.New(b.effectiveValue) end
-    self.coins:SetBid(1,b.enemyBid); self.coins:SetBid(2,b.playerBid)
+    -- While a group call is on screen, the new group funding is held back from the coin pile.
+    self.coins:SetBid(1,b.enemyBid); self.coins:SetBid(2,self.app.groupCall and self.app.groupCall.heldBid or b.playerBid)
     self:RenderCoins()
-    self:RenderTacticScene()
+    self:RenderPopups()
 end
 -- UTF-8 aware typewriter: characters are split once per line, text is only
 -- rebuilt when the visible count changes.
@@ -301,8 +512,8 @@ local verdictColors={great={1,.84,.38,1},good={.62,.95,.72,1},weak={.86,.8,.62,1
 -- The negotiation keeps running underneath and input stays with the trade.
 function U:RenderTacticScene()
     local a=self.app; local scene=a.tacticScene
-    self.cutin:SetHidden(not scene)
     if not scene then self.cutinState=nil; return end
+    self.cutin:SetHidden(false)
     local st=self.cutinState
     if not st or st.scene~=scene then
         local head="◆ 駆け引き「"..scene.tactic.name.."」  "
@@ -321,10 +532,78 @@ function U:RenderTacticScene()
         st.chars,st.count=chars,count; self.cutinLine:SetText(table.concat(chars,"",1,count))
     end
     self.cutinStripe:SetWidth(math.max(1,1132*easeOut(stage=="intro" and t or 1)*self.sx))
+    self.cutinLine:SetHidden(stage=="result"); self.cutinVerdict:SetHidden(stage~="result")
     if stage=="result" then
-        if not st.verdictShown then st.verdictShown=true; self.cutinVerdict:SetText(scene.verdict.."   "..scene.detail) end
-        self.cutinVerdict:SetScale(1+.25*(1-easeOut(t*5)))
+        if not st.verdictShown then st.verdictShown=true; self.cutinVerdict:SetText("◆「"..scene.tactic.name.."」  "..scene.verdict.."   "..scene.detail) end
+        self.cutinVerdict:SetScale(1+.15*(1-easeOut(t*5)))
     else self.cutinVerdict:SetScale(1) end
+end
+local popupColors={call={1,.84,.38,1},fund={.9,.87,.76,1},alert={1,.5,.44,1},tactic={.82,.7,1,1},discovery={1,.84,.38,1},day={1,.86,.55,1},
+    stance={.62,.84,1,1},stanceBreak={.56,1,.68,1}}
+-- Advances one popup channel: fade in, hold (shorter when more are waiting), fade out, next.
+local function stepPopup(channel,dt,hold)
+    if not channel.current then
+        channel.current=table.remove(channel.queue,1); channel.time=0
+        if not channel.current then return nil end
+    end
+    channel.time=channel.time+dt
+    local P=C.ui
+    local holdFor=#channel.queue>0 and P.popupBusyHold or hold
+    local total=P.popupFadeIn+holdFor+P.popupFadeOut
+    if channel.time>=total then channel.current=nil; return stepPopup(channel,0,hold) end
+    local alpha=channel.time<P.popupFadeIn and channel.time/P.popupFadeIn
+        or (channel.time>P.popupFadeIn+holdFor and (total-channel.time)/P.popupFadeOut or 1)
+    return channel.current,alpha
+end
+-- Battle popups: pulls new engine events, then draws the wide strip (tactic cut-in first,
+-- then day summaries) or, when it is free, the two side lanes above the coin bays.
+function U:RenderPopups()
+    local a=self.app; local b=a.engine.battle
+    local now=GetFrameTimeSeconds(); local dt=math.min(.25,math.max(0,now-(self.popupClock or now))); self.popupClock=now
+    if self.popupBattle~=b then
+        self.popupBattle=b; self.popupCursor=0; self.wide.queue={}; self.wide.current=nil
+        for _,lane in pairs(self.lanes) do lane.queue={}; lane.current=nil end
+    end
+    local events=b and b.events or {}
+    while self.popupCursor<#events do
+        self.popupCursor=self.popupCursor+1
+        local event=events[self.popupCursor]
+        local channel=event.lane=="wide" and self.wide or self.lanes[event.lane]
+        if channel then channel.queue[#channel.queue+1]=event end
+    end
+    local scene=a.tacticScene; local call=a.groupCall
+    local wide,alpha
+    if not scene and not call then wide,alpha=stepPopup(self.wide,dt,C.ui.popupWideHold) end
+    self:RenderTacticScene()
+    if call then
+        -- Group call: gold banner that stamps in, over the day summaries and side lanes.
+        local t=call.time/C.groupCall.seconds
+        self.cutin:SetHidden(false); self.cutin:SetAlpha(1); self.wideShown=nil
+        self.cutinLine:SetHidden(true); self.cutinVerdict:SetHidden(false)
+        if self.callShown~=call then
+            self.callShown=call; self.cutinVerdict:SetText("◆ "..call.name.."を知るもの来たれ！")
+            self.cutinVerdict:SetColor(unpack(popupColors.call))
+        end
+        self.cutinVerdict:SetScale(1+.3*(1-easeOut(t*4)))
+        self.cutinStripe:SetWidth(math.max(1,1132*easeOut(t*2)*self.sx))
+    elseif not scene then
+        self.cutin:SetHidden(not wide)
+        if wide then
+            self.cutinLine:SetHidden(false); self.cutinVerdict:SetHidden(true)
+            if self.wideShown~=wide then self.wideShown=wide; self.cutinLine:SetText(wide.text); self.cutinLine:SetColor(unpack(popupColors.day)) end
+            self.cutin:SetAlpha(alpha); self.cutinStripe:SetWidth(1132*self.sx)
+        end
+    else self.cutin:SetAlpha(1); self.wideShown=nil; self.cutinLine:SetColor(unpack(light)) end
+    local blocked=scene~=nil or wide~=nil or call~=nil
+    for _,lane in pairs(self.lanes) do
+        local event,laneAlpha
+        if not blocked then event,laneAlpha=stepPopup(lane,dt,C.ui.popupHold) end
+        lane.box:SetHidden(not event)
+        if event then
+            if lane.shown~=event then lane.shown=event; lane.text:SetText(event.text); lane.text:SetColor(unpack(popupColors[event.kind] or light)) end
+            lane.box:SetAlpha(laneAlpha)
+        end
+    end
 end
 function U:Refresh()
     local a=self.app; local rows=a:Rows(); local row=a:Selected(rows); local b=a.engine.battle
@@ -332,16 +611,43 @@ function U:Refresh()
     if m[1]~=a.screen and self.active and KEYBIND_STRIP.UpdateKeybindButtonGroup then
         KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybinds)
     end
-    m[1],m[2],m[3],m[4],m[5],m[6],m[7]=markers(a)
+    m[1],m[2],m[3],m[4],m[5],m[6],m[7],m[8],m[9],m[10]=markers(a)
     self.fullRefreshElapsed=0
-    self.subtitle:SetText("薄紅の羅針商会  /  交易台帳  /  第"..a.state.chapter.."章")
-    self.stats:SetText("商会資金  "..a.state.cash.."\n総資産  "..M.Assets(a.state).."\n所有  "..#M.Owned(a.state).." 件")
+    self.subtitle:SetText(M.CompanyName(a.state).."  /  交易台帳  /  第"..a.state.chapter.."章")
+    self.stats:SetText("商会資金  "..M.FormatCompact(a.state.cash).."\n総資産  "..M.FormatCompact(M.Assets(a.state)).."\n所有  "..#M.Owned(a.state).." 件")
     local campaign=M.CampaignStatus(a.state)
     self.tabs:SetText((a.tab==1 and "◆ " or "◇ ").."地図    "..(a.tab==2 and "◆ " or "◇ ").."所有物件    "
         ..(a.tab==3 and "◆ " or "◇ ").."連合    "..(a.tab==4 and "◆ " or "◇ ").."駆け引き    "
-        ..(a.tab==5 and "◆ " or "◇ ").."経営    |  第"..a.state.chapter.."章  "..campaign.current.." / "..campaign.target)
+        ..(a.tab==5 and "◆ " or "◇ ").."経営    |  第"..a.state.chapter.."章  "..campaign.short)
+    -- Background music follows the screen (credits / tribute / duel).
+    if self.active and PBTrade.Audio.SyncMusic then PBTrade.Audio.SyncMusic(a.screen) end
+    local titleScreen=a.screen=="title" or a.screen=="naming"
+    local opening=a.screen=="opening"
+    self.gameplay:SetHidden(titleScreen or opening)
+    self.titlePanel:SetHidden(not titleScreen); self.notice:SetHidden(titleScreen or opening)
+    self.openingPanel:SetHidden(not opening); self.helpLine:SetHidden(opening or titleScreen)
+    if opening then self:RenderOpening() end
+    if titleScreen then
+        if a.keyboardRequested then a.keyboardRequested=false; self:OpenKeyboard() end
+        if a.screen=="title" then
+            self.titleCompany:SetText(a.state.companyName and ("「"..a.state.companyName.."」") or "")
+            self.titleStatus:SetText(a:TitleStatus())
+        else
+            self.titleCompany:SetText(a.pendingName and ("「"..a.pendingName.."」") or "「　　　」")
+            self.titleStatus:SetText("商会名は"..C.campaign.companyNameMaxChars.."文字まで。候補から選ぶか、キーボードで入力できます")
+        end
+        for i,controls in ipairs(self.titleRows) do
+            local item=rows[i]; controls.box:SetHidden(not item)
+            if item then
+                controls.text:SetText((a.index==i and "◆ " or "")..item.label)
+                controls.text:SetColor(unpack(item.enabled==false and {.52,.52,.48,1} or (a.index==i and {1,.86,.55,1} or ink)))
+                controls.box:SetCenterColor(unpack(a.index==i and {.47,.41,.23,.65} or {.04,.065,.05,.5}))
+            end
+        end
+        self.titleNotice:SetText(a.notice or "")
+    end
     self.map:SetHidden(a.screen~="map")
-    self.ledger:SetHidden(a.screen~="properties" and a.screen~="owned" and a.screen~="groups" and a.screen~="tactics" and a.screen~="management" and a.screen~="rankings")
+    self.ledger:SetHidden(a.screen~="properties" and a.screen~="owned" and a.screen~="groups" and a.screen~="tactics" and a.screen~="management" and a.screen~="rankings" and a.screen~="admin" and a.screen~="admin_pick" and a.screen~="strategy" and a.screen~="delegate_pick")
     self.battle:SetHidden(a.screen~="battle" and a.screen~="result")
     self.notice:SetText(a.notice)
     if a.screen=="map" then
@@ -353,58 +659,76 @@ function U:Refresh()
             if z then
             local counts=M.ZoneSummary(a.state,z.id)
             local color=not a.state.unlocked[z.id] and T.locked
-                or (counts.own>0 and T.own or (counts.enemy>0 and T.enemy or T.neutral))
+                or (counts.own>0 and T.own or (counts.ally>0 and T.ally or (counts.enemy>0 and T.enemy or T.neutral)))
             pin.box:SetCenterColor(color[1],color[2],color[3],.62)
             pin.box:SetEdgeColor(unpack(index==a.index and T.gold or T.edge))
-            pin.text:SetText((index==a.index and "◆ " or "")..z.shortName.."\n"..(a.state.unlocked[z.id] and "買収可" or "未開放").." / "..(counts.own+counts.enemy+counts.neutral).."物件")
+            pin.text:SetText((index==a.index and "◆ " or "")..z.shortName.."\n"..(a.state.unlocked[z.id] and "買収可" or "未開放").." / "..(counts.own+counts.enemy+counts.neutral+counts.ally).."物件"..(counts.ally>0 and ("（同盟 "..counts.ally.."）") or ""))
             end
         end
         if row then
             local z=row.zone; local counts=M.ZoneSummary(a.state,z.id)
+            local landmarks,landmarksVisited=M.ZoneLandmarks(a.state,z.id)
             self.mapDetail:SetText(z.name.."\n"..(a.state.visited[z.id] and "交易路調査済み" or "未訪問")
-                .."\n\n自社所有："..counts.own.."\n敵商会所有："..counts.enemy.."\n中立："..counts.neutral
+                .."\n\n自社所有："..counts.own.."\n同盟商会所有："..counts.ally.."\n敵商会所有："..counts.enemy.."\n中立："..counts.neutral
+                ..(landmarks>0 and ("\n実在地点：◎訪問済み "..landmarksVisited.." / 全 "..landmarks) or "")
                 .."\n\n"..(a.state.unlocked[z.id] and "×：地域の物件を見る" or "開放条件：所有 "..(2+z.unlockTier*C.campaign.unlockOwnedStep).." 件")
                 .."\n\n緑：自社拠点あり\n赤：敵商会あり\n金茶：中立のみ\n灰：未開放\n※混在地域の内訳は上記参照")
         end
     elseif a.screen=="rankings" then
         self.page=0
-        self.ledgerHeading:SetText("商会資金力ランキング  /  交渉・防衛後")
+        local period=a.rankingPeriod or M.CurrentPeriod(a.state)
+        self.ledgerHeading:SetText("第"..period.."期  商会資金力ランキング  /  交渉・防衛・内政後")
         for i,controls in ipairs(self.rows) do
             local r=a.rankingRows[i]; controls.box:SetHidden(not r)
             if r then
-                controls.text:SetText(r.rank.."位  "..r.name.."  "..r.fundingPower..(r.id==C.playerId and "  ★" or ""))
+                controls.text:SetText(r.rank.."位  "..r.name.."  "..M.FormatCompact(r.fundingPower)..(r.id==C.playerId and "  ★" or (M.IsAllied(a.state,r.id) and "  〔同盟〕" or "")))
                 controls.text:SetColor(unpack(ink))
                 controls.box:SetCenterColor(unpack(a.index==i and {.47,.41,.23,.65} or {.04,.065,.05,.36}))
             end
         end
         if row and row.ranking then
             local r=row.ranking
-            self.detail:SetText(r.name.."\n現在 "..r.rank.."位 / "..#a.rankingRows.."商会"
-                .."\n前回比："..(r.rankChange>0 and "+" or "")..r.rankChange.."\n\n資金力："..r.fundingPower
-                .."\n商会現金："..r.cash.."\n物件の調達余力："..r.reserves.."\n\n総資産："..r.assets
-                .."\n所有物件："..r.propertyCount.."\n\n資金力＝現金＋物件調達余力\n評価額は総資産にのみ加算。\n\n★：自社 / ↑↓：商会を選択\n× / ○：地域の物件へ")
+            self.detail:SetText("第"..period.."期\n"..r.name.."\n現在 "..r.rank.."位 / "..#a.rankingRows.."商会"
+                .."\n前期比："..(period>1 and ((r.rankChange>0 and "+" or "")..r.rankChange) or "―").."\n\n資金力："..M.FormatMoney(r.fundingPower)
+                .."\n商会現金："..M.FormatMoney(r.cash).."\n物件の調達余力："..M.FormatMoney(r.reserves).."\n\n総資産："..M.FormatMoney(r.assets)
+                .."\n所有物件："..r.propertyCount.."\n\n資金力＝現金＋物件調達余力\n評価額は総資産にのみ加算。\n\n★：自社 / ↑↓：商会を選択\n× / ○：第"..period.."期の決算へ")
         end
-    elseif a.screen=="properties" or a.screen=="owned" or a.screen=="groups" or a.screen=="tactics" or a.screen=="management" then
+    elseif a.screen=="properties" or a.screen=="owned" or a.screen=="groups" or a.screen=="tactics" or a.screen=="management"
+        or a.screen=="admin" or a.screen=="admin_pick" or a.screen=="strategy" or a.screen=="delegate_pick" then
         self.page=math.floor((a.index-1)/C.ui.pageSize)
         local heading=a.screen=="owned" and "所有物件" or (a.screen=="groups" and "グループ資金調達"
-            or (a.screen=="tactics" and "駆け引き技" or (a.screen=="management" and "商会経営" or "地域の物件")))
-        self.ledgerHeading:SetText(heading.."  /  "..#rows.." 件  /  "..(self.page+1).."頁  ←→切替")
+            or (a.screen=="tactics" and "駆け引き技" or (a.screen=="management" and "商会経営"
+            or (a.screen=="strategy" and "交易会議・次の10期の方針" or (a.screen=="delegate_pick" and "支配人へ委任する通常物件" or "地域の物件")))))
+        if a.screen=="admin" or a.screen=="admin_pick" then
+            local left=a.admin and a.admin.left or 0
+            self.ledgerHeading:SetText("第"..M.CurrentPeriod(a.state).."期  内政  /  残り行動 "..left.." / "..C.admin.actions
+                ..(a.screen=="admin_pick" and ("  /  "..(a.adminPickName[a.admin.kind] or "").."先を選択") or "")
+                .."  /  商会資金 "..M.FormatCompact(a.state.cash))
+        else self.ledgerHeading:SetText(heading.."  /  "..#rows.." 件  /  "..(self.page+1).."頁  ←→切替") end
         for i,controls in ipairs(self.rows) do
             local index=self.page*C.ui.pageSize+i; local item=rows[index]; controls.box:SetHidden(not item)
             if item then
                 if item.tactic then
-                    controls.text:SetText((a.index==index and "◆ " or "   ")..item.tactic.name.."  ["..(item.learned and "習得" or "未習得").."]  "..item.tactic.cost.." ゴールド")
+                    controls.text:SetText((a.index==index and "◆ " or "   ")..item.tactic.name.."  ["..(item.learned and "習得" or "未習得").."]  "..M.FormatMoney(item.tactic.cost).." ゴールド")
                     controls.text:SetColor(unpack(item.learned and ink or {.52,.52,.48,1}))
                 elseif item.group then
                     local g=item.group; controls.text:SetText((a.index==index and "◆ " or "   ")..g.name.."  ["..(g.learned and "習得" or "未習得").."]  "..g.count.."/"..g.minimum)
                     controls.text:SetColor(unpack(ink))
                 elseif item.property then
-                    local p=item.property; local owner=p.owner==C.playerId and "自社" or (p.owner==C.neutralId and "中立" or "敵")
+                    local p=item.property; local allied=M.IsAllied(a.state,p.owner)
+                    local owner=p.owner==C.playerId and "自社" or (p.owner==C.neutralId and "中立" or (allied and "同盟" or "敵"))
                     local risk=p.owner==C.playerId and M.RiskLabel(p.independenceRisk) or nil
-                    local visit=p.canonical and not M.IsPropertyVisited(a.state,p) and "/未訪問" or ""
-                    controls.text:SetText((a.index==index and "◆ " or "   ")..p.name.."  ["..owner..(risk and "/"..risk or "")..visit.."]  "..p.marketValue)
+                    -- ◎ visited real place (buyable), ○ real place still to be visited.
+                    local visitedPlace=p.canonical and M.IsPropertyVisited(a.state,p)
+                    local visit=p.canonical and not visitedPlace and "/未訪問" or ""
+                    local mark=p.canonical and (visitedPlace and "◎" or "○") or ""
+                    local stance=""
+                    if p.owner~=C.playerId and (visitedPlace or not p.canonical) then
+                        for _,sid in ipairs(M.NegotiationStances(a.state,p)) do stance=stance.."〈"..D.stanceById[sid].name.."〉" end
+                    end
+                    controls.text:SetText((a.index==index and "◆ " or "   ")..mark..p.name.."  ["..owner..(risk and "/"..risk or "")..visit.."]  "..M.FormatCompact(p.marketValue)..(stance~="" and "  "..stance or ""))
                     local riskColor=risk=="離反" and {.53,.53,.53,1} or risk=="危険" and {1,.52,.52,1}
-                        or risk=="警戒" and {1,.77,.42,1} or risk=="注意" and {.93,.88,.58,1} or ink
+                        or risk=="警戒" and {1,.77,.42,1} or risk=="注意" and {.93,.88,.58,1} or (allied and T.allyText) or ink
                     controls.text:SetColor(unpack(riskColor))
                 else
                     controls.text:SetText((a.index==index and "◆ " or "   ")..item.label)
@@ -417,7 +741,12 @@ function U:Refresh()
             or (row.group and a:GroupDetail(row.group) or (row.property and a:Detail(row.property) or a:ManagementDetail(row)))) or "記録はありません")
     elseif b then
         local target=a.state.properties[b.targetId]
-        self.battleTitle:SetText((b.mode=="defense" and "商会防衛" or "買収交渉").."  /  "..target.name.."  /  "..D.companies[b.defender].name)
+        local stances=""
+        for _,stance in ipairs(b.stances or {}) do
+            stances=stances.."  〈"..D.stanceById[stance.id].name..(stance.broken and "：崩壊" or (stance.hits>1 and ("：あと"..stance.hits.."手") or "")).."〉"
+        end
+        self.battleTitle:SetText("第"..M.CurrentPeriod(a.state).."期  "..(b.mode=="defense" and "商会防衛" or "買収交渉").."  /  "..target.name.."  /  "..D.companies[b.defender].name..stances
+            .."      交渉 "..(b.day or 1).."日目")
         self:RefreshBattleFrame()
         if row then
             local tabs={}
@@ -427,8 +756,8 @@ function U:Refresh()
             self.commandTabs:SetText(table.concat(tabs,"   ").."      ←→ / L1 R1：切替")
             self.command:SetText("‹ "..a.index.."/"..#rows.." ›  "..row.label)
             self.command:SetColor(unpack(row.enabled==false and {.52,.52,.48,1} or ink))
-            local hint=row.hint or row.command=="request" and ("要求額 "..a.engine:Quote(row.id).." / 残高 "..row.property.reserve.." / 負担 "..row.property.independenceRisk.." +"..row.property.independenceIncrease)
-                or (row.command=="group" and (row.group.count.."件 / 調達倍率 "..row.group.bonus.." / 全構成物件に負担")
+            local hint=row.hint or row.command=="request" and ("要求額 "..M.FormatMoney(a.engine:Quote(row.id)).." / 残高 "..M.FormatMoney(row.property.reserve).." / 負担 "..row.property.independenceRisk.." +"..row.property.independenceIncrease)
+                or (row.command=="group" and (row.group.count.."件 / 調達倍率 "..M.FormatRatio(row.group.bonus)..((row.group.landmarks or 0)>0 and ("（実在地点 "..row.group.landmarks.."件）") or "").." / 全構成物件に負担")
                 or (row.command=="tactic" and (row.tactic.description.." / コスト "..row.tactic.cost))
                 or (row.command=="stabilize" and "最も危険な自社物件の独立危険度を下げる") or "投入資金は返還されません")
             self.commandHintText=hint
@@ -441,10 +770,21 @@ function U:Refresh()
         local heading=b.mode=="defense" and (b.result=="won" and "防衛成功 — 商会の旗を守りました" or "防衛不成立 — 物件の所有権を失いました")
             or (b.result=="won" and "契約締結 — 商会に新たな旗印" or "交渉終了 — 帳簿を見直しましょう")
         modalText=heading
-            .."\n\n"..a.state.properties[b.targetId].name.."\n自社出資："..b.playerBid.."　相手出資："..b.enemyBid
-            .."\n商会資金の消費："..b.treasurySpent.."\n"..(b.result=="timeout" and "交渉期限切れ。" or "")
+            .."\n\n"..a.state.properties[b.targetId].name.."\n自社出資："..gold(b.playerBid).."　相手出資："..gold(b.enemyBid)
+            .."\n商会資金の消費："..gold(b.treasurySpent).."\n交渉日数："..(b.day or 1).."日\n"..(b.result=="timeout" and "交渉期限切れ。" or "")
+            ..(b.takeover and ("\n\n◆ "..b.takeover.name.."を傘下に収めた！\n本社をすべて押さえ、商会は解体されました。\n傘下物件 "..b.takeover.count.." 件（評価額 "..M.FormatCompact(b.takeover.value).."）と資金 "..gold(b.takeover.cash).." を獲得") or "")
+            ..(function()
+                -- Losing to a standing stance teaches its counter; breaking one is worth a line too.
+                local lines={}
+                for _,stance in ipairs(b.stances or {}) do
+                    local st=D.stanceById[stance.id]
+                    if stance.broken then lines[#lines+1]="構え「"..st.name.."」を崩した"
+                    elseif b.result~="won" then lines[#lines+1]="構え「"..st.name.."」が崩れなかった――"..st.hint end
+                end
+                return #lines>0 and ("\n\n"..table.concat(lines,"\n")) or ""
+            end)()
             ..(#(b.learnedTactics or {})>0 and "\n\n習得："..table.concat((function() local n={}; for _,id in ipairs(b.learnedTactics) do n[#n+1]=D.tacticById[id].name end; return n end)()," / ") or "")
-            .."\n\n×："..(b.mode=="defense" and "資金力ランキングへ" or "敵商会の攻撃判定へ")
+            .."\n\n×："..(b.mode=="defense" and "内政へ" or "敵商会の攻撃判定へ")
     end
     local campaignModal=a.modal and a.modal.campaign
     self.campaignBackdrop:SetHidden(not campaignModal); self.campaignShade:SetHidden(not campaignModal)
@@ -452,11 +792,11 @@ function U:Refresh()
         self.campaignAsset=a.modal.background; PBTrade.Assets.Apply(self.campaignBackdrop,self.campaignAsset)
     end
     self.modal:SetHidden(not modalText); self.modalText:SetText(modalText or "")
-    self.fxPanel:SetHidden(not a.fx)
+    self.fxPanel:SetHidden(not a.fx or a.screen=="title" or a.screen=="naming" or a.screen=="opening")
     if a.fx then
         self.fxText:SetText(a.fx.text)
-        local colors={discovery={.93,.74,.29,1},defection={1,.38,.34,1},chapter={.67,.86,1,1},
-            ending={1,.84,.38,1},settlement={.57,1,.72,1},tactic={.82,.68,1,1}}
+        local colors={takeover={1,.8,.3,1},groupDiscovery={1,.84,.38,1},discovery={.93,.74,.29,1},defection={1,.38,.34,1},chapter={.67,.86,1,1},
+            ending={1,.84,.38,1},settlement={.57,1,.72,1},tactic={.82,.68,1,1},period={1,.86,.55,1}}
         self.fxText:SetColor(unpack(colors[a.fx.kind] or T.gold))
     end
 end
@@ -506,12 +846,12 @@ function U:RenderCoins()
         local floor=self.floors[side]
         clippedTexture(floor,viewport,center+(C.coins.pileWidth-C.coins.plinthWidth)/2,
             frame.floorY+C.coins.plinthOffsetY,C.coins.plinthWidth,C.coins.plinthHeight)
-        self.depthLabels[side]:SetText((side==1 and "相手の金庫" or "自社の金庫")..(frame.camera>0 and "  /  上層を追従中" or "  /  金貨を積層"))
     end
 end
 function U:Tick(dt)
     if not self.active then return end
-    PBTrade.Assets.PollAll()
+    self:UpdateKeyboard(dt)
+    PBTrade.Assets.PollAll(dt)
     if self.viewportWidth~=GuiRoot:GetWidth() or self.viewportHeight~=GuiRoot:GetHeight() then self:Resize() end
     self.app:Tick(dt)
     if self.coins and (self.app.screen=="battle" or self.app.screen=="result")
@@ -524,9 +864,48 @@ function U:Tick(dt)
     -- so run them at a low rate or on a visible state change; animate every tick.
     local screen=self.app.screen
     self.fullRefreshElapsed=(self.fullRefreshElapsed or 0)+dt
-    if self:Changed() or self.fullRefreshElapsed>=C.ui.fullRefreshSeconds then
+    -- Only the negotiation screens change on their own; others redraw on input or on change.
+    local timed=(screen=="battle" or screen=="result") and self.fullRefreshElapsed>=C.ui.fullRefreshSeconds
+    if self:Changed() or timed then
         self:Refresh()
     elseif screen=="battle" or screen=="result" then
         self:RefreshBattleFrame()
+    elseif screen=="opening" then
+        self:RenderOpening()
     end
+end
+-- Crop a background to fill the full 1240x780 opening stage, then drift slowly inward.
+local function stageCoords(name,zoom)
+    local size=PBTrade.Assets.sizes[name] or {C.ui.width,C.ui.height}
+    local stage=C.ui.width/C.ui.height; local ratio=size[1]/size[2]
+    local fu,fv=1,1
+    if ratio>stage then fu=stage/ratio else fv=ratio/stage end
+    fu,fv=fu*(1-zoom),fv*(1-zoom)
+    return (1-fu)/2,(1+fu)/2,(1-fv)/2,(1+fv)/2
+end
+-- Opening render, every tick: background fade and drift, typed narration, blinking ▼.
+function U:RenderOpening()
+    local a=self.app; local o=a.opening
+    if not o then return end
+    local page,timeline=a:OpeningPage()
+    if not page or not timeline then
+        a:FinishOpening(); self:Refresh(); return
+    end
+    local O=C.opening
+    if self.openingShownPage~=o.page or self.openingShownFor~=o then
+        self.openingShownPage=o.page; self.openingShownFor=o; self.openingCount=nil
+        PBTrade.Assets.Apply(self.openingArt,page.bg)
+        self.openingArt:SetAlpha(1)
+        self.openingPage:SetText(o.page.." / "..#o.pages)
+        self.openingText:SetText(table.concat(timeline.chars,"",1,timeline.lead or #timeline.chars))
+    end
+    local drift=math.min(1,o.pageTime/O.driftSeconds)
+    self.openingArt:SetTextureCoords(stageCoords(page.bg,O.driftZoom*drift))
+    local count=math.max(timeline.lead or 1,PBTrade.Story.Visible(timeline,o.time))
+    if count~=self.openingCount then
+        self.openingCount=count; self.openingText:SetText(table.concat(timeline.chars,"",1,count))
+    end
+    local done=o.time>=timeline.total
+    self.openingNext:SetHidden(not done)
+    if done then self.openingNext:SetAlpha(.35+.65*math.abs(math.sin(o.pageTime*3))) end
 end

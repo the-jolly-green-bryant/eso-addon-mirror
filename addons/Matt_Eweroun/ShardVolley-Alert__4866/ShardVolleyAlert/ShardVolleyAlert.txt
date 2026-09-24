@@ -1,0 +1,8 @@
+## Title: Shard Volley Alert
+## Description: Simple alert for Orphic's Shard Volley (ID 213900)
+## Author: eliasnollnollett and eweroun(Matt)
+## Version: 1.0
+## AddOnVersion: 101040
+## DependsOn: LibAddonMenu-2.0
+
+ShardVolleyAlert.lua

@@ -22,7 +22,7 @@
     "CarosPreCrafter"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3143/",
-  "fingerprint": "c39610ab68bf8906a7a4f12fdd8d988de0d111f8e95ee96b3b3aadcf99ee0b37",
+  "fingerprint": "c5ed85e90ac17d432c20a8318800ead5ba2dc92340d30ebabd4b74859c0b99f6",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10656.png",
     "https://cdn-eso.mmoui.com/preview/pvw11233.png",
@@ -38,11 +38,11 @@
   "source_id": "3143",
   "source_url": "https://www.esoui.com/downloads/info3143-CarosPre-Crafter.html",
   "stats": {
-    "downloads": 13290,
+    "downloads": 13403,
     "favorites": 23,
-    "monthly_downloads": 21
+    "monthly_downloads": 123
   },
   "title": "Caro's Pre-Crafter",
-  "updated_at": 1789459650000,
-  "version": "2.3.2"
+  "updated_at": 1790187645000,
+  "version": "2.3.3"
 }

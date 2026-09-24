@@ -74,6 +74,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Shadowfen's Default Guild Bank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/Shadowfen-s-Default-Guild-Bank__2929) | Shadowfen | PC / Mac | 1.21 |
 | [Shai-hulud Guild Hall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manukikon/Shai-hulud-Guild-Hall__2550) | manukikon | PC / Mac | 1.0.0 |
 | [Shalk Tracker (Warden Subterranean Assault Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Shalk-Tracker-Warden-Subterranean-Assault-Tracker__2897) | ownedbynico | PC / Mac | 1.0 |
+| [ShardVolley Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Matt_Eweroun/ShardVolley-Alert__4866) | Matt_Eweroun | PC / Mac | 1.0 |
 | [Sheath Weapon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kelnoreem/Sheath-Weapon__901) | Kelnoreem | PC / Mac | 3.23 |
 | [ShibUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shibui/ShibUI__4171) | Shibui | PC / Mac | 1.10.48 |
 | [Shields](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Shields__2621) | MrPikPik | PC / Mac | 2.2.2 |

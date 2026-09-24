@@ -1,4 +1,5 @@
 -- L2 is read, never bound. Only Right is temporarily reassigned while L2 is held on HUD.
+-- The chord moves to the next chat tab; see CycleChatTab.
 -- No HUD element of its own: the channel is reported to the chat log by CycleChannel.
 local NAME = "PBsChatAssistantHUDChannel"
 local LAYER = "PBsChatAssistantHUDChannelRightLayer"
@@ -11,8 +12,17 @@ local function GetChat()
     return type(ZO_GetChatSystem) == "function" and ZO_GetChatSystem()
 end
 
+function channel:IsPlayerInCombat()
+    -- EVENT_PLAYER_COMBAT_STATE is authoritative once received. Keep its value because the unit
+    -- query can trail the event briefly; without the latch, the 10 ms update could put the Right
+    -- action layer back during that gap. The live query remains a second guard if the event has
+    -- not arrived yet.
+    if self.inCombat == true then return true end
+    return type(IsUnitInCombat) == "function" and IsUnitInCombat("player") == true
+end
+
 function channel:IsAvailable()
-    if IsUnitInCombat and IsUnitInCombat("player") then return false end
+    if self:IsPlayerInCombat() then return false end
     local addon = PBS_CHAT_ASSISTANT
     if not addon or not addon.sv or not addon.sv.enabled or not addon.sv.hudChannelEnabled then return false end
     if IsInGamepadPreferredMode and not IsInGamepadPreferredMode() then return false end
@@ -116,12 +126,10 @@ function channel:OnRightDown()
     end
     self.consumedRight = true
     self.rightDownAt = GetGameTimeSeconds()
-    local chat = GetChat()
-    local before = chat.currentChannel
-    local ok, err = pcall(function() PBS_CHAT_ASSISTANT:CycleChannel(1, true) end)
+    local ok, err = pcall(function() PBS_CHAT_ASSISTANT:CycleChatTab(1) end)
     if not ok then
-        self.error = "channel: " .. tostring(err)
-    elseif chat.currentChannel ~= before then
+        self.error = "tab: " .. tostring(err)
+    else
         self.changes = self.changes + 1
     end
     -- One channel change per physical press. Keep the quest block through Up.
@@ -130,7 +138,7 @@ function channel:OnRightDown()
 end
 
 function channel:OnRightUp()
-    if IsUnitInCombat and IsUnitInCombat("player") then
+    if self:IsPlayerInCombat() then
         self:ClearPress(); self:SetLayer(false); return false
     end
     self.ups = self.ups + 1
@@ -169,6 +177,7 @@ function channel:Start()
     self.error = nil
     self.errorAnnounced = false
     self.triggerHeld = false
+    self.inCombat = type(IsUnitInCombat) == "function" and IsUnitInCombat("player") == true
     self.running = true
     self:Update()
     EVENT_MANAGER:RegisterForUpdate(NAME, 10, function() self:Update() end)
@@ -186,6 +195,7 @@ EVENT_MANAGER:RegisterForEvent(NAME, EVENT_ADD_ON_LOADED, function(_, name)
     if name ~= "PBsChatAssistant" then return end
     EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_ADD_ON_LOADED)
     EVENT_MANAGER:RegisterForEvent(NAME, EVENT_PLAYER_COMBAT_STATE, function(_, inCombat)
+        channel.inCombat = inCombat == true
         if inCombat then
             channel:ClearPress()
             channel.triggerHeld = false

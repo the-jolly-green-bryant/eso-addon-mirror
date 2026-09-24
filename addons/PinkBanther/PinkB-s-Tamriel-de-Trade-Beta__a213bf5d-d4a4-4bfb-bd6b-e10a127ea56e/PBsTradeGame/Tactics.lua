@@ -27,6 +27,25 @@ D.tactics={
     {id="roots",name="根回し",cost=500,resistanceKey="roots",effect={type="ownRisk",amount=-42},learn={category="farm",chance=.38},description="最も危険な自社物件を大きく安定させる。",
         scene={act="自社の最も不安な拠点へ、根回しの使者を送る……",success="使者の言葉が届き、拠点の動揺が大きく静まった。",resist="使者は門前払いを受けた。拠点の不満は燻ったままだ。"}},
 }
+-- Negotiation stances: how an opponent guards a property. While a stance holds, money is
+-- counted at `weights` toward the border (by source); the matching counter breaks it, after
+-- which everything already contributed counts in full. Critical negotiations need two hits.
+D.stances={
+    {id="vault",name="鉄壁の金庫",short="資金半減",
+        hint="資金の効きが半分以下。心づけ・宴席・市場凍結・席を立つで崩せる",
+        weights={request=.45,group=.45,ally=.45,treasury=.45},breakers={gift=true,banquet=true,freeze=true,bargain=true}},
+    {id="courier",name="電撃の伝令網",short="相手倍速",
+        hint="相手の出資が倍の速さで届く。偽の伝令・評議会・俊足の伝令で崩せる",
+        weights={request=.8,group=.8,ally=.8,treasury=.8},enemyWait=.4,enemyBudget=1.4,breakers={falseMessenger=true,council=true,messenger=true}},
+    {id="bloc",name="系列の結束",short="単独出資半減",
+        hint="単独の出資が半分しか効かない。グループ・同盟の出資か離反工作で崩せる",
+        weights={request=.5,group=1.3,ally=1.3,treasury=.5},breakers={defection=true},breakByGroup=true,breakByAlly=true},
+    {id="opinion",name="世論の盾",short="自社資金無効",
+        hint="自社資金がほとんど効かない。吟遊詩人・正当性を訴える・悪評を流すで崩せる",
+        weights={request=.7,group=.8,ally=.8,treasury=.3},breakers={bard=true,justice=true,rumor=true}},
+}
+D.stanceById={}
+for _,stance in ipairs(D.stances) do D.stanceById[stance.id]=stance end
 D.tacticById={}
 for _,tactic in ipairs(D.tactics) do D.tacticById[tactic.id]=tactic end
 return D.tactics

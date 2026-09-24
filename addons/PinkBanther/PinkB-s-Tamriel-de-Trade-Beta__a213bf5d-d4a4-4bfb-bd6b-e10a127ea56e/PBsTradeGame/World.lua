@@ -92,13 +92,52 @@ for i,z in ipairs(catalog) do
     if z[1]=="nightmarket" then zone.eventRegion=true end
     D.zones[#D.zones+1]=zone; D.zoneById[zone.id]=zone; D.propertyIdsByZone[zone.id]={}
     D.groups["region_"..zone.id]={name=zone.name.."交易連合",minimum=3,bonus=1.35,discoveryChance=.15}
+    -- Region-wide grand market: most of a zone's businesses under one banner.
+    D.groups["grand_"..zone.id]={name=zone.name.."大商圏",minimum=10,bonus=2.2,discoveryChance=.12,discoverAt=5,tier="grand"}
 end
+-- Super-scale groups: the three alliances, the imperial heartland and all of Tamriel.
+-- They can only be discovered once half of their required members are already owned.
+D.alliances={
+    {id="alliance_dominion",name="アルドメリ・ドミニオン交易同盟",zones={"auridon","khenarthi","grahtwood","greenshade","malabal","reapers","summerset"}},
+    {id="alliance_covenant",name="ダガーフォール・カバナント交易同盟",zones={"stros","betnikh","glenumbra","stormhaven","rivenspire","alikr","bangkorai"}},
+    {id="alliance_pact",name="エボンハート・パクト交易同盟",zones={"bleakrock","balfoyen","stonefalls","deshaan","shadowfen","eastmarch","rift"}},
+    {id="imperial_heartland",name="帝国中枢商圏",zones={"cyrodiil","imperialcity","sewers","goldcoast"},minimum=20,bonus=2.8},
+}
+D.allianceByZone={}
+for _,a in ipairs(D.alliances) do
+    D.groups[a.id]={name=a.name,minimum=a.minimum or 30,bonus=a.bonus or 3.0,discoveryChance=.1,discoverAt=math.floor((a.minimum or 30)/2),tier="alliance"}
+    for _,zoneId in ipairs(a.zones) do D.allianceByZone[zoneId]=a.id end
+end
+D.groups.tamriel={name="タムリエル大交易網",minimum=120,bonus=4.0,discoveryChance=.08,discoverAt=60,tier="tamriel"}
 for category,name in pairs(D.categories) do D.groups["industry_"..category]={name=name.."職能組合",minimum=4,bonus=1.5,discoveryChance=.12} end
+-- Thematic groups shared by generated properties and real ESO places.
+function D.ThemeGroups(zone,category)
+    local groups={}
+    if (zone.id=="grahtwood" or zone.id=="greenshade" or zone.id=="malabal") and category=="lumber" then groups[#groups+1]="valenwood" end
+    if (zone.id=="auridon" or zone.id=="summerset") and category=="jewelry" then groups[#groups+1]="jewels" end
+    if zone.biome=="volcanic" and category=="mine" then groups[#groups+1]="mines" end
+    if category=="tavern" or category=="inn" then groups[#groups+1]="hospitality" end
+    if category=="caravan" or category=="port" then groups[#groups+1]="roads" end
+    return groups
+end
+-- Real places visited in ESO form their own trade route and strengthen every group they join.
+D.groups.landmarks={name="名所巡り商路",minimum=3,bonus=1.6,discoveryChance=.2}
 local function indexProperty(p)
     assert(not D.propertyById[p.id],"Duplicate property ID: "..p.id)
     local region="region_"..p.zone; local industry="industry_"..p.category
     if not contains(p.groups,region) then p.groups[#p.groups+1]=region end
     if not contains(p.groups,industry) then p.groups[#p.groups+1]=industry end
+    local zoneData=D.zoneById[p.zone]
+    local grand="grand_"..p.zone; if not contains(p.groups,grand) then p.groups[#p.groups+1]=grand end
+    local alliance=D.allianceByZone[p.zone]; if alliance and not contains(p.groups,alliance) then p.groups[#p.groups+1]=alliance end
+    if zoneData and zoneData.atlas=="tamriel" and not contains(p.groups,"tamriel") then p.groups[#p.groups+1]="tamriel" end
+    if p.canonical then
+        local zone=D.zoneById[p.zone]
+        for _,id in ipairs(zone and D.ThemeGroups(zone,p.category) or {}) do
+            if not contains(p.groups,id) then p.groups[#p.groups+1]=id end
+        end
+        if not contains(p.groups,"landmarks") then p.groups[#p.groups+1]="landmarks" end
+    end
     D.propertyById[p.id]=p
     local ids=assert(D.propertyIdsByZone[p.zone]); ids[#ids+1]=p.id
 end
@@ -118,12 +157,7 @@ for zi,z in ipairs(D.zones) do
         elseif slot%4==0 then owner="ink"
         elseif slot%3==0 then owner="iron"
         elseif slot%2==0 then owner="amber" end
-        local groups={}
-        if (z.id=="grahtwood" or z.id=="greenshade" or z.id=="malabal") and category=="lumber" then groups[#groups+1]="valenwood" end
-        if (z.id=="auridon" or z.id=="summerset") and category=="jewelry" then groups[#groups+1]="jewels" end
-        if z.biome=="volcanic" and category=="mine" then groups[#groups+1]="mines" end
-        if category=="tavern" or category=="inn" then groups[#groups+1]="hospitality" end
-        if category=="caravan" or category=="port" then groups[#groups+1]="roads" end
+        local groups=D.ThemeGroups(z,category)
         local resistances={}
         for ti,key in ipairs(tacticKeys) do
             resistances[key]=((slot+zi+ti)%5)*.15
@@ -144,6 +178,21 @@ for zi,z in ipairs(D.zones) do
         D.properties[#D.properties+1]=p; indexProperty(p)
     end
 end
+-- The true last acquisition in chapter 5. It is absent from the market until the
+-- three outer-realm headquarters are all under the player's banner.
+local finalResistances={}
+for _,key in ipairs(tacticKeys) do finalResistances[key]=.75 end
+finalResistances.roots=0; finalResistances.council=0; finalResistances.messenger=0
+local finalStronghold={
+    id="molag_bal_citadel",name="モラグ・バルの居城",zone="coldharbour",category="mages",
+    marketValue=75000,expectedProfit=4875,owner="molag",
+    independenceRisk=64,independenceIncrease=24,gaugeAcceleration=3.4,groups={},
+    negotiationResistances=finalResistances,isHeadquarters=true,businessProfile="anchor",profileName="最終中枢",
+    description="三つの異界中枢を束ねるモラグ・バル コンツェルン最後の居城。外郭三社をすべて買収した商会だけが、その帳簿へ挑めます。",
+    minChapter=5,finalStronghold=true,
+    requiresProperties={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24"},
+}
+D.properties[#D.properties+1]=finalStronghold; indexProperty(finalStronghold)
 local campaignHeadquarters={
     grahtwood_trade_24="veil",deshaan_trade_24="veil",rivenspire_trade_24="veil",
     bangkorai_trade_24="worm",eastmarch_trade_24="worm",cyrodiil_trade_24="worm",
@@ -151,22 +200,41 @@ local campaignHeadquarters={
 for id,owner in pairs(campaignHeadquarters) do
     local p=assert(D.propertyById[id]); p.owner=owner; p.minChapter=D.companies[owner].minChapter
 end
+-- Company headquarters: owning every one of a company's headquarters dissolves the company
+-- and brings all of its remaining properties under the player's banner.
+D.companyHeadquarters={
+    amber={"str_hq"}, ash={"riv_hq"}, ink={"glenumbra_trade_24"}, iron={"stonefalls_trade_24"},
+    veil={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"},
+    worm={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},
+    molag={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},
+}
+-- A rival can be taken over from its own chapter onward (headquarters bought earlier still count).
+D.companyTakeoverChapter={amber=2,ash=2,iron=3,ink=3,veil=3,worm=4,molag=5}
+D.headquartersOf={}
+for company,ids in pairs(D.companyHeadquarters) do
+    for _,id in ipairs(ids) do
+        local p=assert(D.propertyById[id],"missing headquarters "..id)
+        p.owner=company; p.isHeadquarters=true; p.companyHeadquarters=company
+        if (D.companies[company].minChapter or 1)>(p.minChapter or 1) then p.minChapter=D.companies[company].minChapter end
+        D.headquartersOf[id]=company
+    end
+end
 D.campaigns={
     {id=1,title="第1章　小さな羅針盤",subtitle="商会の足場を築く",background="chapter_1",
-        description="二つの小さな事業を束ね、タムリエルの帳簿に名を刻みます。無理な資金要求を避けながら総資産を育ててください。",
-        objective={type="assets",target=PBTrade.Config.campaign.chapterOneAssets}},
+        description="二つの小さな事業を束ね、五十期を見据えた商会の土台を築きます。成長する市場で買収先を見極め、総資産500万ゴールドを達成してください。",
+        objective={type="assets",target=PBTrade.Config.campaign.chapterOneAssets,minimumCycles=50}},
     {id=2,title="第2章　琥珀帆を越えて",subtitle="大商会への挑戦",background="chapter_2",
-        description="港と市場を押さえる琥珀帆商会の中枢へ挑みます。風見の商人会館を足掛かりに、大交易所の所有権を獲得してください。",
-        objective={type="properties",targets={"str_hq"}}},
+        description="市場は毎期複利で拡大し、琥珀帆商会も再投資を続けます。第150期と総資産2億5000万ゴールドを越え、大交易所を獲得してください。",
+        objective={type="properties",targets={"str_hq"},assetTarget=250000000,minimumCycles=150}},
     {id=3,title="第3章　ベールの向こう側",subtitle="守護者連合を解体する",background="chapter_3",
-        description="各地の商人を覆うベールの背後に、虫の教団の資金網が見え始めました。三つの中枢拠点を奪い、守護者連合を解体してください。",
-        objective={type="properties",targets={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"}}},
+        description="長期成長した三つの中枢を奪い、第300期を越え、総資産200億ゴールドの広域商会を築いて守護者連合を解体してください。",
+        objective={type="properties",targets={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"},assetTarget=20000000000,minimumCycles=300}},
     {id=4,title="第4章　黒繭の帳簿",subtitle="虫の教団を解体する",background="chapter_4",
-        description="隠れ蓑を失った教団は、タムリエル各地の物流へ直接手を伸ばします。黒繭交易教団の三拠点を押さえ、資金網を断ってください。",
-        objective={type="properties",targets={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"}}},
+        description="黒繭交易教団は膨張した市場を直接支配します。第450期、総資産1兆ゴールド、三中枢の支配をすべて満たしてください。",
+        objective={type="properties",targets={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},assetTarget=1000000000000,minimumCycles=450}},
     {id=5,title="第5章　鎖の外へ",subtitle="モラグ・バル コンツェルンとの戦い",background="chapter_5",
-        description="帳簿の最終頁はタムリエルの外へ続いていました。コールドハーバー、デッドランドなど異界の交易路が初めて開きます。鎖で結ばれたコンツェルンを解体してください。",
-        objective={type="properties",targets={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24"}}},
+        description="帳簿の最終頁はタムリエルの外へ続いていました。異界三中枢を買収すると、コンツェルン最後の物件「モラグ・バルの居城」への道が開きます。資金源の消耗と離反を抑えながら、第600期、総資産100兆ゴールド、居城の買収をすべて達成してください。",
+        objective={type="properties",targets={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},assetTarget=100000000000000,minimumCycles=600}},
 }
 D.catalogVersion=2
 assert(#D.properties>=1000,"Trade catalog must contain at least 1000 properties")

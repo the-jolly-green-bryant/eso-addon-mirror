@@ -99,6 +99,8 @@ L.CPCLamRestockSearchForNextItem = "Search next needed restock item (fast)"
 L.CPCLamRestockSearchAll = "Search all needed restock items at once (slow)"
 L.CPC_RestockMatsForWrits = "Materials for Writs (%s, %s)"
 
+L.CPC_PleaseCheckCombi = "Please check combination for %s. Combination %s results in: %s"
+
 for stringId, stringValue in pairs(L) do
 	ZO_CreateStringId(stringId, stringValue)
 end

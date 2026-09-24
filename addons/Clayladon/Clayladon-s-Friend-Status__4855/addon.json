@@ -22,7 +22,7 @@
     "ClayladonsFriendStatus"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4855/",
-  "fingerprint": "380e58310df7e2cebfe94c2febf8dd1aee1b2b38b47c65ff19dca65e89525ecb",
+  "fingerprint": "a04b0d6ef7126d7dda4fa62d4794eb6909e97f8e1f4f94112bc7956279367d01",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4855",
   "source_url": "https://www.esoui.com/downloads/info4855-ClayladonsFriendStatus.html",
   "stats": {
-    "downloads": 6,
+    "downloads": 21,
     "favorites": 0,
-    "monthly_downloads": 0
+    "monthly_downloads": 15
   },
   "title": "Clayladon's Friend Status",
-  "updated_at": 1789940343000,
-  "version": "1.0.9"
+  "updated_at": 1790208761000,
+  "version": "1.1.0"
 }

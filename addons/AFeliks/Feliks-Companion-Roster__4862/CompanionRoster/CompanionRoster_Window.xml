@@ -1,0 +1,146 @@
+<GuiXml>
+    <Controls>
+        <!-- One companion row: Companion name, Level, Rapport (raw value/max).
+             Instantiated MAX_COMPANION_ROWS times below as fixed, permanent
+             controls - no scroll list, no pooling. Unused rows are just hidden. -->
+        <Control name="CompanionRoster_CompanionRow" virtual="true">
+            <Dimensions x="335" y="26" />
+
+            <Controls>
+                <Backdrop name="$(parent)Stripe" centerColor="00000000" edgeColor="00000000">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Companion" font="ZoFontWinH5" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="150" />
+                    <Anchor point="LEFT" offsetX="16" />
+                    <OnMouseEnter>
+                        CompanionRoster.OnCompanionMouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Label>
+                <Label name="$(parent)Level" font="ZoFontWinH5" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions x="55" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Companion" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+                <Label name="$(parent)Rapport" font="ZoFontWinH5" horizontalAlignment="CENTER" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Dimensions x="90" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Level" relativePoint="RIGHT" offsetX="6" />
+                    <OnMouseEnter>
+                        CompanionRoster.OnRapportMouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="CompanionRosterWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="345" y="350" />
+            <Anchor point="CENTER" />
+
+            <OnMoveStop>
+                CompanionRoster.OnWindowMoveStop(self)
+            </OnMoveStop>
+
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Control name="$(parent)Header" mouseEnabled="true">
+                    <Dimensions y="32" />
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+
+                    <OnMouseDown>
+                        if button == MOUSE_BUTTON_INDEX_LEFT then
+                            CompanionRosterWindow:StartMoving()
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        CompanionRosterWindow:StopMovingOrResizing()
+                    </OnMouseUp>
+
+                    <Controls>
+                        <Label name="$(parent)Title" font="ZoFontWinH3" text="Companion Roster" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+                    <OnClicked>
+                        CompanionRosterWindow:SetHidden(true)
+                    </OnClicked>
+                </Button>
+
+                <Control name="$(parent)CharacterDropdown" inherits="ZO_ComboBox" mouseEnabled="true">
+                    <Dimensions x="280" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="10" />
+                </Control>
+
+                <Label name="$(parent)ColumnCompanion" font="ZoFontWinH5" text="Companion" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions x="150" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)CharacterDropdown" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="14" />
+                </Label>
+                <Label name="$(parent)ColumnLevel" font="ZoFontWinH5" text="Level" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions x="55" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColumnCompanion" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+                <Label name="$(parent)ColumnRapport" font="ZoFontWinH5" text="Rapport" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions x="90" />
+                    <Anchor point="LEFT" relativeTo="$(parent)ColumnLevel" relativePoint="RIGHT" offsetX="6" />
+                </Label>
+
+                <Backdrop name="$(parent)HeaderDivider" centerColor="FFFFFF40" edgeColor="00000000">
+                    <Dimensions y="1" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ColumnCompanion" relativePoint="BOTTOMLEFT" offsetX="-16" offsetY="6" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)ColumnRapport" relativePoint="BOTTOMRIGHT" offsetX="12" offsetY="6" />
+                </Backdrop>
+
+                <Control name="$(parent)Row1" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ColumnCompanion" relativePoint="BOTTOMLEFT" offsetX="-16" offsetY="10" />
+                </Control>
+                <Control name="$(parent)Row2" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row1" relativePoint="BOTTOMLEFT" />
+                </Control>
+                <Control name="$(parent)Row3" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row2" relativePoint="BOTTOMLEFT" />
+                </Control>
+                <Control name="$(parent)Row4" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row3" relativePoint="BOTTOMLEFT" />
+                </Control>
+                <Control name="$(parent)Row5" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row4" relativePoint="BOTTOMLEFT" />
+                </Control>
+                <Control name="$(parent)Row6" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row5" relativePoint="BOTTOMLEFT" />
+                </Control>
+                <Control name="$(parent)Row7" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row6" relativePoint="BOTTOMLEFT" />
+                </Control>
+                <Control name="$(parent)Row8" inherits="CompanionRoster_CompanionRow">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row7" relativePoint="BOTTOMLEFT" />
+                </Control>
+
+                <Label name="$(parent)Footer" font="ZoFontGameSmall" horizontalAlignment="RIGHT" verticalAlignment="CENTER" mouseEnabled="true">
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-8" />
+                    <OnMouseUp>
+                        if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
+                            CompanionRoster.OnFooterClicked()
+                        end
+                    </OnMouseUp>
+                    <OnMouseEnter>
+                        CompanionRoster.OnFooterMouseEnter(self)
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        CompanionRoster.OnFooterMouseExit(self)
+                    </OnMouseExit>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

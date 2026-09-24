@@ -346,6 +346,11 @@ function GamepadOptions.BuildGroupShowClassOption()
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 16, playerBars.GetGroupShowClassLabel(), playerBars.GetGroupShowClassTooltip(), playerBars.GetGroupShowClass, playerBars.SetGroupShowClass, nil, playerBars.GetGroupShowClassDefault)
 end
 
+function GamepadOptions.BuildGroupShowTargetMarkerOption()
+    local playerBars = NQOL.Features.PlayerBars
+    return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 19, playerBars.GetGroupShowTargetMarkerLabel(), playerBars.GetGroupShowTargetMarkerTooltip(), playerBars.GetGroupShowTargetMarker, playerBars.SetGroupShowTargetMarker, nil, playerBars.GetGroupShowTargetMarkerDefault)
+end
+
 function GamepadOptions.BuildGroupShowChampionPointsOption()
     local playerBars = NQOL.Features.PlayerBars
     return GamepadOptions.BuildCheckboxOption(GamepadOptions.GROUP_FRAME_PANEL_ID, 27, playerBars.GetGroupShowChampionPointsLabel(), playerBars.GetGroupShowChampionPointsTooltip(), playerBars.GetGroupShowChampionPoints, playerBars.SetGroupShowChampionPoints, nil, playerBars.GetGroupShowChampionPointsDefault)

@@ -571,6 +571,7 @@ function GamepadOptions.BuildGroupFrameOptionsData()
         GamepadOptions.BuildGroupReverseOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildGroupNameDisplayOption(), NQOL.L("ui.headers.values_b1564f6")),
         GamepadOptions.BuildGroupShowClassOption(),
+        GamepadOptions.BuildGroupShowTargetMarkerOption(),
         GamepadOptions.BuildGroupShowChampionPointsOption(),
         GamepadOptions.BuildGroupChampionPointsPlacementOption(),
         GamepadOptions.BuildGroupShowCompanionsOption(),

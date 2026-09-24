@@ -29,28 +29,166 @@ function E:Start(id, attacker)
     local opponent=attacker or p.owner
     local company=self.state.companies[opponent]; local profile=profiles[(company and company.personality) or "steady"] or profiles.steady
     local defense=attacker and ((company and company.defense) or .5) or 0
-    local opening=math.floor(p.marketValue*B.openingEnemyBidFactor*profile.opening*(1+defense*.25))
-    local budget=math.floor(p.marketValue*B.enemyBudgetFactor*profile.budget*(1+defense*.20))
+    -- A rival's headquarters is fought for with the whole group behind it.
+    local value,headquarters=M.NegotiationValue(self.state,p,attacker)
+    local groupReserve=0
+    if headquarters then local _,reserves=M.CompanyAssets(self.state,opponent); groupReserve=reserves end
+    local opening=math.floor(value*B.openingEnemyBidFactor*profile.opening*(1+defense*.25))
+    local budget=math.floor(value*B.enemyBudgetFactor*profile.budget*(1+defense*.20))
+    local policy,event=M.ActivePolicy(self.state),M.ActiveMarketEvent(self.state)
+    local stanceIds=M.NegotiationStances(self.state,p,attacker)
+    local budgetMultiplier=(policy and policy.enemyBudgetMultiplier or 1)*(event and event.enemyBudgetMultiplier or 1)
+    for _,sid in ipairs(stanceIds) do budgetMultiplier=budgetMultiplier*(D.stanceById[sid].enemyBudget or 1) end
+    budget=math.floor(budget*budgetMultiplier)
     if opponent~=C.neutralId then
         local company=self.state.companies[opponent]
-        opening=math.min(opening,company.cash)
-        budget=math.min(budget,company.cash-opening)
-        company.cash=company.cash-opening
+        local available=company.cash+groupReserve
+        opening=math.min(opening,available)
+        budget=math.min(budget,available-opening)
+        local fromCash=math.min(company.cash,opening); company.cash=company.cash-fromCash
+        groupReserve=groupReserve-(opening-fromCash)
     end
     self.accumulator=0
     self.battle={targetId=id, defender=opponent, mode=attacker and "defense" or "acquisition", gauge=B.initialGauge, velocity=0, acceleration=0,
-        playerWait=0, enemyWait=B.enemyOpeningWait, elapsed=0, playerBid=0,
+        playerWait=0, enemyWait=B.enemyOpeningWait, elapsed=0, playerBid=0, stanceDiscount=0,
         enemyBid=opening, enemyBudget=budget,
-        momentum=0, requests={}, log={}, treasurySpent=0, baseValue=p.marketValue,effectiveValue=p.marketValue,
-        effects={},delayedEffects={},learnedTactics={}}
+        momentum=0, requests={}, log={}, treasurySpent=0, baseValue=value,effectiveValue=value,
+        headquarters=headquarters, critical=M.IsCriticalProperty(self.state,p), finalStronghold=p.finalStronghold==true,
+        criticalStage=0, groupReserve=groupReserve, groupReserveStart=groupReserve+0,
+        effects={},delayedEffects={},learnedTactics={},day=1,turns=0,events={}}
     self.battle.aiProfile=profile; self.battle.aiStyle=(company and company.personality) or "steady"
+    local hits=self.battle.critical and not attacker and C.stances.criticalHits or 1
+    local stances={}
+    for _,sid in ipairs(stanceIds) do stances[#stances+1]={id=sid,hits=hits,broken=false} end
+    self.battle.stances=stances
     self:Log(attacker and "防衛開始。境目を左端まで押せば防衛成功、右端で物件喪失。" or "交渉開始。境目を左端まで押せば買収成立。")
+    if headquarters then
+        self:Log(company.name.."が総力で本社を守る（交渉価値 "..M.FormatMoney(value).."）")
+        self:Notify("enemy","グループの総力で本社を防衛（交渉価値 "..M.FormatMoney(value).."）","alert")
+    end
+    if self.battle.critical then
+        self:Log("重要交渉：相手は三段階の防衛契約を準備している")
+        self:Notify("wide","重要交渉――防衛契約が段階的に発動する","alert")
+    end
+    for _,stance in ipairs(stances) do
+        local st=D.stanceById[stance.id]
+        self:Log("構え「"..st.name.."」："..st.hint)
+        self:Notify("enemy","構え「"..st.name.."」――"..st.hint,"stance")
+    end
+    self:Notify("wide",self:DaySummary(),"day")
+    -- A negotiator hired in domestic affairs joins this negotiation (attack or defense).
+    if (self.state.envoyBattles or 0)>0 then
+        self.state.envoyBattles=self.state.envoyBattles-1
+        local K=C.admin
+        self.battle.momentum=math.min(B.maxMomentum,self.battle.momentum+K.hireMomentum)
+        self:AddEffect("playerWaitMultiplier",K.hireWaitFactor,K.hireSeconds)
+        self:Log("腕利きの交渉役が同席している"); self:Notify("player","腕利きの交渉役が同席している","tactic")
+    end
     return true
+end
+local function comma(n)
+    return M.FormatMoney(n)
+end
+-- Battle popups: lane is "enemy" (above the rival's coins), "player" (above ours) or "wide".
+function E:Notify(lane,text,kind)
+    local events=self.battle.events
+    if #events<400 then events[#events+1]={lane=lane,text=text,kind=kind} end
+end
+function E:DaySummary()
+    local b=self.battle
+    return "― 交渉"..b.day.."日目 ―    相手  拠出 "..comma(b.enemyBid).." / 残予算 "..comma(b.enemyBudget)
+        .."    ｜    自社  拠出 "..comma(b.playerBid).." / 商会資金 "..comma(self.state.cash)
+end
+-- A day passes after turnsPerDay executed commands or daySeconds of negotiation, whichever first.
+function E:NextDay()
+    local b=self.battle
+    b.day=b.day+1; b.dayTurns=0; b.dayTime=0
+    local K=C.criticalBattle
+    local nextStage=(b.criticalStage or 0)+1
+    if b.critical and K.days[nextStage] and b.day>=K.days[nextStage] then
+        local company=b.defender~=C.neutralId and self.state.companies[b.defender] or nil
+        local multiplier=b.finalStronghold and K.finalStrongholdMultiplier or 1
+        local wanted=math.floor(b.baseValue*K.reinforcementShares[nextStage]*multiplier)
+        local available=company and (company.cash+(b.groupReserve or 0)) or 0
+        local amount=math.min(wanted,available)
+        if company and amount>0 then
+            local fromCash=math.min(company.cash,amount); company.cash=company.cash-fromCash
+            if amount>fromCash then b.groupReserve=math.max(0,(b.groupReserve or 0)-(amount-fromCash)) end
+            b.enemyBid=b.enemyBid+amount; b.lastEnemyAction=b.elapsed
+        end
+        b.criticalStage=nextStage
+        self:AddEffect("enemyAccelerationBoost",K.acceleration[nextStage]*multiplier,K.effectSeconds)
+        local name=K.names[nextStage]
+        self:Log(name.."  +"..comma(amount))
+        self:Notify("enemy",name.."　追加出資 +"..comma(amount),"alert")
+    end
+    self:Notify("wide",self:DaySummary(),"day")
+end
+function E:PlayerTurn()
+    local b=self.battle
+    b.turns=b.turns+1; b.dayTurns=(b.dayTurns or 0)+1
+    if b.dayTurns>=B.turnsPerDay then self:NextDay() end
 end
 function E:AddEffect(kind,amount,duration)
     local effects=self.battle.effects
     effects[#effects+1]={type=kind,amount=amount,remaining=duration}
     while #effects>C.tactics.effectLimit do table.remove(effects,1) end
+end
+-- How much of a contribution from `source` (request/group/ally/treasury) moves the border.
+function E:FundWeight(source)
+    local weight=1
+    for _,stance in ipairs(self.battle.stances or {}) do
+        if not stance.broken then weight=weight*(D.stanceById[stance.id].weights[source] or 1) end
+    end
+    return weight
+end
+-- While a stance stands, money can only press so hard: piling more gold hits a ceiling.
+function E:PressureCap()
+    local standing=0 -- counted in place: this runs every simulation step
+    for _,stance in ipairs(self.battle.stances or {}) do if not stance.broken then standing=standing+1 end end
+    if standing==0 then return 1 end
+    -- Critical targets hold a little tighter; a second stance tightens the ceiling further.
+    local K=C.stances
+    return K.pressureCap*(self.battle.critical and K.criticalCapShare or 1)/(1+K.extraStanceTighten*(standing-1))
+end
+-- Contribution that actually pushes the border: the bid minus what standing stances absorbed.
+function E:PlayerForce()
+    local b=self.battle; return b.playerBid-(b.stanceDiscount or 0)
+end
+function E:EnemyWaitFactor()
+    local factor=1
+    for _,stance in ipairs(self.battle.stances or {}) do
+        if not stance.broken then factor=factor*(D.stanceById[stance.id].enemyWait or 1) end
+    end
+    return factor
+end
+function E:StandingStances()
+    local list={}
+    for _,stance in ipairs(self.battle and self.battle.stances or {}) do if not stance.broken then list[#list+1]=stance end end
+    return list
+end
+-- A counter lands on every standing stance it answers. Returns the stances it broke.
+-- Breaking releases everything contributed so far at full weight and swings the border.
+function E:HitStances(test)
+    local b=self.battle; local broken={}; local shaken
+    for _,stance in ipairs(b.stances or {}) do
+        local st=D.stanceById[stance.id]
+        if not stance.broken and test(st) then
+            stance.hits=stance.hits-1
+            if stance.hits<=0 then stance.broken=true; broken[#broken+1]=st
+            else shaken=st; self:Log("構え「"..st.name.."」が揺らいだ（あと"..stance.hits.."手）")
+                self:Notify("enemy","構え「"..st.name.."」が揺らいだ！ あと"..stance.hits.."手","stance") end
+        end
+    end
+    if #broken>0 then
+        b.stanceDiscount=0
+        b.velocity=clamp(b.velocity-C.stances.breakVelocity*#broken,-B.maxVelocity,B.maxVelocity)
+        for _,st in ipairs(broken) do
+            self:Log("構え「"..st.name.."」を崩した！ 出資が満額で効き始める")
+            self:Notify("wide","構え「"..st.name.."」を崩した！――積んだ出資が満額で効き始める","stanceBreak")
+        end
+    end
+    return broken,shaken
 end
 function E:EffectTotal(kind,default)
     local value=default or 0
@@ -77,6 +215,7 @@ function E:UseTactic(id)
         if not ownTarget then return false,"対象となる自社物件がありません" end
     elseif effect.type=="enemyRisk" and target.owner==C.neutralId then return false,"中立物件には離反工作が効きません" end
     self.state.cash=self.state.cash-tactic.cost; self.battle.treasurySpent=self.battle.treasurySpent+tactic.cost
+    self.battle.lastPlayerAction=self.battle.elapsed
     local resistance=self:TacticResistance(tactic,effect.type=="ownRisk" and ownTarget or target)
     local power=1-resistance; local amount=(effect.amount or 0)*power
     local direction,defected
@@ -93,10 +232,14 @@ function E:UseTactic(id)
     elseif effect.type=="enemyRisk" then target.independenceRisk=clamp(target.independenceRisk+amount,0,B.riskMax-1); defected=self:CheckDefection(target)
     elseif effect.type=="ownRisk" then ownTarget.independenceRisk=clamp(ownTarget.independenceRisk+amount,0,B.riskMax-1) end
     if power>0 then self:Log(tactic.name.."を実行") end
+    local brokenStances,shaken={},nil
+    if power>0 then brokenStances,shaken=self:HitStances(function(st) return st.breakers and st.breakers[id] end) end
+    self:PlayerTurn()
     if effect.type~="resetWaits" then self.battle.playerWait=self:PlayerWaitDuration() end
     -- The outcome feeds the tactic cut-in: power, applied amount and any swing or defection.
     return true,{tactic=tactic,resistance=resistance,target=ownTarget or target,
-        power=math.max(0,power),amount=amount,direction=direction,targetDefected=defected}
+        power=math.max(0,power),amount=amount,direction=direction,targetDefected=defected,
+        brokenStances=brokenStances,shakenStance=shaken}
 end
 function E:TryLearnTactics(result)
     local learned={}; local defense=self.battle.mode=="defense"
@@ -129,7 +272,9 @@ function E:DiscoverGroup(p)
     local found={}
     for _,id in ipairs(p.groups) do
         local group=PBTrade.Data.groups[id]
-        if group and not self.state.learnedGroups[id] and self.random()<(group.discoveryChance or 0) then
+        -- Super-scale groups stay hidden until half of their required members are owned.
+        local ripe=not group or not group.discoverAt or #M.GroupMembers(self.state,id)>=group.discoverAt
+        if group and ripe and not self.state.learnedGroups[id] and self.random()<(group.discoveryChance or 0) then
             self.state.learnedGroups[id]=true; found[#found+1]=id
             self:Log(group.name.."を閃いた！")
             if #found>=C.groups.maxDiscoveriesPerRequest then break end
@@ -147,10 +292,13 @@ function E:Quote(id)
     local base=p.expectedProfit*B.fundingProfitFactor+p.marketValue*B.fundingValueFactor
     return math.floor(math.min(p.reserve,base/(1+(count or 0)*B.fatiguePerRequest)))
 end
-function E:Fund(amount, acceleration)
+function E:Fund(amount, acceleration, source)
     local b=self.battle
+    b.lastPlayerAction=b.elapsed
     b.playerBid=b.playerBid+amount
-    b.momentum=clamp(b.momentum+acceleration*B.momentumPerFunding,0,B.maxMomentum)
+    local weight=self:FundWeight(source or "treasury")
+    b.stanceDiscount=(b.stanceDiscount or 0)+amount*(1-weight)
+    b.momentum=clamp(b.momentum+acceleration*B.momentumPerFunding*math.min(1,weight),0,B.maxMomentum)
     b.playerWait=self:PlayerWaitDuration()
 end
 function E:Request(id)
@@ -161,9 +309,13 @@ function E:Request(id)
     p.reserve=p.reserve-amount
     p.independenceRisk=clamp(p.independenceRisk+p.independenceIncrease,0,B.riskMax-1)
     self.battle.requests[id]=(self.battle.requests[id] or 0)+1
-    self:Fund(amount,p.gaugeAcceleration)
-    self:Log(p.name.."  +"..amount.." / 負担 "..p.independenceRisk)
+    self:Fund(amount,p.gaugeAcceleration,"request")
+    self:Log(p.name.."  +"..comma(amount).." / 負担 "..p.independenceRisk)
+    self:Notify("player",p.name.."から  +"..comma(amount),"fund")
     local discoveries=self:DiscoverGroup(p); local defected=self:CheckDefection(p)
+    for _,gid in ipairs(discoveries) do self:Notify("player","閃き：「"..D.groups[gid].name.."」","discovery") end
+    if defected then self:Notify("player",p.name.."が離反した！","alert") end
+    self:PlayerTurn()
     return true,amount,{discoveries=discoveries,defected=defected,property=p}
 end
 function E:RequestGroup(id)
@@ -183,9 +335,30 @@ function E:RequestGroup(id)
     end
     if paid==0 then return false,"系列に調達余力がありません" end
     local amount=math.floor(base*status.bonus)
-    self:Fund(amount,acceleration/paid+C.groups.accelerationBonus)
-    self:Log(status.name.."  +"..amount.."（"..paid.."件）")
-    return true,amount,{group=status,defected=defected}
+    self:Fund(amount,acceleration/paid+C.groups.accelerationBonus,"group")
+    local broken=self:HitStances(function(st) return st.breakByGroup end)
+    self:Log(status.name.."  +"..comma(amount).."（"..paid.."件）")
+    self:Notify("player",status.name.."  +"..comma(amount).."（"..paid.."件）","fund")
+    for _,p in ipairs(defected) do self:Notify("player",p.name.."が離反した！","alert") end
+    self:PlayerTurn()
+    return true,amount,{group=status,defected=defected,brokenStances=broken}
+end
+-- Ask an allied company to back this negotiation (once per ally per negotiation).
+function E:RequestAlly(id)
+    if not self:Ready() then return false,"伝令の帰還を待ってください" end
+    local b=self.battle; b.allyRequests=b.allyRequests or {}
+    if not M.IsAllied(self.state,id) then return false,"同盟を結んでいない商会です" end
+    if b.allyRequests[id] then return false,"この交渉ではすでに支援を受けています" end
+    if b.defender==id then return false,"交渉相手の同盟商会には頼めません" end
+    local amount=M.AllianceFundAmount(self.state,id); if amount<=0 then return false,"同盟商会に余裕資金がありません" end
+    local c=self.state.companies[id]; c.cash=c.cash-amount; b.allyRequests[id]=true
+    local broken=M.StrainAlliance(self.state,id,C.alliance.fundTrust)
+    self:Fund(amount,B.baseAcceleration+.5,"ally")
+    local brokenStances=self:HitStances(function(st) return st.breakByAlly end)
+    self:Log(c.name.."の支援  +"..comma(amount)); self:Notify("player","同盟 "..c.name.."の支援  +"..comma(amount),"fund")
+    if broken then self:Log(c.name.."との同盟が解消された"); self:Notify("player",c.name.."との同盟が解消された！","alert") end
+    self:PlayerTurn()
+    return true,amount,{ally=id,broken=broken,brokenStances=brokenStances}
 end
 function E:Stabilize()
     if not self:Ready() then return false,"伝令の帰還を待ってください" end
@@ -194,9 +367,12 @@ function E:Stabilize()
     for _,p in ipairs(M.Owned(self.state)) do if not target or p.independenceRisk>target.independenceRisk then target=p end end
     if not target or target.independenceRisk<=0 then return false,"根回しが必要な物件はありません" end
     self.state.cash=self.state.cash-C.independence.stabilizeCost
+    self.battle.lastPlayerAction=self.battle.elapsed
     target.independenceRisk=math.max(0,target.independenceRisk-C.independence.stabilizeAmount)
     self.battle.treasurySpent=self.battle.treasurySpent+C.independence.stabilizeCost
     self.battle.playerWait=B.playerWait; self:Log(target.name.."を安定化  -"..C.independence.stabilizeAmount)
+    self:Notify("player",target.name.."を根回しで安定化","fund")
+    self:PlayerTurn()
     return true,target
 end
 function E:Treasury(amount)
@@ -207,22 +383,55 @@ function E:Treasury(amount)
     if self.state.cash<amount then return false,"商会資金が不足しています" end
     self.state.cash=self.state.cash-amount
     self.battle.treasurySpent=self.battle.treasurySpent+amount
-    self:Fund(amount,B.baseAcceleration)
-    self:Log("商会資金を投入  +"..amount)
+    self:Fund(amount,B.baseAcceleration,"treasury")
+    self:Log("商会資金を投入  +"..comma(amount))
+    self:Notify("player","商会資金を投入  +"..comma(amount),"fund")
+    self:PlayerTurn()
     return true
 end
 function E:Finish(result)
     local b=self.battle
     if not b or b.result then return end
     b.result=result
+    -- Reserves the group spent defending its headquarters come out of its properties, pro rata.
+    local spent=(b.groupReserveStart or 0)-(b.groupReserve or 0)
+    if b.headquarters and spent>0 then
+        local _,total=M.CompanyAssets(self.state,b.defender)
+        if total>0 then
+            for _,p in pairs(self.state.properties) do
+                if p.owner==b.defender and (p.reserve or 0)>0 then p.reserve=math.max(0,p.reserve-math.floor(spent*p.reserve/total+.5)) end
+            end
+        end
+    end
     if result=="won" then
         if b.mode=="defense" then
             self.state.defensesWon=self.state.defensesWon+1; self:Log("防衛成功。所有権を維持しました。")
         else
-            local acquired=self.state.properties[b.targetId]; acquired.owner=C.playerId
+            local acquired=self.state.properties[b.targetId]
+            -- Buying an ally's property strains the alliance, and may break it.
+            if M.IsAllied(self.state,acquired.owner) then
+                b.allianceStrained=acquired.owner
+                b.allianceBroken=M.StrainAlliance(self.state,acquired.owner,C.alliance.acquireTrust) and acquired.owner or nil
+                if b.allianceBroken then self:Log(self.state.companies[acquired.owner].name.."との同盟が解消された") end
+            end
+            acquired.owner=C.playerId
             acquired.independenceRisk=math.min(acquired.independenceRisk,C.independence.reacquireRisk)
             self.state.wins=self.state.wins+1; M.Unlock(self.state)
             self:Log("買収成立。物件が商会に加わりました。")
+            for _,definition in ipairs(D.properties) do
+                local locked=self.state.properties[definition.id]
+                if locked.finalStronghold and locked.owner~=C.playerId then
+                    local wasKey=false
+                    for _,id in ipairs(locked.requiresProperties or {}) do if id==b.targetId then wasKey=true end end
+                    if wasKey and M.IsAvailable(self.state,locked) then
+                        b.finalStrongholdUnlocked=locked
+                        self:Log(locked.name.."への道が開いた！")
+                        self:Notify("wide","最終物件出現：「"..locked.name.."」","discovery")
+                    end
+                end
+            end
+            b.takeover=M.Takeover(self.state,b.targetId)
+            if b.takeover then self:Log(b.takeover.name.."を傘下に収めた！ 物件 "..b.takeover.count.." 件") end
         end
     else
         if b.mode=="defense" then
@@ -238,6 +447,7 @@ function E:Finish(result)
     -- No income settlement yet: that belongs to the campaign phase.
 end
 function E:UseEnemyTactic(company)
+    self.battle.lastEnemyAction=self.battle.elapsed
     local id=company and company.tacticBias; local tactic=id and D.tacticById[id]
     if not tactic then return end
     if id=="messenger" then self.battle.enemyWait=self.battle.enemyWait*.55
@@ -251,38 +461,67 @@ function E:UseEnemyTactic(company)
         self.battle.enemyBid=self.battle.enemyBid+extra
     end
     self:Log("相手が「"..tactic.name.."」を使用")
+    self:Notify("enemy","駆け引き「"..tactic.name.."」を仕掛けてきた","tactic")
+end
+-- The side the border is moving toward is under attack. If it has not acted for a while,
+-- the push against it keeps building so a one-sided negotiation ends quickly.
+function E:IdlePressure()
+    local b=self.battle
+    if math.abs(b.velocity)<1e-6 then b.idleSide=nil; return 0 end
+    local pressedPlayer=b.velocity>0 -- positive velocity heads for the player's loss
+    local last=pressedPlayer and (b.lastPlayerAction or 0) or (b.lastEnemyAction or 0)
+    local idle=b.elapsed-last-B.idleGrace
+    if idle<=0 then b.idleSide=nil; return 0 end
+    local side=pressedPlayer and "player" or "enemy"
+    if b.idleSide~=side then
+        b.idleSide=side
+        self:Log(pressedPlayer and "自社の手が止まり、一気に押し込まれていく……" or "相手の手が止まった。流れが一気に傾く！")
+        self:Notify(side,pressedPlayer and "手が止まり、一気に押し込まれている……" or "手が止まった。流れが一気に傾く！","alert")
+    end
+    local push=B.idleAcceleration*math.min(1,idle/B.idleRamp)
+    return pressedPlayer and push or -push
 end
 function E:Step(dt)
     local b=self.battle
     b.elapsed=b.elapsed+dt
+    b.dayTime=(b.dayTime or 0)+dt
+    if b.dayTime>=B.daySeconds then self:NextDay() end
     for i=#b.effects,1,-1 do local effect=b.effects[i]; effect.remaining=effect.remaining-dt; if effect.remaining<=0 then table.remove(b.effects,i) end end
     for i=#b.delayedEffects,1,-1 do
         local effect=b.delayedEffects[i]; effect.remaining=effect.remaining-dt
-        if effect.remaining<=0 then self:AddEffect(effect.type,effect.amount,effect.duration); self:Log("宴席の働きかけが広がりました"); table.remove(b.delayedEffects,i) end
+        if effect.remaining<=0 then self:AddEffect(effect.type,effect.amount,effect.duration); self:Log("宴席の働きかけが広がりました"); self:Notify("player","宴席の働きかけが広がった","tactic"); table.remove(b.delayedEffects,i) end
     end
     b.effectiveValue=b.baseValue*self:EffectTotal("valueMultiplier",1)
     b.playerWait=math.max(0,b.playerWait-dt)
     b.enemyWait=math.max(0,b.enemyWait-dt)
     if b.enemyWait<=0 then
         local profile=b.aiProfile or profiles.steady
-        local pressure=clamp((b.playerBid-b.enemyBid)/math.max(B.priceFloor,b.effectiveValue),0,1)
+        local pressure=clamp((self:PlayerForce()-b.enemyBid)/math.max(B.priceFloor,b.effectiveValue),0,1)
         local amount=math.min(b.enemyBudget,math.floor(b.effectiveValue*B.enemyBidFactor*profile.bid*
             (1+self.random()*B.enemyBidVariation+profile.react*pressure)))
         if b.defender~=C.neutralId then
             local company=self.state.companies[b.defender]
-            amount=math.min(amount,company.cash); company.cash=company.cash-amount
+            -- Headquarters defence draws on the group's property reserves once cash runs out.
+            amount=math.min(amount,company.cash+(b.groupReserve or 0))
+            local fromCash=math.min(company.cash,amount); company.cash=company.cash-fromCash
+            if amount>fromCash then b.groupReserve=b.groupReserve-(amount-fromCash) end
         end
         b.enemyBudget=b.enemyBudget-amount; b.enemyBid=b.enemyBid+amount
-        b.enemyWait=B.enemyWait*profile.wait
-        if amount>0 then self:Log("相手側の追加出資  +"..amount) end
+        b.enemyWait=B.enemyWait*profile.wait*self:EnemyWaitFactor()
+        if amount>0 then
+            self:Log("相手側の追加出資  +"..comma(amount)); b.lastEnemyAction=b.elapsed
+            self:Notify("enemy","追加出資  +"..comma(amount).."（計 "..comma(b.enemyBid).."）","fund")
+        end
         local company=b.defender~=C.neutralId and self.state.companies[b.defender] or nil
         if company and self.random()<C.tactics.aiUseChance then self:UseEnemyTactic(company) end
     end
     b.momentum=math.max(0,b.momentum-B.momentumDecay*dt)
     -- Saturation prevents a single enormous bid from teleporting the gauge.
-    local pressure=clamp((b.playerBid-b.enemyBid)/math.max(B.priceFloor,b.effectiveValue),-1,1)
+    -- Stances discount money toward the border: PlayerForce() is the weighted contribution.
+    local pressure=clamp((self:PlayerForce()-b.enemyBid)/math.max(B.priceFloor,b.effectiveValue),-1,self:PressureCap())
     b.acceleration=-pressure*B.pressureAcceleration-b.momentum+B.baseAcceleration
         -self:EffectTotal("playerAcceleration",0)-self:EffectTotal("enemyAccelerationPenalty",0)+self:EffectTotal("enemyAccelerationBoost",0)
+    b.acceleration=b.acceleration+self:IdlePressure()
     b.velocity=clamp(b.velocity+(b.acceleration-B.drag*b.velocity)*dt,-B.maxVelocity,B.maxVelocity)
     -- Position-dependent pace: the border creeps near the centre and races near either edge.
     local edge=math.abs(b.gauge)/B.gaugeLimit

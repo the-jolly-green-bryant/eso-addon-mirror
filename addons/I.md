@@ -67,6 +67,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Insatiable Hunger Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Insatiable-Hunger-Blocker__42a55498-b21a-4657-86ba-bdb954f7a09d) | Lykeion+ | Console | — |
 | [insjunkyard update for ESO 1.4.3](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Klingo/insjunkyard-update-for-ESO-1.4.3__719) | Klingo | PC / Mac | 1.03 |
 | [Inspect Vestige](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/LuckyRome13/Inspect-Vestige__4706) | LuckyRome13 | PC / Mac | 1.4.0 |
+| [Instance Leaver \[leave instance with one key bind\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VaalHazac/Instance-Leaver-leave-instance-with-one-key-bind__4867) | VaalHazac | PC / Mac | 0.2 |
 | [Instant Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/delstrega/Instant-Swap__2987) | delstrega | PC / Mac | 1.2 |
 | [InstaQ](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Synkronist/InstaQ__5da20bd4-9950-42b8-aca8-deadd5817210) | Synkronist | Console | — |
 | [Interrupt Narc](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/Interrupt-Narc__fe232f99-8f31-4163-906d-48182e80a59d) | brossin13 | Console | — |

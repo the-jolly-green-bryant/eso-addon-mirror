@@ -1,0 +1,48 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Matt_Eweroun/ShardVolley-Alert__4866",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Matt_Eweroun",
+  "canonical_id": "esoui:4866",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4866",
+  "deleted": false,
+  "directories": [
+    "ShardVolleyAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4866/",
+  "fingerprint": "6fe730aadd2a4b650d95581c14e55a7f6cb91370114141554e42ee375e61baf0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4866",
+  "source_url": "https://www.esoui.com/downloads/info4866-ShardVolleyAlert.html",
+  "stats": {
+    "downloads": 8,
+    "favorites": 0,
+    "monthly_downloads": 3
+  },
+  "title": "ShardVolley Alert",
+  "updated_at": 1790179347000,
+  "version": "1.0"
+}

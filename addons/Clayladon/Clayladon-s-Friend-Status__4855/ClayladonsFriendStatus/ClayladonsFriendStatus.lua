@@ -1,4 +1,4 @@
-ClayladonsFriendStatus = {}
+local ClayladonsFriendStatus = {}
 ClayladonsFriendStatus.name = "ClayladonsFriendStatus"
 
 -- Define default values for SavedVars here:
@@ -20,7 +20,6 @@ local defaultSettings = {
 
 -- Helper function to automatically format and print text stylishly
 local function stylish_print(in_text, in_hexColour)
-    -- d("|cA183C0" .. in_text .. "|r")
     local targetColour = in_hexColour or "A183C0"
     d("|c" .. targetColour .. in_text .. "|r")
 end
@@ -114,8 +113,9 @@ local function PrintOnlineFriends()
                     if hasCharacter then
                         anyoneOnline = true
                         local sanitizedCharacterName = zo_strformat("<<1>>", characterName)
+                        local sanitizedZoneName = zo_strformat("<<1>>", zoneName)
 
-                        printInfo(displayName, sanitizedCharacterName, zoneName, friendsHexColour)
+                        printInfo(displayName, sanitizedCharacterName, sanitizedZoneName, friendsHexColour)
                     end
                 end
             end
@@ -153,8 +153,9 @@ local function PrintOnlineFriends()
                                 watchlistOnline = true
                                 printedWatchlist[lowerName] = true
                                 local sanitizedCharacterName = zo_strformat("<<1>>", characterName)
+                                local sanitizedZoneName = zo_strformat("<<1>>", zoneName)
 
-                                printInfo(displayName, sanitizedCharacterName, zoneName, watchlistHexColour)
+                                printInfo(displayName, sanitizedCharacterName, sanitizedZoneName, watchlistHexColour)
                             end
                         end
                     end
@@ -177,8 +178,9 @@ local function PrintOnlineFriends()
                                     watchlistOnline = true
                                     printedWatchlist[lowerName] = true
                                     local sanitizedCharacterName = zo_strformat("<<1>>", characterName)
+                                    local sanitizedZoneName = zo_strformat("<<1>>", zoneName)
                                     
-                                    printInfo(displayName, sanitizedCharacterName, zoneName, watchlistHexColour)
+                                    printInfo(displayName, sanitizedCharacterName, sanitizedZoneName, watchlistHexColour)
                                 end
                             end
                         end
@@ -195,11 +197,6 @@ end
 
 -- Create the LibAddonMenu-2.0 settings panel
 local function InitializeSettingsMenu()
-    -- Create a pointer to the LibAddonMenu2 object
-    local ptr_LibAddonMenu2 = LibAddonMenu2
-
-    -- If LibAddonMenu2 doesn't exist, don't do anything else
-    if not ptr_LibAddonMenu2 then return end
 
     -- Create the panel
     local panelData = {
@@ -207,7 +204,7 @@ local function InitializeSettingsMenu()
         name = "Clayladon's Friend Status",
         displayName = "|cA183C0Clayladon's Friend Status|r",
         author = "@Clayladon",
-        version = "1.0.9",
+        version = "1.1.0",
         registerForRefresh = true,
     }
 
@@ -610,7 +607,8 @@ local function InitializeSettingsMenu()
         },
     }
 
-    -- Register the panel with LibAddonMenu-2.0
+    -- Create a pointer to LibAddonMenu-2.0 and register the panel.
+    local ptr_LibAddonMenu2 = LibAddonMenu2
     ptr_LibAddonMenu2:RegisterAddonPanel("ClayladonsFriendStatusOptions", panelData)
     ptr_LibAddonMenu2:RegisterOptionControls("ClayladonsFriendStatusOptions", optionsTable)
 
@@ -628,7 +626,7 @@ local function OnPlayerActivated(eventCode, initial)
         
 end
 
--- Futureproofing for when I implement anything with Saved Variables
+-- Saved variable initialization, slash command registration, and creating the settings menu.
 local function OnAddOnLoaded(eventCode, addonName)
     if addonName ~= ClayladonsFriendStatus.name then return end
     EVENT_MANAGER:UnregisterForEvent(ClayladonsFriendStatus.name, EVENT_ADD_ON_LOADED)
@@ -638,19 +636,20 @@ local function OnAddOnLoaded(eventCode, addonName)
         "ClayladonsFriendStatusVariables",
         1,
         nil,
-        defaultSettings
+        defaultSettings,
+        GetWorldName()
     )
+
+    -- Slash command because it's cool. No more pressing "o". #cool
+    SLASH_COMMANDS["/friendstatus"] = function()
+        PrintOnlineFriends()
+    end
 
     -- Create the settings menu
     InitializeSettingsMenu()
 
 
     EVENT_MANAGER:RegisterForEvent(ClayladonsFriendStatus.name, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
-end
-
--- Slash command because it's cool. No more pressing "o". #cool
-SLASH_COMMANDS["/friendstatus"] = function()
-    PrintOnlineFriends()
 end
 
 -- Equivalent to calling main (starts the cascade of event listens)

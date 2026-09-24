@@ -1,3 +1,9 @@
+Version 3.1.3 (2026/09/23)
+* The tooltip extension displaying the researchability list will no longer be
+  disabled for tradable BoP items that have no tradability context (e.g., items
+  that are linked in chat) and will instead be shown with the same single-
+  account filter that is applied to non-tradable items
+
 Version 3.1.2 (2026/08/31)
 * Improved support for Update 51
 * Added option to change the styling of the multi-character indicator in the
@@ -113,7 +119,7 @@ Version 2.1.4 (2024/07/08)
   can now be invoked via a shortened alias (/ckl) and also by a keybind that the
   user can set
 * The character list shown in the tooltips for bind-on-pickup items will now be
-  restricted to only the characters on the current account; tradeable items will
+  restricted to only the characters on the current account; tradable items will
   still show the full multi-account character list
 * Right-clicking on an entry in the browser will now display its associated ID
   - For recipes and furnishing plans, this will be its itemId

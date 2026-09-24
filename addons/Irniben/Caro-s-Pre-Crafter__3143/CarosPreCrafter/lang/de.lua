@@ -99,6 +99,8 @@ L.CPCLamRestockSearchForNextItem = "Suche nächsten Vorrats-Gegenstand (schnell)
 L.CPCLamRestockSearchAll = "Suche alle Vorrats-Gegenstände (langsam)"
 L.CPC_RestockMatsForWrits = "Zutaten für Schriebe (%s, %s)"
 
+L.CPC_PleaseCheckCombi = "Bitte Kombination für %s prüfen, Kombination %s ergibt %s"
+
 for stringId, stringValue in pairs(L) do
 	SafeAddString(_G[stringId], stringValue, 0)
 end

@@ -259,6 +259,14 @@ function PlayerBars.GetGroupShowClassTooltip()
     return NQOL.L("features.player_bars.group_show_class_tooltip")
 end
 
+function PlayerBars.GetGroupShowTargetMarkerLabel()
+    return NQOL.L("features.player_bars.group_show_target_marker_label")
+end
+
+function PlayerBars.GetGroupShowTargetMarkerTooltip()
+    return NQOL.L("features.player_bars.group_show_target_marker_tooltip")
+end
+
 function PlayerBars.GetGroupShowChampionPointsLabel()
     return NQOL.L("features.player_bars.group_show_champion_points_label")
 end

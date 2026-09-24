@@ -53,7 +53,7 @@ function CharacterKnowledge.GetTradeEligibility( itemLink, itemSource, account )
 			-- Trade slots
 			return string.find(GetTradeItemBoPTradeableDisplayNamesString(itemSource.who, itemSource.tradeIndex) .. " ", account .. "[%s,]") ~= nil
 		else
-			return false
+			return account == CharacterKnowledge.userId
 		end
 	else
 		return true
@@ -110,7 +110,7 @@ function CharacterKnowledge.ResearchGetColoredNameList( craftingSkillType, resea
 			total = total + 1
 		elseif (mode == 2 and CharacterKnowledge.GetTradeEligibility(itemLink, itemSource, character.account)) then
 			if (character.knowledge == LCK.KNOWLEDGE_UNKNOWN and not character.remaining) then
-				local remaining = LCK.CanTraitBeImmediatelyResearchedByCharacter(craftingSkillType, researchLineIndex, traitIndex, server, character.id)
+				local remaining = LCK.CanTraitBeImmediatelyResearchedByCharacter(craftingSkillType, researchLineIndex, traitIndex, nil, character.id)
 
 				-- Handle pending research
 				local activeTimeLeft = ""

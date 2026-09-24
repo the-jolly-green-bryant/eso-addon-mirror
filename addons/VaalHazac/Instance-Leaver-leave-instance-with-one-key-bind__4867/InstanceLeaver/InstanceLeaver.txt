@@ -1,0 +1,10 @@
+## Title: Instance Leaver
+## Author: VaalHazac
+## APIVersion: 101050
+## AddOnVersion: 002
+
+InstanceLeaver.lua
+
+## Keybind
+Bindings/Bindings.lua
+Bindings/Bindings.xml

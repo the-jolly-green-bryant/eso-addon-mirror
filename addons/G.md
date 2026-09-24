@@ -133,7 +133,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GroupSpy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/GroupSpy__2114) | Ace'r | PC / Mac | 1.0 |
 | [Grubmaster Food & Drink Auto Consume](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aethronx/Grubmaster-Food-Drink-Auto-Consume__2139) | aethronx | PC / Mac | 1.07 |
 | [Grumpy's Larcenist Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ethilin/Grumpy-s-Larcenist-Tracker__247c8a28-fdfb-4ffc-9bb8-21c4fd1a01da) | ethilin | Console | — |
-| [Grumpy's Larcenist Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GrumpyEthilin/Grumpy-s-Larcenist-Tracker__4531) | GrumpyEthilin | PC / Mac | 1.0.1 |
+| [Grumpy's Larcenist Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GrumpyEthilin/Grumpy-s-Larcenist-Tracker__4531) | GrumpyEthilin | PC / Mac | 1.1.0 |
 | [Grumpy's Simple Playtime](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ethilin/Grumpy-s-Simple-Playtime__118c6c05-d955-4eff-b2de-a1e171ee1215) | ethilin | Console | — |
 | [Guard Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/branddi/Guard-Helper__3553) | branddi | PC / Mac | 1.0.1 |
 | [Guard Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Guard-Status__3024) | MrPikPik | PC / Mac | 1.2.1 |

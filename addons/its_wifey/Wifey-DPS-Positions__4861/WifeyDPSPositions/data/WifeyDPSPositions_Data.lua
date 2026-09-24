@@ -2,7 +2,7 @@
 WifeyDPSPositions = WifeyDPSPositions or {}
 local DDP = WifeyDPSPositions
 
-DDP.version = "1.0"
+DDP.version = "1.6"
 DDP.positions = {
 	[636] = { mechOrder = {"2Groups"}, mechanics = {["2Groups"] = {"Upstairs","Upstairs","Upstairs","Upstairs","Downstairs","Downstairs","Downstairs","Downstairs"}} },
 	[725] = {
@@ -20,7 +20,7 @@ DDP.positions = {
         },
     },
     [1000] = { mechOrder = {"Positions"}, mechanics = {["Positions"] = {"1","2","3","4","5","6","7","8"}} },
-    [1051] = { mechOrder = {"Portals", "Orbs"}, mechanics = {["Portals"] = {"P1","P1","P2","P2"}, ["Orbs"] = {"Orbs"}} },
+    [1051] = { mechOrder = {"Portals", "Orbs"}, mechanics = {["Portals"] = {"P1","P1","P2","P2","BACKUP"}, ["Orbs"] = {"Orbs"}} },
     [1121] = {
         mechOrder = {"Tombs", "Head&Wing", "Portals", "Positions(HM)", "Tombs(HM)"},
         mechanics = {
@@ -42,11 +42,12 @@ DDP.positions = {
     },
     [1263] = { mechOrder = {"Kite"}, mechanics = {["Kite"] = {"Kite"}} },
     [1344] = {
-        mechOrder = {"Interrupts", "Reefs", "Bridges", "Interrupts(HM)"},
+        mechOrder = {"Twins", "Interrupts", "Reefs", "Bridges", "Interrupts(HM)"},
         mechanics = {
             ["Interrupts"] = {"Exit.R & Swap","Exit.L & Swap","Entrance.R","Entrance.L"},
-            ["Reefs"] = {"12-5-8","3-6-9","4-7-10"},
+            ["Reefs"] = {"1-2-5-8","1-2-5-8","3-6-9","3-6-9","4-7-10","4-7-10"},
             ["Bridges"] = {"B1","B1","B2","B2","B3","B3"},
+            ["Twins"] = {"FIRE","FIRE","FIRE","FIRE","ICE","ICE","ICE","ICE"},
             ["Interrupts(HM)"] = {"Exit.R","Exit.L","Entrance.R","Entrance.L","Exit.R","Exit.L","Entrance.R","Entrance.L"},
         },
     },
@@ -68,7 +69,7 @@ DDP.positions = {
 	[1548] = {
         mechOrder = {"Portal", "2Groups"},
         mechanics = {
-            ["Portal"] = {"+P","+P","+P","+P"},
+            ["Portal"] = {"P","P","P","P","P","Healer"},
             ["2Groups"] = {"Left","Left","Left","Left","Right","Right","Right","Right"},
         },
     },

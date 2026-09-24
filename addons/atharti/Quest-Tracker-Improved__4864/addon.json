@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/atharti/Quest-Tracker-Improved__4864",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "atharti",
+  "canonical_id": "esoui:4864",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4864",
+  "deleted": false,
+  "directories": [
+    "QuestTrackerImproved"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4864/",
+  "fingerprint": "6444ac4216561d175f19ea32fa30190cef9b73ed2aa2db5ed2cf63f06f8b260a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17499.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17498.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw17497.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4864",
+  "source_url": "https://www.esoui.com/downloads/info4864-QuestTrackerImproved.html",
+  "stats": {
+    "downloads": 25,
+    "favorites": 1,
+    "monthly_downloads": 23
+  },
+  "title": "Quest Tracker Improved",
+  "updated_at": 1790158986000,
+  "version": "1.0"
+}

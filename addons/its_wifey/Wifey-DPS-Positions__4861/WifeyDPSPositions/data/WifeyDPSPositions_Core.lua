@@ -41,6 +41,11 @@ local function ensureAssignments(zoneId, mechKey, mechPositions)
         return mechObjects
     end
 
+    -- Keep SavedVariables in sync when a mechanic gains/loses slots.
+    for i = #mechObjects, #mechPositions + 1, -1 do
+        table.remove(mechObjects, i)
+    end
+
     for i, pos in ipairs(mechPositions) do
         if not mechObjects[i] then
             mechObjects[i] = { name = "@Missing", position = pos, override = false }
@@ -60,6 +65,30 @@ function DDP.AssignToPositions(zoneId, mechKey, mechPositions)
 
     local mechObjects = ensureAssignments(zoneId, mechKey, mechPositions)
     local dpsMap = getCurrentDPS()
+
+    -- Ossein Cage Portal: exactly five DPS plus one healer.
+    if zoneId == 1548 and mechKey == "Portal" then
+        local dpsNames = {}
+        for name in pairs(dpsMap) do table.insert(dpsNames, name) end
+        table.sort(dpsNames)
+        for i = 1, 5 do
+            mechObjects[i].name = dpsNames[i] or "@Missing"
+            mechObjects[i].override = false
+        end
+        local healerName = nil
+        for i = 1, GetGroupSize() do
+            local unitTag = GetGroupUnitTagByIndex(i)
+            if DoesUnitExist(unitTag) and not IsUnitDead(unitTag) and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_HEAL then
+                healerName = DDP.NormalizeName(GetUnitDisplayName(unitTag))
+                if healerName then break end
+            end
+        end
+        mechObjects[6].name = healerName or "@Missing"
+        mechObjects[6].override = false
+        DDP.savedAssignments[zoneId][mechKey] = mechObjects
+        if DDP.SV then DDP.SV.savedAssignments = DDP.savedAssignments end
+        return buildAssignmentMessage(mechObjects)
+    end
 
     for _, obj in ipairs(mechObjects) do
         if obj.name ~= "@Missing" then
@@ -391,3 +420,141 @@ function DDP.SendFreeAssignmentsToChat(zoneId)
 end
 
 
+
+-- v1.1 host-console helpers. These actions edit locally until SEND/RESEND.
+function DDP.BuildAssignmentMessage(mechObjects)
+    return buildAssignmentMessage(mechObjects)
+end
+
+function DDP.ShuffleAllAssignments(zoneId, mechKey, mechPositions, keepOverrides)
+    if GetGroupSize() == 0 then return end
+
+    -- Ossein Cage Portal always stays five DPS + one healer, including REROLL.
+    if zoneId == 1548 and mechKey == "Portal" then
+        local mechObjects = ensureAssignments(zoneId, mechKey, mechPositions)
+        local dpsMap = getCurrentDPS()
+        local dpsNames = {}
+        for name in pairs(dpsMap) do table.insert(dpsNames, name) end
+        DDP.ShuffleTable(dpsNames)
+        for i = 1, 5 do
+            mechObjects[i].name = dpsNames[i] or "@Missing"
+            mechObjects[i].override = false
+        end
+        local healers = {}
+        for i = 1, GetGroupSize() do
+            local unitTag = GetGroupUnitTagByIndex(i)
+            if DoesUnitExist(unitTag) and not IsUnitDead(unitTag) and GetGroupMemberSelectedRole(unitTag) == LFG_ROLE_HEAL then
+                local name = DDP.NormalizeName(GetUnitDisplayName(unitTag))
+                if name then table.insert(healers, name) end
+            end
+        end
+        DDP.ShuffleTable(healers)
+        mechObjects[6].name = healers[1] or "@Missing"
+        mechObjects[6].override = false
+        DDP.savedAssignments[zoneId][mechKey] = mechObjects
+        if DDP.SV then DDP.SV.savedAssignments = DDP.savedAssignments end
+        return buildAssignmentMessage(mechObjects)
+    end
+
+    local dpsMap = getCurrentDPS()
+    local mechObjects = ensureAssignments(zoneId, mechKey, mechPositions)
+    local reserved = {}
+    if keepOverrides then
+        for _, obj in ipairs(mechObjects) do
+            if obj.override and obj.name and obj.name ~= "@Missing" and dpsMap[obj.name] then
+                reserved[obj.name] = true
+            end
+        end
+    end
+    local pool = {}
+    for name in pairs(dpsMap) do
+        if not reserved[name] then table.insert(pool, name) end
+    end
+    DDP.ShuffleTable(pool)
+    local idx = 1
+    for i, pos in ipairs(mechPositions) do
+        local obj = mechObjects[i] or {position = pos, name = "@Missing", override = false}
+        obj.position = pos
+        if not (keepOverrides and obj.override and obj.name ~= "@Missing" and dpsMap[obj.name]) then
+            obj.name = pool[idx] or "@Missing"
+            obj.override = false
+            idx = idx + 1
+        end
+        mechObjects[i] = obj
+    end
+    DDP.savedAssignments[zoneId][mechKey] = mechObjects
+    if DDP.SV then DDP.SV.savedAssignments = DDP.savedAssignments end
+    return buildAssignmentMessage(mechObjects)
+end
+
+function DDP.SwapAssignments(zoneId, mechKey, firstIndex, secondIndex)
+    local zoneData = DDP.positions[zoneId]
+    if not zoneData or not zoneData.mechanics[mechKey] then return false end
+    local objs = ensureAssignments(zoneId, mechKey, zoneData.mechanics[mechKey])
+    if not objs[firstIndex] or not objs[secondIndex] then return false end
+    objs[firstIndex].name, objs[secondIndex].name = objs[secondIndex].name, objs[firstIndex].name
+    objs[firstIndex].override, objs[secondIndex].override = objs[secondIndex].override, objs[firstIndex].override
+    if DDP.SV then DDP.SV.savedAssignments = DDP.savedAssignments end
+    return true
+end
+
+function DDP.FillEmptyAssignments(zoneId, mechKey, mechPositions)
+    return DDP.AssignToPositions(zoneId, mechKey, mechPositions)
+end
+
+function DDP.ResetMechanic(zoneId, mechKey, mechPositions)
+    DDP.savedAssignments = DDP.savedAssignments or {}
+    DDP.savedAssignments[zoneId] = DDP.savedAssignments[zoneId] or {}
+    local objs = {}
+    for i, pos in ipairs(mechPositions or {}) do
+        objs[i] = {name = "@Missing", position = pos, override = false}
+    end
+    DDP.savedAssignments[zoneId][mechKey] = objs
+    if DDP.SV then DDP.SV.savedAssignments = DDP.savedAssignments end
+    return objs
+end
+
+function DDP.SendAssignments(zoneId, mechKey)
+    local savedZone = DDP.savedAssignments and DDP.savedAssignments[zoneId]
+    local objs = savedZone and savedZone[mechKey]
+    if not objs then
+        DDP.msg("Nothing assigned yet.")
+        return false
+    end
+    local message = buildAssignmentMessage(objs)
+    DDP.SendNativeAssignmentPopup(mechKey, message)
+    StartChatInput(message, CHAT_CHANNEL_PARTY)
+    return true
+end
+
+-- Manual reassignment is now local; SEND/RESEND controls broadcasting.
+function DDP.OverrideAssignment(zoneId, mechKey, positionIndex, playerName, makePersistent)
+    if not zoneId or not mechKey or not positionIndex or not playerName then return end
+    local zoneData = DDP.positions[zoneId]
+    if not zoneData or not zoneData.mechanics[mechKey] then return end
+    local objs = ensureAssignments(zoneId, mechKey, zoneData.mechanics[mechKey])
+    local normalized = DDP.NormalizeName(playerName)
+    local oldIndex
+    for i, obj in ipairs(objs) do if obj.name == normalized then oldIndex = i break end end
+    local target = objs[positionIndex]
+    local displaced = target.name
+    if oldIndex and oldIndex ~= positionIndex then
+        objs[oldIndex].name = displaced
+        objs[oldIndex].override = false
+    end
+    target.name = normalized
+    target.override = makePersistent and true or false
+    if DDP.SV then DDP.SV.savedAssignments = DDP.savedAssignments end
+    if DDP.UI and DDP.UI.MarkDirty then DDP.UI:MarkDirty() end
+    if DDP.UI and DDP.UI.RefreshAssignments then DDP.UI:RefreshAssignments() end
+end
+
+-- Selecting a mechanic prepares it locally; it no longer broadcasts immediately.
+function DDP.AssignSpecificMechanic(zoneId, mechName)
+    local zoneData = DDP.positions[zoneId]
+    if not zoneData or not zoneData.mechanics[mechName] then return end
+    DDP.AssignToPositions(zoneId, mechName, zoneData.mechanics[mechName])
+    DDP.lastMechanicShown = mechName
+    if DDP.UI and DDP.UI.MarkDirty then DDP.UI:MarkDirty() end
+    if DDP.UI and DDP.UI.Refresh then DDP.UI:Refresh() end
+end

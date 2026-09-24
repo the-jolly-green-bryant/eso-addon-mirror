@@ -148,6 +148,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TOM Guild's Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Splat/TOM-Guild-s-Addon__3703) | Splat | PC / Mac | 2.70 |
 | [Tomes Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Tomes-Tracker__4488) | atharti | PC / Mac | 3.0 |
 | [Tooltip Resizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ifridius/Tooltip-Resizer__4409) | ifridius | PC / Mac | 2.2 |
+| [Tooltipruhe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Torfason/Tooltipruhe__4865) | Torfason | PC / Mac | 1.0.0 |
 | [ToonCurrencies](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Noobanidus/ToonCurrencies__1282) | Noobanidus | PC / Mac | 3.0.0 |
 | [Top level potency runes filter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Maggi/Top-level-potency-runes-filter__2501) | Maggi | PC / Mac | 1.1.7a |
 | [Top Tier Crafting Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jodynn/Top-Tier-Crafting-Bar__2217) | Jodynn | PC / Mac | 0.5 |
