@@ -227,7 +227,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Sora Ultimate Pair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sora0v0/Sora-Ultimate-Pair__4583) | sora0v0 | PC / Mac | 1.0.61 |
 | [Sorc Overload Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Smasharooisold/Sorc-Overload-Tracker__4785) | Smasharooisold | PC / Mac | 1.0 |
 | [Sorcerer Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vahrokh/Sorcerer-Helper__2576) | Vahrokh | PC / Mac | 3.2.1 |
-| [Sorcerer Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Sorcerer-Mastery-Tracker__4840) | its_wifey | PC / Mac | 1.0 |
+| [Sorcerer Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Sorcerer-Mastery-Tracker__4840) | its_wifey | PC / Mac | 1.2 |
 | [Sorry, Not Sorry!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/worb13/Sorry-Not-Sorry__2434) | worb13 | PC / Mac | 0.1.0 |
 | [Sort By Quantity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PacificOshie/Sort-By-Quantity__2305) | PacificOshie | PC / Mac | 21 |
 | [Soul Bombardment Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/goron_spice/Soul-Bombardment-Patch__c786f4ab-0ae9-4067-bfd7-5d9ec9b2705b) | goron_spice | Console | — |

@@ -174,22 +174,20 @@ local function RefreshProcUI()
             end
         end
 
-        -- 何も表示するものがない場合、手動登録も0件ならその旨を案内する
-        -- (登録済みだが今は発動していないだけの場合や、自動検知待ちの
-        -- 場合は空欄のままにする)。
-        if index == 0 and next(knownProcs) == nil then
-            index = 1
-            local row = PTI.UI.AcquireRow("proc", 1)
-            row.nameLabel:SetFont(PTI.UI.RowFont("proc"))
-            row.nameLabel:SetColor(0.55, 0.57, 0.6, 1)
-            row.nameLabel:SetText("(Conditionの登録なし。設定で追加するか、自分へのデバフ発動時に自動表示されます)")
-            row.timeLabel:SetFont(PTI.UI.RowFont("proc"))
-            row.timeLabel:SetText("")
-        end
+        -- STEP6で変更: 以前はここで「登録なし」の案内文をindex=1として
+        -- 表示していたが、「Conditionが発動していない時はUI③を勝手に
+        -- 表示しない」仕様になったため、案内文の表示自体を廃止した。
+        -- indexが0のままなら下のhasContent判定でウィンドウごと隠れる。
     end
 
     PTI.UI.ReleaseUnusedRows("proc", index + 1)
-    -- パネルは中身の有無に関わらず、有効になっている限り常に表示する
+
+    -- STEP6で変更: UI③(Condition)はUI①②(戦闘連動)とは完全に独立して、
+    -- 「実際に表示する行があるか(=Conditionが発動している、またはプレビュー中)」
+    -- だけを表示条件にする。ここではフラグを立てるだけで、実際の表示/非表示の
+    -- 判定(previewMode例外や全体enabled等との組み合わせ)はUI.lua側の
+    -- SetWindowVisibleに集約している。
+    PTI.UI.procHasContent = (index > 0)
     PTI.UI.SetWindowVisible("proc")
 end
 PTI.Procs.RefreshProcUI = RefreshProcUI

@@ -1,6 +1,6 @@
 -- Match the working PBsWarTable loader: verify texture dimensions, then retry
 -- using the install root reported by ESO. Never change visibility owned by the UI.
-local A={legacyRoot="PBsTradeGame/",controls=setmetatable({},{__mode="k"})}
+local A={legacyRoot="PBsTradeGame/",fallbackSeconds=4,controls=setmetatable({},{__mode="k"})}
 A.sizes={coin={128,64},coin_plinth={512,128},treasury={2048,1024},title_hall={1024,512},crest={256,256},
     atlas={1024,1024},wood_frame={512,256},band_glow={128,32},band_tip_left={128,32},band_tip_right={128,32},
     chapter_1={1024,512},chapter_2={1024,512},chapter_3={1024,512},chapter_4={1024,512},chapter_5={1024,512}}
@@ -57,13 +57,19 @@ function A.PollAll(dt)
                 control.pbtradeLoadDone=true
             else
                 control.pbtradeLoadTime=(control.pbtradeLoadTime or 0)+(dt or 0)
-                if control.pbtradeLoadTime>=1 then
+                if control.pbtradeLoadTime>=A.fallbackSeconds then
                     control.pbtradeLoadTime=0
                     local index=control.pbtradeRoot or 1
                     if index<#(A.roots or {A.legacyRoot}) then
                         control.pbtradeRoot=index+1
                         control:SetTexture(A.Path(control.pbtradeAsset,index+1))
-                    else control.pbtradeLoadDone=true end
+                    else
+                        -- As in v0.7.5, never strand textures at an unsuccessful
+                        -- manager path. Leave the primary request alive for late loading.
+                        control.pbtradeRoot=1
+                        control:SetTexture(A.Path(control.pbtradeAsset,1))
+                        control.pbtradeLoadDone=true
+                    end
                 end
             end
         end
@@ -86,7 +92,7 @@ function A.Describe()
                 local w,h=control:GetTextureFileDimensions(); local e=A.sizes[name]
                 state=state.." "..tostring(w).."x"..tostring(h)..((e and (w~=e[1] or h~=e[2])) and "（想定と異なる）" or "")
             end
-            assets[#assets+1]=name.."："..state
+            assets[#assets+1]=name.."："..state.."\n  "..A.Path(name,control.pbtradeRoot)
         end
     end
     table.sort(assets)

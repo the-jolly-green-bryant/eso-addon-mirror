@@ -1,13 +1,24 @@
 ## Title: Trackers by JH
-## Description: Bright Harbinger, Alkosh and Warmask trackers in one addon with one combined LibAddonMenu page.
+## Description: JH tracker collection for console, including Bright Harbinger, Alkosh, Warmask and 8 set proc trackers.
 ## Author: JH
-## Version: 1.0.3
-## AddOnVersion: 1030
+## Version: 1.0.9
+## AddOnVersion: 1070
 ## APIVersion: 101050 101051
-## SavedVariables: AlkoshTrackerSV BrightHarbingerTrackerSavedVariables WarmasktrackerByJHData
+## SavedVariables: AlkoshTrackerSV BrightHarbingerTrackerSavedVariables WarmasktrackerByJHData JHSetTrackersVariables
 ## DependsOn: LibAddonMenu-2.0
 
 TrackersByJH.lua
 BrightHarbingerTracker.lua
 AlkoshTracker.lua
 WarmasktrackerByJH.lua
+
+SetTrackers/lib/LibEquipmentBonus/LibEquipmentBonus.lua
+SetTrackers/src/Main.lua
+SetTrackers/src/Data.lua
+SetTrackers/src/ConsoleTarget.lua
+SetTrackers/src/Defaults.lua
+SetTrackers/src/Interface.lua
+SetTrackers/src/Sounds.lua
+SetTrackers/src/Settings.lua
+SetTrackers/src/Tracking.lua
+SetTrackers/src/ConsoleMove.lua

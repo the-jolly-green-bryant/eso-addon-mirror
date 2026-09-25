@@ -1,0 +1,62 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="UnchainedHelperSpaceRoot" mouseEnabled="false" hidden="false">
+            <Controls>
+            </Controls>
+        </TopLevelControl>
+
+        <Texture name="UnchainedHelperSpaceMarkerTextureTemplate" virtual="true" texture="" color="FFFFFFFF" width="1" height="1" pixelRoundingEnabled="false" />
+
+        <TopLevelControl name="UnchainedHelperFrame" mouseEnabled="false" movable="false" hidden="true" clampedToScreen="true">
+            <Dimensions x="500" y="72" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+            <Controls>
+                <Backdrop name="$(parent)Bg" centerColor="000000AA" edgeColor="C9A34AFF" edgeSize="1">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Purge" text="" color="66FF66" inheritAlpha="true" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="UnchainedHelperLegendRowTemplate" virtual="true" mouseEnabled="false" hidden="true" width="276" height="32">
+            <Controls>
+                <Texture name="$(parent)Icon" texture="" width="24" height="24">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" offsetY="0" />
+                </Texture>
+                <Label name="$(parent)Label" text="" color="FFFFFF" font="$(GAMEPAD_LIGHT_FONT)|$(KB_18)|soft-shadow-thin" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="UnchainedHelperLegend" mouseEnabled="false" movable="false" hidden="true" clampedToScreen="true">
+            <Dimensions x="232" y="176" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1640" offsetY="460" />
+            <Controls>
+                <Backdrop name="$(parent)Bg" centerColor="000000CC" edgeColor="C9A34AFF" edgeSize="1">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" text="Marker Key" color="F0E2B7" font="$(GAMEPAD_BOLD_FONT)|$(KB_20)|soft-shadow-thick">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="10" />
+                </Label>
+                <Control name="$(parent)Row1" inherits="UnchainedHelperLegendRowTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+                </Control>
+                <Control name="$(parent)Row2" inherits="UnchainedHelperLegendRowTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row1" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)Row3" inherits="UnchainedHelperLegendRowTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row2" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)Row4" inherits="UnchainedHelperLegendRowTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row3" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+                <Control name="$(parent)Row5" inherits="UnchainedHelperLegendRowTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Row4" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

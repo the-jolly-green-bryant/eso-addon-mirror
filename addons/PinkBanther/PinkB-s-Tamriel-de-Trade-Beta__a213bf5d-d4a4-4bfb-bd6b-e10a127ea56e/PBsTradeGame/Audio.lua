@@ -11,9 +11,12 @@ function A.Impact(visual,impacts)
     if not C.soundEnabled or impacts<=0 or not PlaySound or not SOUNDS then return false end
     local sound=SOUNDS[C.soundKey]
     if not sound or sound=="No_Sound" then return false end
-    if visual.lastSound and visual.time-visual.lastSound<C.soundInterval then return false end
+    -- Tick returns one impact for every visible coin that touched its stack. Do not throttle
+    -- this signal: dense opening volleys should sound dense, while the thinning tail naturally
+    -- becomes sparse. Calls in the same frame are intentional; ESO mixes them as a stronger
+    -- burst instead of silently dropping most of the landed coins.
+    for _=1,math.floor(impacts) do PlaySound(sound) end
     visual.lastSound=visual.time
-    PlaySound(sound)
     return true
 end
 -- Background music via ESO's UI music override (the same public API PBsTetris uses).

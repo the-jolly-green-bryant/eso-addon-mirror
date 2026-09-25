@@ -232,7 +232,7 @@ local function OnFenceOpen(eventCode)
                         end, delay)
                         
                         soldCount = soldCount + 1
-                        delay = delay + 200
+                        delay = delay + 50
                     end
                 end
             end
@@ -242,12 +242,12 @@ local function OnFenceOpen(eventCode)
     if soldCount > 0 and MasterThief.savedVars.announceInChat then
         zo_callLater(function()
             CHAT_ROUTER:AddSystemMessage(string_format("|c00FF00[MasterThief]|r Finished queuing |cFFD700%d|r items to sell.", soldCount))
-        end, delay + 100)
+        end, delay + 25)
     end
     
     zo_callLater(function()
         MasterThief.ScanExistingInventory()
-    end, delay + 200)
+    end, delay + 50)
 end
 
 -----------------------------------------------------------

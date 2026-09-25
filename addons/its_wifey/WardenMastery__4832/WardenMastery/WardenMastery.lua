@@ -6,7 +6,7 @@ WardenMastery = {}
 local WM = WardenMastery
 
 WM.name = "WardenMastery"
-WM.version = "1.1"
+WM.version = "1.3"
 
 -- Confirmed Warden Class Mastery passive ability IDs.
 WM.MASTERY = {
@@ -132,6 +132,7 @@ function WM:IsInCombat()
 end
 
 function WM:IsHUDShowing()
+    if IsUnitDead("player") then return false end
     if not HUD_SCENE or not HUD_UI_SCENE then return false end
     return HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()
 end
@@ -189,8 +190,6 @@ function WM:CreateTracker(key)
     local wm = WINDOW_MANAGER
     local control = wm:CreateTopLevelWindow("WardenMastery_" .. key)
     control:SetClampedToScreen(true)
-    control:SetDrawTier(DT_HIGH)
-    control:SetDrawLayer(DL_OVERLAY)
     control:SetHidden(true)
 
     local bg = wm:CreateControl(nil, control, CT_BACKDROP)

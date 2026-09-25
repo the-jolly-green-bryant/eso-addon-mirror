@@ -3,8 +3,21 @@
 local V={}; V.__index=V; PBTrade.Coins=V
 local C=PBTrade.Config.coins
 local pillars={}
+-- Fill each depth rank from its centre outward. With only a handful of coins the old
+-- left-to-right order put the entire pile on the rear-left edge of the stone plinth.
+local function centeredColumns(count)
+    local order={}
+    if count%2==1 then
+        local middle=math.floor(count/2); order[1]=middle
+        for distance=1,middle do order[#order+1]=middle-distance; order[#order+1]=middle+distance end
+    else
+        local left=count/2-1; order[1]=left; order[2]=left+1
+        for distance=1,left do order[#order+1]=left-distance; order[#order+1]=left+1+distance end
+    end
+    return order
+end
 for depth,rank in ipairs(C.ranks) do
-    for column=0,rank.count-1 do
+    for _,column in ipairs(centeredColumns(rank.count)) do
         pillars[#pillars+1]={x=rank.x+column*C.pillarSpacing,y=rank.y,
             scale=rank.scale,shade=rank.shade,depth=depth}
     end
@@ -71,7 +84,9 @@ function V:SetBid(side,bid)
         local progress=(arrival-firstFlight)/(duration-firstFlight)
         local flight=firstFlight+(finalFlight-firstFlight)*progress
         local slot=visualStart+(visualEnd-visualStart)*i/n
-        local k=math.max(1,math.floor(slot+1e-9))
+        -- A fractional slot belongs to the next visible coin position: (0,1] is slot 1,
+        -- (1,2] is slot 2. floor() made small showers collapse one position too early.
+        local k=math.max(1,math.ceil(slot-1e-9))
         batch.events[i]={index=s.target+amount*i/n,starts=self.time+arrival-flight,
             arrives=self.time+arrival,duration=flight,amount=amount/n,
             slot=slot,pillar=(k-1)%#pillars+1,level=math.floor((k-1)/#pillars),k=k}
@@ -94,7 +109,16 @@ function V:Tick(dt)
                     coin.landed=true; s.landed=s.landed+coin.amount; impacts=impacts+1
                     if coin.slot>s.landedVisual then s.landedVisual=coin.slot end
                     -- Stays drawn where it landed until the growing pile covers its slot.
-                    if coin.k>math.floor(s.displayed) then s.resting[#s.resting+1]=coin end
+                    if coin.k>math.floor(s.displayed) then
+                        -- minimumSprites may send several representative sprites to one logical
+                        -- slot. Keep just the newest arrival there; identical transparent textures
+                        -- stacked on the same pixel render inconsistently on the console GPU.
+                        local replaced=false
+                        for i=#s.resting,1,-1 do
+                            if s.resting[i].k==coin.k then s.resting[i]=coin; replaced=true; break end
+                        end
+                        if not replaced then s.resting[#s.resting+1]=coin end
+                    end
                 elseif coin.emitted and not coin.landed and #s.falling<C.maxFalling then
                     s.falling[#s.falling+1]=coin
                 end
@@ -114,6 +138,7 @@ function V:Tick(dt)
             local step=math.max(gap*math.min(1,dt*C.scrollFollowRate),C.scrollMinSpeed/unitPx*dt)
             step=math.min(step,C.scrollMaxSpeed/unitPx*dt,gap)
             s.displayed=s.displayed+step
+            if s.landedVisual-s.displayed<1e-7 then s.displayed=s.landedVisual end
         elseif gap<0 then s.displayed=s.landedVisual end
         s.camera=math.max(0,C.tipY-topAt(math.floor(s.displayed)))
         -- Drop resting sprites the pile now draws itself (in place: no per-tick garbage).
@@ -138,7 +163,9 @@ function V:Frame(side)
     local s=self.sides[side]
     local count=math.floor(s.displayed)
     local frame=s.frame
-    frame.floorY=C.floorY+s.camera; frame.camera=s.camera; frame.count=s.target; frame.landed=s.landed
+    frame.floorY=C.floorY+s.camera
+    frame.plinthY=frame.floorY-math.min(C.plinthMaxLag,s.camera*C.plinthLagFactor)
+    frame.camera=s.camera; frame.count=s.target; frame.landed=s.landed
     frame.tipY=topAt(count)+s.camera
     local n=0
     -- Painter order: finish every rear rank (including its falling coins) before the next rank.

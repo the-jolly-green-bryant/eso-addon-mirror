@@ -1,6 +1,6 @@
 local SMT = {}
 SMT.name = "SorcererMasteryTracker"
-SMT.version = "1.0"
+SMT.version = "1.2"
 SMT.svName = "SorcererMasteryTrackerSavedVars"
 
 local MASTERIES = {
@@ -132,6 +132,7 @@ end
 
 function SMT:RefreshVisibility()
     if not self.container then return end
+    if IsUnitDead("player") then self.container:SetHidden(true) return end
     if not self.sv.enabled then self.container:SetHidden(true) return end
     local any=false
     for _,key in ipairs(ORDER) do
@@ -172,8 +173,6 @@ function SMT:CreateUI()
     HUD_UI_SCENE:AddFragment(self.hudFragment)
 
     self.container:SetClampedToScreen(true)
-    self.container:SetDrawLayer(DL_OVERLAY)
-    self.container:SetDrawTier(DT_HIGH)
     self.container:SetHandler("OnMoveStop",function() SMT:SavePosition() end)
 
     for _,key in ipairs(ORDER) do
@@ -219,6 +218,8 @@ function SMT:StartTimer(key,seconds)
 end
 
 function SMT:OnUpdate()
+    self:RefreshVisibility()
+    if IsUnitDead("player") then return end
     local now=GetFrameTimeSeconds()
     for _,key in ipairs(ORDER) do
         local c=self.controls[key]

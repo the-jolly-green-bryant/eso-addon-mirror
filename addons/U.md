@@ -21,6 +21,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Ultivite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aLi3nZ/Ultivite__4777) | aLi3nZ | PC / Mac | 1.0.200 |
 | [UltTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KöniglichePM/UltTracker__2421) | KöniglichePM | PC / Mac | 0.1a |
 | [Unboxer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Unboxer__1655) | Masteroshi430 | PC / Mac | 2026.08.04 |
+| [Unchained Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BLKx777/Unchained-Helper__acfe07fa-8e20-4f70-b0be-6425a61c4fda) | BLKx777 | Console | — |
 | [Unchained Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/branddi/Unchained-Helper__3731) | branddi | PC / Mac | 1.0.5 |
 | [Uncoffered: Is it worth it?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Uncoffered-Is-it-worth-it__3446) | Complicative | PC / Mac | 2.1.2 |
 | [Undaunted Auto Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/phil7/Undaunted-Auto-Queue__4664) | phil7 | PC / Mac | 1.1.2 |

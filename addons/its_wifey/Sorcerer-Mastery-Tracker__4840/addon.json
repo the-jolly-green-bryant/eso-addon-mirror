@@ -18,7 +18,7 @@
     "SorcererMasteryTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4840/",
-  "fingerprint": "528d06bdedc6827348eaceeeb9af3fe423a8decdfeb321dd18df3968a956e04b",
+  "fingerprint": "377f5c91a876cc9d42ede39c8c73c312608228754447db298088bc138966fc24",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17385.png",
     "https://cdn-eso.mmoui.com/preview/pvw17386.png"
@@ -29,11 +29,11 @@
   "source_id": "4840",
   "source_url": "https://www.esoui.com/downloads/info4840-SorcererMasteryTracker.html",
   "stats": {
-    "downloads": 4,
+    "downloads": 53,
     "favorites": 0,
-    "monthly_downloads": 2
+    "monthly_downloads": 49
   },
   "title": "Sorcerer Mastery Tracker",
-  "updated_at": 1789579273000,
-  "version": "1.0"
+  "updated_at": 1790297186000,
+  "version": "1.2"
 }

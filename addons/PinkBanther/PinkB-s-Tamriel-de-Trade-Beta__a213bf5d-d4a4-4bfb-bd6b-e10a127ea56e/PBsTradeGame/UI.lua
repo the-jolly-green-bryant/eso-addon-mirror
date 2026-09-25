@@ -96,30 +96,41 @@ function U.New(app)
     self.ledger=panel(p,40,158,1160,500)
     texture(self.ledger,0,0,710,500,"wood_frame",{.66,.69,.65,.98})
     texture(self.ledger,734,0,426,500,"wood_frame",{.65,.70,.67,.97})
-    self.ledgerHeading=label(self.ledger,22,12,670,35,"",27,ink)
+    -- The wood frame has a deeper ornamental top edge than a plain backdrop.
+    -- Use the same 22px content inset as the detail panel so the heading sits
+    -- inside the frame instead of riding across its upper rule.
+    self.ledgerHeading=label(self.ledger,26,24,666,32,"",27,ink)
     self.detail=label(self.ledger,758,22,376,454,"",22)
     for i=1,C.ui.pageSize do
         -- Ten rows per page: the nine domestic actions plus "finish" fit on one page.
         local row=plaque(self.ledger,18,56+(i-1)*44,674,40)
-        local text=label(row,10,2,652,36,"",22,ink)
+        -- Centre the single-line caption in the 40px plaque.  A 2px inset made
+        -- Japanese glyphs appear visibly high against the engraved row border.
+        local text=label(row,14,7,648,28,"",22,ink)
         row:SetMouseEnabled(true); row:SetHandler("OnMouseUp",function()
             self.app.index=(self.page or 0)*C.ui.pageSize+i; self.app:Act("confirm"); self:Refresh()
         end)
         self.rows[i]={box=row,text=text}
     end
     self.battle=panel(p,40,158,1160,500)
-    box(self.battle,0,0,1160,500,{.025,.034,.03,.30},{.49,.39,.24,.55})
-    self.battleTitle=label(self.battle,24,0,1100,34,"",27)
+    self.battle:SetDrawTier(DT_MEDIUM)
+    local function battleLayer(control,layer,level)
+        control:SetDrawTier(DT_MEDIUM)
+        control:SetDrawLayer(layer)
+        control:SetDrawLevel(level or 0)
+        return control
+    end
+    self.battleBackdrop=battleLayer(box(self.battle,0,0,1160,500,{.025,.034,.03,.30},{.49,.39,.24,.55}),DL_BACKGROUND,0)
+    self.battleTitle=battleLayer(label(self.battle,24,0,1100,34,"",27),DL_OVERLAY,3)
     self.bands={}
     for i=1,6 do
         local y=64+(i-1)*38
-        local enemy=box(self.battle,20,y,560,28,{.48,.12,.14,.40},{0,0,0,0})
-        local own=box(self.battle,580,y,560,28,{.08,.27,.52,.44},{0,0,0,0})
-        local enemyTip=texture(self.battle,508,y,C.battle.bandTipWidth,28,"band_tip_right",{.48,.12,.14,.40})
-        local ownTip=texture(self.battle,580,y,C.battle.bandTipWidth,28,"band_tip_left",{.08,.27,.52,.44})
-        local enemyGlow=texture(self.battle,20,y,C.battle.bandGlowWidth,28,"band_glow",{1,.44,.35,.88})
-        local ownGlow=texture(self.battle,1044,y,C.battle.bandGlowWidth,28,"band_glow",{.42,.78,1,.92})
-        enemyGlow:SetDrawLayer(DL_CONTROLS); ownGlow:SetDrawLayer(DL_CONTROLS)
+        local enemy=battleLayer(box(self.battle,20,y,560,28,{.48,.12,.14,.40},{0,0,0,0}),DL_BACKGROUND,10)
+        local own=battleLayer(box(self.battle,580,y,560,28,{.08,.27,.52,.44},{0,0,0,0}),DL_BACKGROUND,10)
+        local enemyTip=battleLayer(texture(self.battle,508,y,C.battle.bandTipWidth,28,"band_tip_right",{.48,.12,.14,.40}),DL_BACKGROUND,11)
+        local ownTip=battleLayer(texture(self.battle,580,y,C.battle.bandTipWidth,28,"band_tip_left",{.08,.27,.52,.44}),DL_BACKGROUND,11)
+        local enemyGlow=battleLayer(texture(self.battle,20,y,C.battle.bandGlowWidth,28,"band_glow",{1,.44,.35,.88}),DL_BACKGROUND,12)
+        local ownGlow=battleLayer(texture(self.battle,1044,y,C.battle.bandGlowWidth,28,"band_glow",{.42,.78,1,.92}),DL_BACKGROUND,12)
         self.bands[i]={enemy=enemy,own=own,enemyTip=enemyTip,ownTip=ownTip,enemyGlow=enemyGlow,ownGlow=ownGlow,phase=(i-1)/6}
     end
     self.coinAreas={}; self.floors={}
@@ -127,19 +138,28 @@ function U.New(app)
         local bayX=side==1 and 74 or 674
         local viewport=panel(self.battle,bayX,65,400,C.coins.viewportHeight)
         self.coinAreas[side]=viewport
-        self.floors[side]=texture(viewport,0,C.coins.floorY+C.coins.plinthOffsetY,C.coins.plinthWidth,C.coins.plinthHeight,"coin_plinth")
+        self.floors[side]=battleLayer(texture(viewport,0,C.coins.floorY+C.coins.plinthOffsetY,C.coins.plinthWidth,C.coins.plinthHeight,"coin_plinth"),DL_CONTROLS,0)
     end
-    plaque(self.battle,34,306,516,45)
-    plaque(self.battle,610,306,516,45)
-    self.leftBid=label(self.battle,52,313,490,34,"",27,{.94,.79,.60,1})
-    self.rightBid=label(self.battle,628,313,490,34,"",27,{1,.88,.56,1})
-    self.status=label(self.battle,24,365,1110,34,"",18)
-    texture(self.battle,16,410,696,89,"wood_frame",{.83,.83,.76,1})
-    texture(self.battle,723,410,421,89,"wood_frame",{.72,.76,.71,1})
-    self.commandTabs=label(self.battle,28,417,670,22,"",18,T.gold)
-    self.command=label(self.battle,28,438,670,32,"",27)
-    self.commandHint=label(self.battle,28,472,670,25,"",18)
-    self.log=label(self.battle,735,417,398,78,"",18)
+    self.bidFrames={}
+    for _,spec in ipairs({{34,306,516,45},{610,306,516,45}}) do
+        local frame,art=plaque(self.battle,spec[1],spec[2],spec[3],spec[4])
+        self.bidFrames[#self.bidFrames+1]={
+            frame=battleLayer(frame,DL_OVERLAY,1),
+            art=battleLayer(art,DL_OVERLAY,2),
+        }
+    end
+    self.leftBid=battleLayer(label(self.battle,52,313,490,34,"",27,{.94,.79,.60,1}),DL_OVERLAY,3)
+    self.rightBid=battleLayer(label(self.battle,628,313,490,34,"",27,{1,.88,.56,1}),DL_OVERLAY,3)
+    self.commandFrames={
+        battleLayer(texture(self.battle,16,410,696,89,"wood_frame",{.83,.83,.76,1}),DL_OVERLAY,1),
+        battleLayer(texture(self.battle,723,410,421,89,"wood_frame",{.72,.76,.71,1}),DL_OVERLAY,1),
+    }
+    -- DL_OVERLAY sorts above DL_TEXT in the live ESO client. Keep the panel art at levels
+    -- 1-2 and its text at level 3; otherwise the wood textures cover every caption.
+    self.commandTabs=battleLayer(label(self.battle,28,417,670,22,"",18,T.gold),DL_OVERLAY,3)
+    self.command=battleLayer(label(self.battle,28,438,670,32,"",27),DL_OVERLAY,3)
+    self.commandHint=battleLayer(label(self.battle,28,472,670,25,"",18),DL_OVERLAY,3)
+    self.log=battleLayer(label(self.battle,735,417,398,78,"",18),DL_OVERLAY,3)
     -- Tactic banner: two slim lines over the title row, clear of the bands, coins and bids.
     local function overlay(c,level) c:SetDrawLayer(DL_OVERLAY); c:SetDrawLevel(level); return c end
     -- Popup strip above the coin bays (y 36-62): one lane per side for moves and status,
@@ -168,14 +188,21 @@ function U.New(app)
         c:SetDrawLevel(level)
         return c
     end
-    local openingLayer=stageLayer
+    local function openingLayer(c,level)
+        stageLayer(c,level)
+        -- Set the primary draw priority too: layer/level alone do not specify
+        -- the tier inherited by different native control types.
+        c:SetDrawTier(c:GetType()==CT_LABEL and DT_HIGH or DT_MEDIUM)
+        return c
+    end
     self.openingPanel=panel(p,0,0,1240,780)
+    self.openingPanel:SetDrawTier(DT_MEDIUM)
     openingLayer(box(self.openingPanel,0,0,1240,780,{0,0,0,1},{0,0,0,0}),0)
     self.openingArt=openingLayer(texture(self.openingPanel,0,0,1240,780,"treasury"),3)
     openingLayer(box(self.openingPanel,0,0,1240,90,{0,0,0,.45},{0,0,0,0}),4)
     openingLayer(box(self.openingPanel,0,485,1240,295,{.01,.012,.01,.88},{0,0,0,0}),4)
     openingLayer(box(self.openingPanel,60,493,1120,2,T.gold,{0,0,0,0}),5)
-    self.openingText=openingLayer(label(self.openingPanel,80,512,1080,198,"",27,{1,.93,.78,1}),6)
+    self.openingText=openingLayer(label(self.openingPanel,80,504,1080,216,"",C.opening.fontSize,{1,.93,.78,1}),6)
     self.openingNext=openingLayer(label(self.openingPanel,1150,678,40,36,"▼",27,T.gold),6)
     self.openingHint=openingLayer(label(self.openingPanel,80,730,760,30,"×：次へ　　○：スキップ",18,T.gold),6)
     self.openingPage=openingLayer(label(self.openingPanel,1040,730,140,30,"",18,T.gold),6)
@@ -227,11 +254,18 @@ function U.New(app)
     self:RegisterCompanyNameDialog()
     self.modal,self.modalArt=plaque(p,225,155,790,510)
     self.modal:SetCenterColor(.025,.03,.02,1)
-    self.modalArt:SetDrawLayer(DL_OVERLAY); self.modalArt:SetDrawLevel(11)
-    self.modal:SetDrawLayer(DL_OVERLAY); self.modal:SetDrawLevel(10)
-    self.campaignBackdrop=texture(self.modal,8,8,774,494,"chapter_1"); self.campaignBackdrop:SetDrawLayer(DL_OVERLAY); self.campaignBackdrop:SetDrawLevel(11)
-    self.campaignShade=box(self.modal,8,8,774,494,{.01,.015,.012,.62},{0,0,0,0}); self.campaignShade:SetDrawLayer(DL_OVERLAY); self.campaignShade:SetDrawLevel(12)
-    self.modalText=label(self.modal,30,25,730,460,"",22); self.modalText:SetDrawLayer(DL_OVERLAY); self.modalText:SetDrawLevel(13)
+    -- Result/campaign dialogs must beat the complete negotiation stage, including
+    -- dynamically-created coin textures and level 17 tactic strips.  A layer alone
+    -- is insufficient across sibling control trees in the live client, so give every
+    -- dialog surface the HIGH tier as well as an explicit local order.
+    local function modalLayer(c,level)
+        c:SetDrawTier(DT_HIGH); c:SetDrawLayer(DL_OVERLAY); c:SetDrawLevel(level)
+        return c
+    end
+    modalLayer(self.modal,100); modalLayer(self.modalArt,101)
+    self.campaignBackdrop=modalLayer(texture(self.modal,8,8,774,494,"chapter_1"),102)
+    self.campaignShade=modalLayer(box(self.modal,8,8,774,494,{.01,.015,.012,.62},{0,0,0,0}),103)
+    self.modalText=modalLayer(label(self.modal,30,25,730,460,"",22),104)
     self.fxPanel=box(p,320,102,600,64,{.04,.08,.07,.94},T.gold)
     self.fxPanel:SetDrawLayer(DL_OVERLAY); self.fxPanel:SetDrawLevel(20)
     self.fxText=label(self.fxPanel,16,10,568,44,"",27,T.gold)
@@ -348,7 +382,7 @@ end
 -- focus the edit box once and let the platform keyboard serve it. No forced refocus.
 function U:OpenKeyboard()
     if self:RegisterCompanyNameDialog() then
-        self.editing=false; self.keyboardCommitTime=nil
+        self.editing=false; self.keyboardCommitTime=nil; self.companyNameEditControl=nil
         ZO_Dialogs_ShowGamepadDialog(COMPANY_NAME_DIALOG,{name=self.app.pendingName or ""})
         return
     end
@@ -365,43 +399,77 @@ function U:RegisterCompanyNameDialog()
         and ZO_GenericGamepadDialog_GetControl and GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.PARAMETRIC) then return false end
     local ui=self
     local parametricDialog=ZO_GenericGamepadDialog_GetControl(GAMEPAD_DIALOGS.PARAMETRIC)
-    local function release() ZO_Dialogs_ReleaseDialogOnButtonPress(COMPANY_NAME_DIALOG) end
+    local function release()
+        ui.companyNameEditControl=nil
+        ZO_Dialogs_ReleaseDialogOnButtonPress(COMPANY_NAME_DIALOG)
+    end
+    -- Japanese composition can be committed as the platform keyboard closes. Capture the
+    -- EditBox before ESO refreshes the parametric row; otherwise setup may restore the old
+    -- cached value and replace the just-committed Japanese text with an empty string.
+    local function captureName(edit)
+        if edit and parametricDialog.data then parametricDialog.data.name=edit:GetText() end
+    end
+    local function submitName(dialog)
+        -- Read the live native control as well as the cache. This also covers a platform
+        -- IME commit that did not emit OnTextChanged before the confirm key was pressed.
+        local edit=ui.companyNameEditControl
+        local name=edit and edit:GetText() or (dialog.data and dialog.data.name or "")
+        if dialog.data then dialog.data.name=name end
+        if ui.app:SubmitTypedName(name) then release(); ui:Refresh(); return true end
+        KEYBIND_STRIP:UpdateCurrentKeybindButtonGroups()
+        return false
+    end
     ZO_Dialogs_RegisterCustomDialog(COMPANY_NAME_DIALOG,{
         canQueue=true,
         gamepadInfo={dialogType=GAMEPAD_DIALOGS.PARAMETRIC},
         setup=function(dialog) dialog:setupFunc() end,
         title={text="商会名を入力"},
-        mainText={text="日本語・英数字を使用できます（16文字まで）\n×：入力　□：この名前で決定"},
-        parametricList={{
-            template="ZO_Gamepad_GenericDialog_Parametric_TextFieldItem",
-            templateData={
-                nameField=true,
-                textChangedCallback=function(control)
-                    if parametricDialog.data then parametricDialog.data.name=control:GetText() end
-                end,
-                setup=function(control,data)
-                    local edit=control.editBoxControl
-                    data.control=control; edit.textChangedCallback=data.textChangedCallback
-                    edit:SetMaxInputChars(64); edit:SetTextType(TEXT_TYPE_ALL)
-                    if edit.SetVirtualKeyboardType and VIRTUAL_KEYBOARD_TYPE_DEFAULT then
-                        edit:SetVirtualKeyboardType(VIRTUAL_KEYBOARD_TYPE_DEFAULT)
-                    end
-                    edit:SetText((parametricDialog.data and parametricDialog.data.name) or "")
-                end,
-                narrationText=ZO_GetDefaultParametricListEditBoxNarrationText,
+        mainText={text="日本語・英数字を使用できます（16文字まで）\n×：選択　↓：決定欄へ　□：直接決定"},
+        parametricList={
+            {
+                template="ZO_Gamepad_GenericDialog_Parametric_TextFieldItem",
+                templateData={
+                    nameField=true,
+                    textChangedCallback=captureName,
+                    focusLostCallback=captureName,
+                    setup=function(control,data)
+                        local edit=control.editBoxControl
+                        data.control=control; ui.companyNameEditControl=edit
+                        edit.textChangedCallback=data.textChangedCallback
+                        edit.focusLostCallback=data.focusLostCallback
+                        edit:SetMaxInputChars(64); edit:SetTextType(TEXT_TYPE_ALL)
+                        if edit.SetVirtualKeyboardType and VIRTUAL_KEYBOARD_TYPE_DEFAULT then
+                            edit:SetVirtualKeyboardType(VIRTUAL_KEYBOARD_TYPE_DEFAULT)
+                        end
+                        edit:SetText((parametricDialog.data and parametricDialog.data.name) or "")
+                    end,
+                    callback=function()
+                        if ui.companyNameEditControl then ui.companyNameEditControl:TakeFocus() end
+                    end,
+                    narrationText=ZO_GetDefaultParametricListEditBoxNarrationText,
+                },
             },
-        }},
+            {
+                template="ZO_GamepadTextFieldSubmitItem",
+                templateData={
+                    finishedSelector=true,
+                    text="この名前で決定",
+                    setup=function(control,data,...)
+                        ZO_SharedGamepadEntry_OnSetup(control,data,...)
+                    end,
+                    callback=submitName,
+                },
+                icon=ZO_GAMEPAD_SUBMIT_ENTRY_ICON,
+            },
+        },
         blockDialogReleaseOnPress=true,
         buttons={
-            {keybind="DIALOG_PRIMARY",text="入力",callback=function(dialog)
+            {keybind="DIALOG_PRIMARY",text="選択",callback=function(dialog)
                 local data=dialog.entryList:GetTargetData()
-                if data and data.control then data.control.editBoxControl:TakeFocus() end
+                if data and data.callback then data.callback(dialog)
+                elseif data and data.control then data.control.editBoxControl:TakeFocus() end
             end},
-            {keybind="DIALOG_SECONDARY",text="この名前で決定",callback=function(dialog)
-                local name=dialog.data and dialog.data.name or ""
-                if ui.app:SubmitTypedName(name) then release(); ui:Refresh()
-                else KEYBIND_STRIP:UpdateCurrentKeybindButtonGroups() end
-            end},
+            {keybind="DIALOG_SECONDARY",text="この名前で決定",callback=submitName},
             {keybind="DIALOG_NEGATIVE",text="戻る",callback=release},
         },
         noChoiceCallback=release,
@@ -489,8 +557,6 @@ function U:RefreshBattleFrame()
     -- Under a standing stance, show how much of the contribution actually pushes the border.
     local force=self.app.engine:PlayerForce()
     self.rightBid:SetText("自社の拠出　"..gold(b.playerBid).." ゴールド"..(force<b.playerBid and ("（実効 "..gold(math.floor(force)).."）") or ""))
-    self.status:SetText(string.format("← %s    速度 %+.2f / 加速度 %+.2f    相手待ち %.1f秒    残り %.0f秒    %s →",
-        b.mode=="defense" and "防衛成功" or "買収成立",-(b.gaugeSpeed or b.velocity),-b.acceleration,b.enemyWait,math.max(0,C.battle.duration-b.elapsed),b.mode=="defense" and "物件喪失" or "不成立"))
     if self.commandHintText then
         self.commandHint:SetText(string.format("伝令 %.1f秒  |  %s",b.playerWait,self.commandHintText))
     end
@@ -600,7 +666,12 @@ function U:RenderPopups()
         if not blocked then event,laneAlpha=stepPopup(lane,dt,C.ui.popupHold) end
         lane.box:SetHidden(not event)
         if event then
-            if lane.shown~=event then lane.shown=event; lane.text:SetText(event.text); lane.text:SetColor(unpack(popupColors[event.kind] or light)) end
+            if lane.shown~=event then
+                lane.shown=event; lane.text:SetText(event.text); lane.text:SetColor(unpack(popupColors[event.kind] or light))
+                if event.sentiment and PBTrade.Audio and PBTrade.Audio.Play then
+                    PBTrade.Audio.Play(event.sentiment=="positive" and "statusPositive" or "statusNegative")
+                end
+            end
             lane.box:SetAlpha(laneAlpha)
         end
     end
@@ -670,20 +741,23 @@ function U:Refresh()
             local landmarks,landmarksVisited=M.ZoneLandmarks(a.state,z.id)
             self.mapDetail:SetText(z.name.."\n"..(a.state.visited[z.id] and "交易路調査済み" or "未訪問")
                 .."\n\n自社所有："..counts.own.."\n同盟商会所有："..counts.ally.."\n敵商会所有："..counts.enemy.."\n中立："..counts.neutral
-                ..(landmarks>0 and ("\n実在地点：◎訪問済み "..landmarksVisited.." / 全 "..landmarks) or "")
+                ..(landmarks>0 and ("\n実在地点：◎登録済み "..landmarksVisited.." / 全 "..landmarks) or "")
                 .."\n\n"..(a.state.unlocked[z.id] and "×：地域の物件を見る" or "開放条件：所有 "..(2+z.unlockTier*C.campaign.unlockOwnedStep).." 件")
                 .."\n\n緑：自社拠点あり\n赤：敵商会あり\n金茶：中立のみ\n灰：未開放\n※混在地域の内訳は上記参照")
         end
     elseif a.screen=="rankings" then
-        self.page=0
+        self.page=math.floor((a.index-1)/C.ui.pageSize)
         local period=a.rankingPeriod or M.CurrentPeriod(a.state)
-        self.ledgerHeading:SetText("第"..period.."期  商会資金力ランキング  /  交渉・防衛・内政後")
+        local first=self.page*C.ui.pageSize
+        local pages=math.max(1,math.ceil(#a.rankingRows/C.ui.pageSize))
+        self.ledgerHeading:SetText("第"..period.."期  商会資金力ランキング  /  "..(self.page+1).." / "..pages.."頁  /  交渉・防衛・内政後")
         for i,controls in ipairs(self.rows) do
-            local r=a.rankingRows[i]; controls.box:SetHidden(not r)
+            local absolute=first+i
+            local r=a.rankingRows[absolute]; controls.box:SetHidden(not r)
             if r then
                 controls.text:SetText(r.rank.."位  "..r.name.."  "..M.FormatCompact(r.fundingPower)..(r.id==C.playerId and "  ★" or (M.IsAllied(a.state,r.id) and "  〔同盟〕" or "")))
                 controls.text:SetColor(unpack(ink))
-                controls.box:SetCenterColor(unpack(a.index==i and {.47,.41,.23,.65} or {.04,.065,.05,.36}))
+                controls.box:SetCenterColor(unpack(a.index==absolute and {.47,.41,.23,.65} or {.04,.065,.05,.36}))
             end
         end
         if row and row.ranking then
@@ -718,9 +792,9 @@ function U:Refresh()
                     local p=item.property; local allied=M.IsAllied(a.state,p.owner)
                     local owner=p.owner==C.playerId and "自社" or (p.owner==C.neutralId and "中立" or (allied and "同盟" or "敵"))
                     local risk=p.owner==C.playerId and M.RiskLabel(p.independenceRisk) or nil
-                    -- ◎ visited real place (buyable), ○ real place still to be visited.
+                    -- ◎ registered real place (buyable from anywhere), ○ not registered yet.
                     local visitedPlace=p.canonical and M.IsPropertyVisited(a.state,p)
-                    local visit=p.canonical and not visitedPlace and "/未訪問" or ""
+                    local visit=p.canonical and not visitedPlace and "/未登録" or ""
                     local mark=p.canonical and (visitedPlace and "◎" or "○") or ""
                     local stance=""
                     if p.owner~=C.playerId and (visitedPlace or not p.canonical) then
@@ -772,7 +846,9 @@ function U:Refresh()
         modalText=heading
             .."\n\n"..a.state.properties[b.targetId].name.."\n自社出資："..gold(b.playerBid).."　相手出資："..gold(b.enemyBid)
             .."\n商会資金の消費："..gold(b.treasurySpent).."\n交渉日数："..(b.day or 1).."日\n"..(b.result=="timeout" and "交渉期限切れ。" or "")
-            ..(b.takeover and ("\n\n◆ "..b.takeover.name.."を傘下に収めた！\n本社をすべて押さえ、商会は解体されました。\n傘下物件 "..b.takeover.count.." 件（評価額 "..M.FormatCompact(b.takeover.value).."）と資金 "..gold(b.takeover.cash).." を獲得") or "")
+            ..(b.takeover and ("\n\n◆ "..b.takeover.name.."を傘下に収めた！\n"
+                ..(b.takeover.body and "商会本体の買収が成立し、商会は解体されました。" or "全中枢を押さえ、商会は解体されました。")
+                .."\n傘下物件 "..b.takeover.count.." 件（評価額 "..M.FormatCompact(b.takeover.value).."）と資金 "..gold(b.takeover.cash).." を獲得") or "")
             ..(function()
                 -- Losing to a standing stance teaches its counter; breaking one is worth a line too.
                 local lines={}
@@ -822,7 +898,7 @@ function U:CoinControl(side,i)
     if coin or self.coinsCreated>=C.coins.createPerFrame then return coin end
     coin=WINDOW_MANAGER:CreateControl(nil,self.coinAreas[side],CT_TEXTURE)
     PBTrade.Assets.Apply(coin,"coin"); coin:SetDimensions(C.coins.width,C.coins.height)
-    coin:SetColor(1,1,1,1); coin:SetDrawLayer(DL_CONTROLS); coin:SetDrawLevel(i); coin:SetHidden(true)
+    coin:SetColor(1,1,1,1); coin:SetDrawTier(DT_MEDIUM); coin:SetDrawLayer(DL_CONTROLS); coin:SetDrawLevel(i); coin:SetHidden(true)
     controls[i]=coin; self.coinsCreated=self.coinsCreated+1
     return coin
 end
@@ -845,7 +921,7 @@ function U:RenderCoins()
         end
         local floor=self.floors[side]
         clippedTexture(floor,viewport,center+(C.coins.pileWidth-C.coins.plinthWidth)/2,
-            frame.floorY+C.coins.plinthOffsetY,C.coins.plinthWidth,C.coins.plinthHeight)
+            (frame.plinthY or frame.floorY)+C.coins.plinthOffsetY,C.coins.plinthWidth,C.coins.plinthHeight)
     end
 end
 function U:Tick(dt)
@@ -860,7 +936,7 @@ function U:Tick(dt)
         local impacts=self.coins:Tick(dt)
         PBTrade.Audio.Impact(self.coins,impacts)
     end
-    -- Full text/list rebuilds allocate heavily (row tables, 1,302-property scans),
+    -- Full text/list rebuilds allocate heavily (row tables, 1,303-property scans),
     -- so run them at a low rate or on a visible state change; animate every tick.
     local screen=self.app.screen
     self.fullRefreshElapsed=(self.fullRefreshElapsed or 0)+dt
@@ -883,12 +959,12 @@ local function stageCoords(name,zoom)
     fu,fv=fu*(1-zoom),fv*(1-zoom)
     return (1-fu)/2,(1+fu)/2,(1-fv)/2,(1+fv)/2
 end
--- Opening render, every tick: background fade and drift, typed narration, blinking ▼.
+-- Keep the proven HIGH text tier while revealing complete UTF-8 code points.
 function U:RenderOpening()
     local a=self.app; local o=a.opening
     if not o then return end
     local page,timeline=a:OpeningPage()
-    if not page or not timeline then
+    if not page then
         a:FinishOpening(); self:Refresh(); return
     end
     local O=C.opening
@@ -897,15 +973,18 @@ function U:RenderOpening()
         PBTrade.Assets.Apply(self.openingArt,page.bg)
         self.openingArt:SetAlpha(1)
         self.openingPage:SetText(o.page.." / "..#o.pages)
-        self.openingText:SetText(table.concat(timeline.chars,"",1,timeline.lead or #timeline.chars))
+        self.openingText:SetAlpha(1)
+        self.openingText:SetHidden(false)
     end
     local drift=math.min(1,o.pageTime/O.driftSeconds)
     self.openingArt:SetTextureCoords(stageCoords(page.bg,O.driftZoom*drift))
-    local count=math.max(timeline.lead or 1,PBTrade.Story.Visible(timeline,o.time))
+    local count=math.max(timeline.lead,PBTrade.Story.Visible(timeline,o.time))
     if count~=self.openingCount then
-        self.openingCount=count; self.openingText:SetText(table.concat(timeline.chars,"",1,count))
+        self.openingCount=count
+        self.openingText:SetText(table.concat(timeline.chars,"",1,count))
     end
     local done=o.time>=timeline.total
+    self.openingHint:SetText(done and "×：次へ　　○：スキップ" or "×：全文表示　　○：スキップ")
     self.openingNext:SetHidden(not done)
-    if done then self.openingNext:SetAlpha(.35+.65*math.abs(math.sin(o.pageTime*3))) end
+    self.openingNext:SetAlpha(.35+.65*math.abs(math.sin(o.pageTime*3)))
 end

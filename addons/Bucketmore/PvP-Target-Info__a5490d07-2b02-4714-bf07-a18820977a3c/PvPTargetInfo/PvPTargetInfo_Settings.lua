@@ -266,16 +266,6 @@ function PTI.Settings.Initialize()
             setFunc = function(value) PTI.sv.holdDuration = value / 10 end,
             width = "full",
         },
-        {
-            type = "checkbox",
-            name = "戦闘時にUI①②を自動表示する",
-            tooltip = "ONにすると、ログイン/リロード直後はUI①(重要バフ)とUI②(重要デバフ)を隠しておき、最初に戦闘状態に入った時点で表示します。以後は戦闘が終了しても再び隠しません。UI③(Condition)はこの設定の影響を受けず、常にCondition自身の発動を基準に独立して表示されます。",
-            getFunc = function() return PTI.sv.combatAutoShow.enabled end,
-            setFunc = function(value)
-                PTI.sv.combatAutoShow.enabled = value
-                PTI.UI.RefreshVisibility()
-            end,
-        },
     }
 
     ----------------------------------------------------------------------

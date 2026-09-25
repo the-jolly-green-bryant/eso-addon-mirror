@@ -174,6 +174,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [BuffTimers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coolmodi/BuffTimers__1278) | coolmodi | PC / Mac | 1.4 |
 | [BuffTimers2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uta.karas/BuffTimers2__1986) | uta.karas | PC / Mac | 2.31.1 |
 | [Buffy: Live Buff Tracking](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/Buffy-Live-Buff-Tracking__782c659c-1b9a-4e03-aaef-6526095363ad) | YFNatey | Console | — |
+| [buffybeta](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/buffybeta__086be98f-893e-4cea-a222-aad748e474c9) | YFNatey | Console | — |
 | [BugCatcher Keybinds - Adds Custom Keybinds](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/BugCatcher-Keybinds---Adds-Custom-Keybinds__4621) | Duesentrieb | PC / Mac | 20260609-0001 |
 | [BugCatcher Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shadowfen/BugCatcher-Updated__2566) | Shadowfen | PC / Mac | 042 |
 | [bugfixxxxx](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/bugfixxxxx__b057d22b-1ffd-455c-834a-af582e3e270a) | Vixen_Hunny | Console | — |

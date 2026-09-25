@@ -8,6 +8,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | --- | --- | --- | --- |
 | [Racing Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Undyne/Racing-Panel__2358) | Undyne | PC / Mac | 1 |
 | [Radiant Duration](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Aaxc/Radiant-Duration__2323) | Aaxc | PC / Mac | 1.2.1 |
+| [Radiant Range](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Radiant-Range__4868) | its_wifey | PC / Mac | 1.0.2 |
 | [Radiant Time](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fortan/Radiant-Time__1589) | Fortan | PC / Mac | 1.2 |
 | [Radiating Regen Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/branddi/Radiating-Regen-Tracker__3678) | branddi | PC / Mac | 1.0.1 |
 | [RAETIA InfoHub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kraeius/RAETIA-InfoHub__417) | Kraeius | PC / Mac | 1.2.4 |
@@ -171,5 +172,5 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Rulebased Inventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/TaxTalis/Rulebased-Inventory__2136) | TaxTalis | PC / Mac | 2.32 |
 | [RunesVoice](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Nols1000/RunesVoice__2173) | Nols1000 | PC / Mac | 0.1.0 |
 | [Rush of Agony Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Rush-of-Agony-Tracker__03e3b721-0ccb-4e27-9f1c-ae0e6bf96be5) | codeWarrior82 | Console | — |
+| [RyticCombat&RaidTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rytic/RyticCombat-RaidTools__4854) | Rytic | PC / Mac | 3.0 |
 | [RyticRaidManager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rytic/RyticRaidManager__4858) | Rytic | PC / Mac | 1.1 |
-| [RyticTankandRaidTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rytic/RyticTankandRaidTools__4854) | Rytic | PC / Mac | 2.0.3 |

@@ -247,7 +247,7 @@ function AT:CreateMenu()
     local options = {
         {
             type = "description",
-            text = "Positionierung wie beim Warmask Tracker: /atmove oder Move-Mode-Button, dann mit dem linken Stick bewegen und erneut beenden zum Speichern.",
+            text = "Positioning: use /atmove or the Move Mode button, move with the left stick, then toggle it again to save.",
         },
         {
             type = "checkbox",
@@ -291,7 +291,7 @@ function AT:CreateMenu()
         },
         {
             type = "header",
-            name = "Gamepad Positionierung",
+            name = "Gamepad positioning",
         },
         {
             type = "slider",

@@ -1,0 +1,6 @@
+## Title: GN Guild Hall Shortcut v1.0
+## APIVersion: 101049
+## AddOnVersion: 1
+## Author: Yskaya for Girls Night
+## Description: Adds the Girls Night Logo to the Guild page allowing guild members to quickly jump to the GN Guild Village. This addon may be copied and adapted by other guilds for their use. Originally Written by Mathius Mordred, Skyrim Red Shirts, the UK's Premier Guild. Adapted for Girls Night Australia's most chaotic guild by Yskaya (just a search and replace basically, you can do it if I can.)
+GN_GuildHall.lua

@@ -18,7 +18,7 @@
     "WardenMastery"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4832/",
-  "fingerprint": "e7139cdc421b999dc0f55821ecc574cd119d031b87ab327a935d9fcd137d1265",
+  "fingerprint": "3780de24e734f9abd4129ee898ade3195c201edf322252b6f720dd569c96856e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17353.png",
     "https://cdn-eso.mmoui.com/preview/pvw17354.png",
@@ -30,11 +30,11 @@
   "source_id": "4832",
   "source_url": "https://www.esoui.com/downloads/info4832-WardenMastery.html",
   "stats": {
-    "downloads": 49,
+    "downloads": 87,
     "favorites": 0,
-    "monthly_downloads": 46
+    "monthly_downloads": 81
   },
   "title": "WardenMastery",
-  "updated_at": 1789742194000,
-  "version": "1.1"
+  "updated_at": 1790297110000,
+  "version": "1.3"
 }

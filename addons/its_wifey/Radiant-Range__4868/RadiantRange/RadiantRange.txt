@@ -1,0 +1,9 @@
+## Title: Radiant Range
+## Author: WifeyRytic
+## Version: 1.0.2
+## AddOnVersion: 2
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=43 LibGroupBroadcast>=91
+## SavedVariables: RadiantRangeSavedVariables
+
+RadiantRange.lua

@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/brianmit/One-Click-Champion-Points__4870",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "brianmit",
+  "canonical_id": "esoui:4870",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4870",
+  "deleted": false,
+  "directories": [
+    "CPBIS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4870/",
+  "fingerprint": "5fc71b7e31efaa004e35c9146313e6129bf8da46266c3dbd826b870c1e833ab3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17530.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17531.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17532.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4870",
+  "source_url": "https://www.esoui.com/downloads/info4870-OneClickChampionPoints.html",
+  "stats": {
+    "downloads": 36,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "One Click Champion Points",
+  "updated_at": 1790266230000,
+  "version": "1.0.0"
+}

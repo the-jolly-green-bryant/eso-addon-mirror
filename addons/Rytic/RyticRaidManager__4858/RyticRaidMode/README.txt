@@ -1,4 +1,4 @@
-Rytic's Raid Manager v0.3.1
+Rytic's Raid Manager v1.1
 Author: Rytic
 
 PURPOSE
@@ -14,8 +14,20 @@ COMMANDS
 /rrm restore
 /rrm profile
 /rrm addons
-/rrm auto on
-/rrm auto off
+
+
+v1.1 - TRIAL-ONLY ENTRY / EXIT PROMPTS
+- Removed the Auto Prompt toggle; automatic trial checks are always enabled.
+- Entering a recognized Trial while in Normal mode prompts to load Raid Mode.
+- Leaving a recognized Trial while Raid Mode is active prompts to restore the saved pre-raid addon state.
+- Housing, delves, public dungeons, group dungeons, and arenas do not trigger automatic prompts.
+- Manual RAID MODE and RESTORE controls remain available.
+- Trial state is stored in account-wide, server-separated SavedVariables so ReloadUI preserves entry/exit tracking.
+
+v1.0 - AUTO PROMPT ALWAYS ENABLED
+- Removed the Auto Prompt UI toggle and /rrm auto commands.
+- Instance entry/exit prompt checks are always enabled.
+- This test build otherwise preserves the known-good all-instance detection behavior.
 
 v0.3.1 - ESOUI RELEASE PASS
 - Uses an ESO HUD scene fragment for the RRM window.
@@ -53,3 +65,11 @@ v0.3.1 - ESOUI fragment compliance correction
 - Manual HIDE removes the fragment from both scenes; SHOW reattaches it.
 - Removed SetConditional / SetHiddenForReason visibility handling.
 - No menu polling or ad-hoc menu hooks.
+
+
+TRIAL-ONLY TEST PASS
+- Automatic prompt now appears only when entering a recognized Trial.
+- No automatic prompt in housing, delves, public dungeons, group dungeons, or arenas.
+- Leaving a Trial while Raid Mode is active prompts to restore the saved pre-raid addon state.
+- Auto Prompt toggle remains removed.
+- Existing RAID MODE / RESTORE behavior is otherwise unchanged.

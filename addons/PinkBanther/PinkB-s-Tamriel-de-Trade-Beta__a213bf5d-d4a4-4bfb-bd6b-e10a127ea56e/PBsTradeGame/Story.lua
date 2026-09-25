@@ -28,19 +28,18 @@ local cache={}
 function S.Timeline(text)
     local timeline=cache[text]; if timeline then return timeline end
     local chars,times,t={},{},0
-    for ch in text:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
+    -- Walk UTF-8 code points explicitly; never reveal a partial multibyte glyph.
+    local i=1
+    while i<=#text do
+        local first=text:byte(i)
+        local width=first<128 and 1 or (first<224 and 2 or (first<240 and 3 or 4))
+        local ch=text:sub(i,i+width-1)
         t=t+PBTrade.Config.opening.charSeconds
         chars[#chars+1]=ch; times[#times+1]=t
         t=t+(pauses[ch] or 0)
+        i=i+width
     end
-    -- A client string implementation may not support this byte-pattern splitter.
-    -- Display the original page intact instead of constructing a nil concat range.
-    if #chars==0 and text~="" then chars={text}; times={0}; t=0 end
-    -- Keep the first sentence visible from the first rendered frame. Besides being easier to
-    -- read, this prevents a dormant update callback from ever presenting an empty story page.
-    local lead=#chars
-    for i,ch in ipairs(chars) do if ch=="。" or ch=="！" or ch=="？" or ch=="\n" then lead=i; break end end
-    timeline={chars=chars,times=times,total=t,lead=math.max(1,lead)}; cache[text]=timeline
+    timeline={chars=chars,times=times,total=t,lead=math.min(1,#chars)}; cache[text]=timeline
     return timeline
 end
 -- Number of characters visible after `elapsed` seconds on a page.

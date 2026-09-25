@@ -8,8 +8,8 @@
   "category_id": "109",
   "compatibility": [
     {
-      "name": "Season Zero Pt.2",
-      "version": "12.0.0"
+      "name": "Season One",
+      "version": "12.1.0"
     }
   ],
   "content_id": "esoui:4860",
@@ -18,7 +18,7 @@
     "TamrielSkyDial"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4860/",
-  "fingerprint": "be187c20d26f247b699b7d7f326af90b16db5eb95cc23879626af890b65c662f",
+  "fingerprint": "4dd8dc3a3f722c235f52975df466f7b13436cff2960004d21e18a41056ed6f52",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17469.png",
     "https://cdn-eso.mmoui.com/preview/pvw17470.png"
@@ -29,11 +29,11 @@
   "source_id": "4860",
   "source_url": "https://www.esoui.com/downloads/info4860-TamrielSkyDial.html",
   "stats": {
-    "downloads": 4,
+    "downloads": 17,
     "favorites": 1,
-    "monthly_downloads": 2
+    "monthly_downloads": 14
   },
   "title": "Tamriel Sky Dial",
-  "updated_at": 1790023212000,
-  "version": "1.0"
+  "updated_at": 1790294891000,
+  "version": "1.1"
 }

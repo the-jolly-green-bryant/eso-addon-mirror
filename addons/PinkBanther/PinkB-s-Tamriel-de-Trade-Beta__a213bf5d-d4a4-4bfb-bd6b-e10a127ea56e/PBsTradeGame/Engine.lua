@@ -21,7 +21,7 @@ function E:Start(id, attacker)
     if not p then return false,"物件が見つかりません" end
     if not M.IsAvailable(self.state,p) then return false,"この章では交易路が存在しません" end
     if not self.state.unlocked[p.zone] then return false,"まだ交易路が開いていません" end
-    if not attacker and not M.IsPropertyVisited(self.state,p) then return false,"ESO内でこの場所を訪問すると買収できます" end
+    if not attacker and not M.IsPropertyVisited(self.state,p) then return false,"ESO内の現地で物件登録すると買収できます" end
     if attacker then
         if p.owner~=C.playerId then return false,"防衛できる自社物件ではありません" end
         if attacker==C.playerId or attacker==C.neutralId or not self.state.companies[attacker] then return false,"攻撃商会が不正です" end
@@ -90,9 +90,13 @@ local function comma(n)
     return M.FormatMoney(n)
 end
 -- Battle popups: lane is "enemy" (above the rival's coins), "player" (above ours) or "wide".
-function E:Notify(lane,text,kind)
+-- Side-lane events also carry their meaning for the player.  The UI uses this rather than
+-- the physical lane to distinguish encouraging and adverse status sounds.
+function E:Notify(lane,text,kind,sentiment)
     local events=self.battle.events
-    if #events<400 then events[#events+1]={lane=lane,text=text,kind=kind} end
+    if not sentiment and lane=="player" then sentiment=kind=="alert" and "negative" or "positive"
+    elseif not sentiment and lane=="enemy" then sentiment="negative" end
+    if #events<400 then events[#events+1]={lane=lane,text=text,kind=kind,sentiment=sentiment} end
 end
 function E:DaySummary()
     local b=self.battle
@@ -177,7 +181,7 @@ function E:HitStances(test)
             stance.hits=stance.hits-1
             if stance.hits<=0 then stance.broken=true; broken[#broken+1]=st
             else shaken=st; self:Log("構え「"..st.name.."」が揺らいだ（あと"..stance.hits.."手）")
-                self:Notify("enemy","構え「"..st.name.."」が揺らいだ！ あと"..stance.hits.."手","stance") end
+                self:Notify("enemy","構え「"..st.name.."」が揺らいだ！ あと"..stance.hits.."手","stance","positive") end
         end
     end
     if #broken>0 then
@@ -272,9 +276,12 @@ function E:DiscoverGroup(p)
     local found={}
     for _,id in ipairs(p.groups) do
         local group=PBTrade.Data.groups[id]
-        -- Super-scale groups stay hidden until half of their required members are owned.
-        local ripe=not group or not group.discoverAt or #M.GroupMembers(self.state,id)>=group.discoverAt
-        if group and ripe and not self.state.learnedGroups[id] and self.random()<(group.discoveryChance or 0) then
+        local count=group and #M.GroupMembers(self.state,id) or 0
+        -- A flash must be immediately usable.  The requested property is a member because we
+        -- only inspect p.groups; require at least two current members and the group's own,
+        -- possibly stricter, activation threshold before rolling the discovery chance.
+        local required=group and math.max(2,group.minimum or 2,group.discoverAt or 0) or math.huge
+        if group and count>=required and not self.state.learnedGroups[id] and self.random()<(group.discoveryChance or 0) then
             self.state.learnedGroups[id]=true; found[#found+1]=id
             self:Log(group.name.."を閃いた！")
             if #found>=C.groups.maxDiscoveriesPerRequest then break end
@@ -306,23 +313,26 @@ function E:Request(id)
     local amount=self:Quote(id)
     if amount<=0 then return false,"調達できる手元資金がありません" end
     local p=self.state.properties[id]
+    local discoveries=self:DiscoverGroup(p)
+    if #discoveries>0 then
+        -- The flash replaces the single request: the newly learned group fires at once, so the
+        -- triggering property is not charged twice and only one player turn is consumed.
+        local status=M.GroupStatus(self.state,discoveries[1])
+        self:Notify("player","閃き：「"..status.name.."」","discovery")
+        return self:FundGroup(status,discoveries)
+    end
     p.reserve=p.reserve-amount
     p.independenceRisk=clamp(p.independenceRisk+p.independenceIncrease,0,B.riskMax-1)
     self.battle.requests[id]=(self.battle.requests[id] or 0)+1
     self:Fund(amount,p.gaugeAcceleration,"request")
     self:Log(p.name.."  +"..comma(amount).." / 負担 "..p.independenceRisk)
     self:Notify("player",p.name.."から  +"..comma(amount),"fund")
-    local discoveries=self:DiscoverGroup(p); local defected=self:CheckDefection(p)
-    for _,gid in ipairs(discoveries) do self:Notify("player","閃き：「"..D.groups[gid].name.."」","discovery") end
+    local defected=self:CheckDefection(p)
     if defected then self:Notify("player",p.name.."が離反した！","alert") end
     self:PlayerTurn()
     return true,amount,{discoveries=discoveries,defected=defected,property=p}
 end
-function E:RequestGroup(id)
-    if not self:Ready() then return false,"伝令の帰還を待ってください" end
-    local status=M.GroupStatus(self.state,id)
-    if not status or not status.learned then return false,"まだこの連合を閃いていません" end
-    if not status.usable then return false,"系列物件が不足しています" end
+function E:FundGroup(status,discoveries)
     local base,acceleration,paid,defected=0,0,0,{}
     for _,p in ipairs(status.members) do
         local amount=self:Quote(p.id)
@@ -341,7 +351,14 @@ function E:RequestGroup(id)
     self:Notify("player",status.name.."  +"..comma(amount).."（"..paid.."件）","fund")
     for _,p in ipairs(defected) do self:Notify("player",p.name.."が離反した！","alert") end
     self:PlayerTurn()
-    return true,amount,{group=status,defected=defected,brokenStances=broken}
+    return true,amount,{group=status,discoveries=discoveries or {},defected=defected,brokenStances=broken}
+end
+function E:RequestGroup(id)
+    if not self:Ready() then return false,"伝令の帰還を待ってください" end
+    local status=M.GroupStatus(self.state,id)
+    if not status or not status.learned then return false,"まだこの連合を閃いていません" end
+    if not status.usable then return false,"系列物件が不足しています" end
+    return self:FundGroup(status)
 end
 -- Ask an allied company to back this negotiation (once per ally per negotiation).
 function E:RequestAlly(id)
@@ -476,7 +493,8 @@ function E:IdlePressure()
     if b.idleSide~=side then
         b.idleSide=side
         self:Log(pressedPlayer and "自社の手が止まり、一気に押し込まれていく……" or "相手の手が止まった。流れが一気に傾く！")
-        self:Notify(side,pressedPlayer and "手が止まり、一気に押し込まれている……" or "手が止まった。流れが一気に傾く！","alert")
+        self:Notify(side,pressedPlayer and "手が止まり、一気に押し込まれている……" or "手が止まった。流れが一気に傾く！","alert",
+            pressedPlayer and "negative" or "positive")
     end
     local push=B.idleAcceleration*math.min(1,idle/B.idleRamp)
     return pressedPlayer and push or -push

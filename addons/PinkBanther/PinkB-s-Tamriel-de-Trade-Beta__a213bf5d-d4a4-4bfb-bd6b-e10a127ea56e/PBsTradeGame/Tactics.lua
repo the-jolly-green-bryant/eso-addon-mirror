@@ -27,6 +27,7 @@ D.tactics={
     {id="roots",name="根回し",cost=500,resistanceKey="roots",effect={type="ownRisk",amount=-42},learn={category="farm",chance=.38},description="最も危険な自社物件を大きく安定させる。",
         scene={act="自社の最も不安な拠点へ、根回しの使者を送る……",success="使者の言葉が届き、拠点の動揺が大きく静まった。",resist="使者は門前払いを受けた。拠点の不満は燻ったままだ。"}},
 }
+for _,tactic in ipairs(D.tactics) do tactic.cost=PBTrade.Config.Money(tactic.cost) end
 -- Negotiation stances: how an opponent guards a property. While a stance holds, money is
 -- counted at `weights` toward the border (by source); the matching counter breaks it, after
 -- which everything already contributed counts in full. Critical negotiations need two hits.

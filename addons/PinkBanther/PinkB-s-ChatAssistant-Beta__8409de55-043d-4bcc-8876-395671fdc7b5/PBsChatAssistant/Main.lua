@@ -99,6 +99,8 @@ local DEFAULTS = {
 	-- remain exempt unless their separate switch is enabled.
 	recruitFilterEnabled = false,
 	recruitFilterWhispers = false,
+	-- NPC speech reaches chat through four dedicated monster channels. Off by default.
+	npcChatFilterEnabled = false,
 	-- Whether the active-tab name is drawn. Tab selection and outgoing-channel synchronization
 	-- continue when this is off.
 	tabNameVisible = true,
@@ -155,7 +157,7 @@ local CATCHER_CONTROL_NAMES = {
 -- Reported by /pbchat rather than announced at login. It was announced while the add-on was
 -- being built, because a build behaving unlike its code was the hardest thing to diagnose from
 -- inside the game. That is worth a command, not a line of chat on every login.
-local VERSION = "1.29.1"
+local VERSION = "1.29.2"
 
 -- How long the catcher waits for the box to close before coming back anyway.
 local RESUME_DEADLINE_SECONDS = 120
@@ -1069,6 +1071,8 @@ function addon:PrintStatus()
 	Print("guild recruitment filter %s, whispers %s, hidden this session %d",
 		self.sv.recruitFilterEnabled and "on" or "off",
 		self.sv.recruitFilterWhispers and "on" or "off", self.hiddenRecruitment or 0)
+	Print("NPC chat filter %s, hidden this session %d",
+		self.sv.npcChatFilterEnabled and "on" or "off", self.hiddenNpcChat or 0)
 end
 
 -- Reports what the game thinks of the add-on's bindable actions.
@@ -1281,6 +1285,12 @@ function addon:InitSlashCommand()
 			Print("guild recruitment filter %s, whispers %s, hidden this session %d",
 				self.sv.recruitFilterEnabled and "on" or "off",
 				self.sv.recruitFilterWhispers and "on" or "off", self.hiddenRecruitment or 0)
+		elseif command == "npc" then
+			if argument == "on" or argument == "off" then
+				self.sv.npcChatFilterEnabled = argument == "on"
+			end
+			Print("NPC chat filter %s, hidden this session %d",
+				self.sv.npcChatFilterEnabled and "on" or "off", self.hiddenNpcChat or 0)
 		elseif command == "guildinmain" then
 			local slot, state = argument:match("^(%S*)%s*(%S*)$")
 			local slotIndex = tonumber(slot)

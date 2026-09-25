@@ -1,8 +1,8 @@
 ## Title: Warden Mastery
 ## Description: Tracks Warden Class Mastery active states, timers, and status-based bonuses.
 ## Author: WifeyRytic
-## Version: 1.1
-## AddOnVersion: 3
+## Version: 1.3
+## AddOnVersion: 5
 ## APIVersion: 101050 101051
 ## SavedVariables: WardenMasterySavedVariables
 ## OptionalDependsOn: LibAddonMenu-2.0

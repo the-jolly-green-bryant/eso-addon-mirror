@@ -169,6 +169,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CombatTopHealthbar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/CombatTopHealthbar__3324) | Masteroshi430 | PC / Mac | 2026.07.07 |
 | [CombatZone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VarietyIX/CombatZone__2061) | VarietyIX | PC / Mac | 1.9 |
 | [Coming Back Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saleand/Coming-Back-Home__1920) | Saleand | PC / Mac | 1.5.1 |
+| [Command Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brianmit/Command-Codex__4871) | brianmit | PC / Mac | 1.0.0 |
 | [Common Works UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lean/Common-Works-UI__4838) | Lean | PC / Mac | 1.0 |
 | [Community Leveling Guides](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hydra9268/Community-Leveling-Guides__2062) | Hydra9268 | PC / Mac | 1157 |
 | [Comp's Pot Swapper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Comp-s-Pot-Swapper__3634) | Complicative | PC / Mac | 1.1.2 |

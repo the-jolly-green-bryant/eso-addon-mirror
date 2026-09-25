@@ -1,4 +1,4 @@
-# Store listing copy — PB's ChatAssistant 1.29.1
+# Store listing copy — PB's ChatAssistant 1.29.2
 
 Text for the ZOS Console AddOn Uploader. Plain text, no markup, so it survives whatever the
 uploader does to it.
@@ -11,7 +11,7 @@ PB's ChatAssistant makes console chat easier to open, organize and use with a US
 raises the console text input screen for Japanese input, creates one chat tab for each guild, and
 lets you switch tabs from the HUD with L2 + D-pad Right. The selected tab and outgoing channel
 stay synchronized, while a customizable HUD label shows where your next message will go. An
-optional language-independent filter hides Guild Finder recruitment adverts carrying guild links.
+optional filters hide Guild Finder recruitment adverts carrying guild links and NPC speech.
 
 ---
 
@@ -35,6 +35,7 @@ WHAT IT DOES
 - Lets you decide, separately for each named guild, whether its messages also appear in the normal
   chat tab.
 - Optionally hides guild-link recruitment adverts before they enter the chat log.
+- Optionally removes NPC speech from the chat log without affecting subtitles.
 - Switches to the next tab with L2 + D-pad Right while on the HUD.
 - Keeps the selected tab and outgoing channel synchronized in both directions.
 - Restores a non-guild destination when the normal chat tab is selected.
@@ -61,6 +62,12 @@ matches that link markup rather than guessing words, so it works in every langua
 adverts without a guild link and ordinary chat remain visible. Guild and officer channels and
 your own messages are always exempt. Whispers are exempt by default and have a separate opt-in.
 
+ABOUT NPC SPEECH
+
+The NPC option removes the game's four dedicated monster speech channels -- speech, yells,
+whispers and emotes -- from the chat log. Player messages are unaffected. Subtitles use a
+separate UI and continue to appear normally.
+
 ABOUT ENTER INPUT
 
 Listening continuously for Enter can temporarily hold keyboard focus and pause controller buttons,
@@ -80,6 +87,7 @@ Settings -> Add-Ons -> PB's ChatAssistant includes:
 - Enable or disable per-guild chat tabs.
 - Choose whether each guild's messages also appear in normal chat. Actual guild names are shown.
 - Hide guild-link recruitment adverts, with a separate option for whispers.
+- Hide NPC speech from the chat log while keeping subtitles visible.
 - Show or hide the active-tab HUD label, and configure its position, text size and draw layer.
 - Choose the outgoing channel and matching active tab used at login.
 - Adjust the delay before opening the console text input screen.

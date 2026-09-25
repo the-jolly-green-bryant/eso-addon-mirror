@@ -1,0 +1,7 @@
+Templar Mastery — Change Log
+
+v1.7
+- Repackaged the previous death-hide update with the correct public release filename.
+- Mastery HUD hides while the player is dead and returns after resurrection.
+- Version bumped because v1.6 was already uploaded before the packaging filename issue was caught.
+- No additional mastery tracking or functionality changes from v1.6.

@@ -1,0 +1,19 @@
+Radiant Range License
+
+Copyright (c) 2026 WifeyRytic. All Rights Reserved.
+
+Radiant Range and its original code and assets are provided for personal gameplay use only.
+
+You may NOT, without prior written permission from WifeyRytic:
+
+- Copy or republish the addon or its original code or assets.
+- Modify and redistribute the addon.
+- Redistribute the addon, in whole or in part.
+- Reuse or incorporate its original code or assets into another addon or project.
+- Create or distribute derivative works based on Radiant Range.
+
+This license applies only to the original Radiant Range code and assets owned by WifeyRytic. Third-party libraries, third-party materials, and The Elder Scrolls Online / ZeniMax materials remain subject to their respective owners' licenses and terms.
+
+Downloading or using Radiant Range does not grant permission to copy, modify, redistribute, republish, reuse, or create derivative works from its protected original content.
+
+For permission requests, contact WifeyRytic through ESOUI.

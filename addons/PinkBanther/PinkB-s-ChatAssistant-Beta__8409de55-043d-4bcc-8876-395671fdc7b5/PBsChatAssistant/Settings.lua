@@ -307,8 +307,8 @@ function addon:InitSettings()
 		}
 	)
 
-	-- Keep this section last. LibHarvens treats every following row as belonging to the most recent
-	-- section heading, so placing it earlier visually folds unrelated existing settings into it.
+	-- Keep the filter sections after every existing setting. LibHarvens treats following rows as
+	-- belonging to the most recent heading, so placing them earlier folds unrelated rows into them.
 	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSCHATASSISTANT_RECRUIT_SECTION))
 	settings:AddSetting({
 		type = LibHarvensAddonSettings.ST_LABEL,
@@ -336,6 +336,24 @@ function addon:InitSettings()
 		end,
 		setFunction = function(value)
 			self.sv.recruitFilterWhispers = value
+		end,
+	})
+
+	AddHeading(settings, LibHarvensAddonSettings, GetString(SI_PBSCHATASSISTANT_NPC_SECTION))
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_LABEL,
+		label = GetString(SI_PBSCHATASSISTANT_NPC_NOTE),
+	})
+	settings:AddSetting({
+		type = LibHarvensAddonSettings.ST_CHECKBOX,
+		label = GetString(SI_PBSCHATASSISTANT_NPC),
+		tooltip = GetString(SI_PBSCHATASSISTANT_NPC_TOOLTIP),
+		default = false,
+		getFunction = function()
+			return self.sv.npcChatFilterEnabled == true
+		end,
+		setFunction = function(value)
+			self.sv.npcChatFilterEnabled = value
 		end,
 	})
 end

@@ -1,0 +1,28 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Command Codex">
+            <Action name="COMMANDCODEX_TOGGLE">
+                <Down>CommandCodex.ToggleWindow()</Down>
+            </Action>
+            <Action name="COMMANDCODEX_TOGGLE_FAVS">
+                <Down>CommandCodex.ToggleFavoritesOnScreen()</Down>
+            </Action>
+            <!-- Run the favorite in slot 1-5 (the numbers shown on the quick bar). -->
+            <Action name="COMMANDCODEX_FAV1">
+                <Down>CommandCodex.RunFavorite(1)</Down>
+            </Action>
+            <Action name="COMMANDCODEX_FAV2">
+                <Down>CommandCodex.RunFavorite(2)</Down>
+            </Action>
+            <Action name="COMMANDCODEX_FAV3">
+                <Down>CommandCodex.RunFavorite(3)</Down>
+            </Action>
+            <Action name="COMMANDCODEX_FAV4">
+                <Down>CommandCodex.RunFavorite(4)</Down>
+            </Action>
+            <Action name="COMMANDCODEX_FAV5">
+                <Down>CommandCodex.RunFavorite(5)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

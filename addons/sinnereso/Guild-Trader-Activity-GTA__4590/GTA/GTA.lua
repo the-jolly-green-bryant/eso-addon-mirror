@@ -1,7 +1,7 @@
 GuildTraderActivity = {
 	name = "GTA",
 	author = "@sinnereso",
-	version = "2026.09.22",
+	version = "2026.09.24",
 	svName = "GTAVars",
 	svVersion = 1,
 }
@@ -1068,17 +1068,20 @@ function GuildTraderActivity.Toggle(mailCallback)
 	if mailCallback then
 		GTAMain:SetHidden(false)
 		SetGameCameraUIMode(true)
+		MAIL_SEND:ClearFields()
 	elseif GTAMain:IsHidden() then
 		GTASelectedGuildView:SetHidden(true)
 		GTAPersonalView:SetHidden(false)
 		GuildTraderActivity.Refresh()
 		GTAMain:SetHidden(false)
+		SetGameCameraUIMode(true)
 	else
 		EVENT_MANAGER:UnregisterForEvent("GTA", EVENT_GUILD_MEMBER_ADDED)
 		EVENT_MANAGER:UnregisterForEvent("GTA", EVENT_GUILD_MEMBER_REMOVED)
 		EVENT_MANAGER:UnregisterForEvent("GTA", EVENT_GUILD_MEMBER_RANK_CHANGED)
 		EVENT_MANAGER:UnregisterForEvent("GTA", EVENT_GUILD_MEMBER_NOTE_CHANGED)
 		GTAMain:SetHidden(true)
+		SetGameCameraUIMode(false)
 	end
 end
 --SCENE_MANAGER:Show("hud")--SCENE_MANAGER:Show("hudui")--ZO_SceneManager_ToggleUIModeBinding()

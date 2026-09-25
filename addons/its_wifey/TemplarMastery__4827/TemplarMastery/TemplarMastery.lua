@@ -7,7 +7,7 @@ TemplarMastery = {}
 local TM = TemplarMastery
 
 TM.name = "TemplarMastery"
-TM.version = "1.4"
+TM.version = "1.7"
 
 TM.MASTERY = {
     bastion   = 263585,
@@ -95,6 +95,7 @@ end
 -- Same HUD rule proven in Sorcerer/Arcanist:
 -- addon controls may only show while ESO's HUD/HUD_UI scene is showing.
 function TM:IsHUDShowing()
+    if IsUnitDead("player") then return false end
     if not HUD_SCENE or not HUD_UI_SCENE then return false end
     return HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()
 end
@@ -213,8 +214,6 @@ function TM:CreateTracker(key)
     local wm=WINDOW_MANAGER
     local c=wm:CreateTopLevelWindow("TM_"..key)
     c:SetClampedToScreen(true)
-    c:SetDrawTier(DT_HIGH)
-    c:SetDrawLayer(DL_OVERLAY)
     c:SetHidden(true)
 
     local bg=wm:CreateControl(nil,c,CT_BACKDROP)

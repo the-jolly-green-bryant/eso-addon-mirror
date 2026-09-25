@@ -1,5 +1,6 @@
-2026.09.22
-- Added "Send Mail" to the right click context menu in guild details view.
+2026.09.24
+- Clears send mail to field when closing mail if mail and was cancelled and originally opened by GTA.
+- Misc other ui tweaks.
 
 ** POSSIBLE FUTURE OPTIONS **
 

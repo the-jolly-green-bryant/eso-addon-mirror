@@ -1,6 +1,6 @@
 local NBM={}
 local ADDON="NightbladeMastery"
-NBM.version="1.0"
+NBM.version="1.1"
 
 -- Update 50 Nightblade Class Mastery is SKILL_TYPE_CLASS, line 48.
 -- IDs verified against ESOUI U50 documentation.
@@ -29,6 +29,7 @@ local ctrls,selected,active,ends={}, {}, {}, {}
 local inCombat=false
 
 local function HUDShowing()
+ if IsUnitDead("player") then return false end
  return HUD_SCENE and HUD_UI_SCENE and (HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing())
 end
 local function Gray(c)

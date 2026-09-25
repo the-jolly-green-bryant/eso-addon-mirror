@@ -1,10 +1,10 @@
 ## Title: Arcanist Mastery Tracker
 ## Author: WifeyRytic
-## Version: 1.4
-## AddOnVersion: 140
+## Version: 1.6
+## AddOnVersion: 142
 ## APIVersion: 101050 101051
 ## Description: Tracks Arcanist Class Masteries plus Crux, Gibbering Shield, and Block Mitigation.
 ## OptionalDependsOn: LibAddonMenu-2.0
-## SavedVariables: ArcanistMasteryTrackerSavedVariables
+## SavedVariables: ArcanistMasteryTrackerSavedVariables ArcanistMasteryTrackerCharacterSavedVariables
 
 ArcanistMasteryTracker.lua

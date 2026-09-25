@@ -21,10 +21,10 @@ local TEX = "TamrielSkyDial/textures/"
 
 -- Time bands, in 24h in-game hours. Edit here if you want different cutoffs.
 -- night wraps midnight (>= NIGHT_START or < DAWN_START).
-local DAWN_START = 4   -- 04:00 sunrise begins
+local DAWN_START = 5   -- 05:00 sunrise begins
 local DAY_START  = 8   -- 08:00 full day
 local DUSK_START = 18  -- 18:00 sunset begins
-local NIGHT_START = 22 -- 22:00 night begins
+local NIGHT_START = 21 -- 21:00 night begins
 
 -- Sprite files for the daytime bands.
 local BAND_TEX = {
@@ -88,8 +88,8 @@ local sv
 -- ---------------------------------------------------------------------------
 
 local function GetTST()
-    -- LibClockTST is a hard dependency; Instance() gives the singleton.
-    return LibClockTST and LibClockTST:Instance() or nil
+    -- LibClockTST is a hard dependency (manifest DependsOn), so it's always present.
+    return LibClockTST:Instance()
 end
 
 local function CurrentBand(hour)
@@ -328,7 +328,6 @@ end
 
 local function BuildSettings()
     local LAM = LibAddonMenu2
-    if not LAM then return end
 
     local panel = {
         type = "panel",
@@ -434,7 +433,7 @@ local function OnLoaded(_, name)
     EVENT_MANAGER:RegisterForUpdate(ADDON, 250, OnUpdate)
 
     SLASH_COMMANDS["/skydial"] = function()
-        if LibAddonMenu2 then LibAddonMenu2:OpenToPanel(_G[ADDON .. "Panel"]) end
+        LibAddonMenu2:OpenToPanel(_G[ADDON .. "Panel"])
     end
 end
 

@@ -42,6 +42,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GGN Dialog2Clipboard](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gigon/GGN-Dialog2Clipboard__926) | Gigon | PC / Mac | 1.31 |
 | [GhostwheelAI Shortcuts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/GhostwheelAI/GhostwheelAI-Shortcuts__2675) | GhostwheelAI | PC / Mac | 1.0.3 |
 | [Gilded UI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fluazinam/Gilded-UI__5dce8bc1-61a1-4273-a23e-f74372f36b40) | Fluazinam | Console | — |
+| [Girls Night Guild Hall Icon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/yskaya/Girls-Night-Guild-Hall-Icon__4869) | yskaya | PC / Mac | 1.0 |
 | [GL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/GL__b4445246-dea8-4bb9-842c-2235db14a84b) | user562x | Console | — |
 | [GLA Farm Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/blubaxp/GLA-Farm-Manager__2948) | blubaxp | PC / Mac | 0.2 |
 | [Global Cooldown (GCD) Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Global-Cooldown-GCD-Bar__2322) | Wheels | PC / Mac | 2.6 |
@@ -178,7 +179,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Guild Tickets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/attriel/Guild-Tickets__3205) | attriel | PC / Mac | 1.0.12 |
 | [Guild Tools \[En/Fr\] Classic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/pills/Guild-Tools-En-Fr-Classic__884) | pills | PC / Mac | 0.4.0 |
 | [Guild Tools By Fen](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fenweldryn/Guild-Tools-By-Fen__2939) | Fenweldryn | PC / Mac | 0.9.1 |
-| [Guild Trader Activity (GTA)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sinnereso/Guild-Trader-Activity-GTA__4590) | sinnereso | PC / Mac | 2026.09.22 |
+| [Guild Trader Activity (GTA)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sinnereso/Guild-Trader-Activity-GTA__4590) | sinnereso | PC / Mac | 2026.09.24 |
 | [Guild Trader Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Guild-Trader-Tracker__f2495833-84b0-4142-8a25-f2063d0f0a23) | ReliktKoala | Console | — |
 | [GuildActivity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/GuildActivity__2190) | Coorbin | PC / Mac | 1.1.1 |
 | [GuildBankLedger - 3.x - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/myristican/GuildBankLedger---3.x---Updated__2858) | myristican | PC / Mac | 3.55 |

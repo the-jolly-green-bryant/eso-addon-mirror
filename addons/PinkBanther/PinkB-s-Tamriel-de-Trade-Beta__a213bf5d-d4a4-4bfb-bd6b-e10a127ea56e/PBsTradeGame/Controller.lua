@@ -4,7 +4,7 @@ local tutorial={
     "交易台帳へようこそ\n\n各地域の物件を買収し、商会の総資産を伸ばします。L1 / R1で地図・所有物件・連合・駆け引き・経営を切り替えます。",
     "買収交渉\n\n交渉はリアルタイムです。相手は左、自社は右。資金要求や駆け引きで青い帯を伸ばし、赤との境目を左端まで押し切ってください。\nコマンドは「資金要求・グループ要求・駆け引き・自社資金」の4分類。←→ / L1 R1で分類、↑↓で項目を選びます。撤退は□ボタンです。",
     "資金と離反\n\n所有物件へ要求すると独立危険度が上昇します。強い物件を使い続けるほど失う危険が増え、根回しが重要になります。",
-    "連合・交易会議・委任\n\n同地域・同業種をそろえると大口の連合調達を閃きます。10期ごとの交易会議では市場事件に合わせて経営方針を選びます。通常物件は支配人へ委任できますが、章目標・本社・最終居城は必ず自分でリアルタイム交渉を行います。",
+    "連合・交易会議・委任\n\n同地域・同業種をそろえると大口の連合調達を閃きます。10期ごとの交易会議では市場事件に合わせて経営方針を選びます。通常物件は支配人へ委任できますが、章目標・商会本体・中枢・最終居城は必ず自分でリアルタイム交渉を行います。",
 }
 function A.New(random,saved)
     if PBTrade.LiveCatalog then PBTrade.LiveCatalog.Import() end
@@ -13,19 +13,7 @@ function A.New(random,saved)
     self.saved=saved; self.tutorialComplete=saved and saved.tutorialComplete or false
     if PBTrade.Audio and PBTrade.Audio.SetMusicEnabled and saved and saved.music==false then PBTrade.Audio.musicEnabled=false end
     self.state=saved and saved.state and M.Load(saved.state) or M.New(); self.engine=PBTrade.Engine.New(self.state,self.random)
-    if PBTrade.LiveCatalog then
-        -- Visits recorded in the background before this first open, then where the player stands now.
-        local names
-        self.pendingVisitsApplied,names=PBTrade.LiveCatalog.ApplyPending(self.state,saved)
-        if self.pendingVisitsApplied>0 then
-            -- Visits made while the ledger was closed are reported on the next open.
-            local shown={}; for i=1,math.min(3,#names) do shown[i]="「"..names[i].."」" end
-            self.visitReport="前回から "..self.pendingVisitsApplied.." 件の実在地点を現地確認しました："
-                ..table.concat(shown,"")..(#names>3 and (" ほか"..(#names-3).."件") or "")
-            self.notice=self.visitReport
-        end
-        PBTrade.LiveCatalog.CaptureCurrent(self.state)
-    end
+    if PBTrade.LiveCatalog then self:RefreshCurrentLocation() end
     -- Saves that reached chapter 5 before the takeover existed receive it on load.
     if not self.state.campaignComplete then self.molagReport=M.MolagTakeover(self.state,self.random) end
     self.previousRanks={}; for _,r in ipairs(M.Rankings(self.state)) do self.previousRanks[r.id]=r.rank end
@@ -91,10 +79,13 @@ function A:Rows()
     if self.screen=="title" then
         if not self.state.companyName then rows[1]={label="新しい商会を興す",command="found"}
         else
-            rows[1]={label="交易を続ける",command="continue"}
-            rows[2]={label="商会名を変更",command="rename"}
-            rows[3]={label="オープニングを見る",command="opening"}
-            if self.state.trueEnding then rows[4]={label="真のエンディングを見る",command="trueEnding"} end
+            if self.currentRegistration then
+                rows[#rows+1]={label="現在地「"..self.currentRegistration.name.."」を物件登録",command="registerCurrent",property=self.currentRegistration}
+            end
+            rows[#rows+1]={label="交易を続ける",command="continue"}
+            rows[#rows+1]={label="商会名を変更",command="rename"}
+            rows[#rows+1]={label="オープニングを見る",command="opening"}
+            if self.state.trueEnding then rows[#rows+1]={label="真のエンディングを見る",command="trueEnding"} end
         end
     elseif self.screen=="naming" then
         rows[1]={label="キーボードで入力する",command="keyboard"}
@@ -104,8 +95,8 @@ function A:Rows()
         for _,z in ipairs(D.zones) do if (z.minChapter or 1)<=self.state.chapter then rows[#rows+1]={id=z.id,label=z.name,zone=z} end end
     elseif self.screen=="properties" or self.screen=="owned" then
         local definitions=self.screen=="properties" and D.propertyIdsByZone[self.zone] or D.properties
-        -- Region lists lead with visited real places (buyable now), then the regular catalog,
-        -- then real places still to be visited.
+        -- Registered real places lead the list and remain buyable from anywhere.  Places not
+        -- registered at their ESO location trail the ordinary catalog.
         local visited,regular,unvisited={},{},{}
         for _,def in ipairs(definitions) do
             local p=self.state.properties[type(def)=="string" and def or def.id]
@@ -363,6 +354,7 @@ function A:ShowTitle()
     -- A deliberate return to the title also ends any story playback.  Scene
     -- restoration must not call this while an opening is still in progress.
     self.opening=nil; self.screen="title"; self.index=1; self.modal=nil
+    self:RefreshCurrentLocation()
 end
 function A:TitleStatus()
     local s=self.state
@@ -374,7 +366,53 @@ function A:TitleStatus()
     local chapter=D.campaigns[s.chapter]
     return (chapter and chapter.title or ("第"..s.chapter.."章")).."    第"..M.CurrentPeriod(s).."期    総資産 "..M.FormatCompact(M.Assets(s))
 end
--- Opening: pages type out sound-novel style. × completes the page or turns it, ○ skips.
+-- Preview the current ESO place.  An unregistered place becomes a title command; registration
+-- itself happens only when the player selects it.  Buying still starts from the regional map.
+function A:RefreshCurrentLocation(record)
+    local catalog=PBTrade.LiveCatalog
+    if not catalog then return nil,false end
+    local property,observed,registered=catalog.PreviewCurrent(self.state,record)
+    self.currentLocationRecord=observed
+    self.currentRegistration=property and not registered and property or nil
+    return property,registered
+end
+function A:ConfirmCurrentRegistration()
+    local catalog=PBTrade.LiveCatalog
+    if not catalog then self.notice="現在地を物件として登録できませんでした"; return false end
+    local property,newlyVisited=catalog.Apply(self.state,self.currentLocationRecord)
+    if not property then self.notice="現在地を物件として登録できませんでした"; self:RefreshCurrentLocation(); return false end
+    self.currentRegistration=nil
+    if self.saved then self.saved.pendingVisits=nil end
+    local zone=D.zoneById[property.zone]
+    self.notice=property.name.."を物件登録しました。交易地図の「"..(zone and zone.name or "該当地域").."」から買収できます"
+    if newlyVisited then self:Flash("discovery",property.name.."を物件登録！",2.8) end
+    self:Save(); self:FlushSave()
+    return newlyVisited
+end
+function A:PromptAcquisition(property)
+    if not property then self.notice="現在地に買収できる物件が見つかりません"; return false end
+    if property.owner==C.playerId then self.modal={text=self:Detail(property).."\n\n× / ○：閉じる"}; return false end
+    if not M.IsAvailable(self.state,property) then self.notice="この物件は現在の章ではまだ買収できません"; return false end
+    if not self.state.unlocked[property.zone] then self.notice="この地域への交易路がまだ開いていません"; return false end
+    if not M.IsPropertyVisited(self.state,property) then self.notice="実在地点がまだ物件登録されていません"; return false end
+    local ally=M.IsAllied(self.state,property.owner) and self.state.alliances[property.owner]
+    local warning=ally and ("\n\n◆ 同盟商会 "..self.state.companies[property.owner].name.." の物件です。\n買収に成功すると信頼 -"..C.alliance.acquireTrust.."（現在 "..ally.trust.."）。0になると同盟は解消されます。") or ""
+    local value,headquarters=M.NegotiationValue(self.state,property)
+    if headquarters then
+        local body=property.companyBody
+        warning=warning.."\n\n◆ "..self.state.companies[property.owner].name..(body and "の商会本体です。" or "の中枢本社です。")
+            .."グループ全体が総力で守ります。\n交渉価値："..comma(value).."（グループ総資産）\n"
+            ..(body and "この商会本体を買収すると、全傘下物件を取得します。" or "全中枢を買収すると、商会ごと傘下に収められます。")
+    end
+    local advice=self:StanceAdvice(M.NegotiationStances(self.state,property))
+    if advice then warning=warning.."\n\n"..advice end
+    self.pendingId=property.id
+    self.modal={action="start",text=property.name
+        .."\n\n買収交渉を始めますか？\n単体調達で物件の負担が増えます。\n投入資金は結果にかかわらず消費します。"
+        ..warning.."\n\n×：開始　○：戻る"}
+    return true
+end
+-- Opening: × completes the text, then turns the page; ○ skips.
 local function play(kind) if PBTrade.Audio and PBTrade.Audio.Play then PBTrade.Audio.Play(kind) end end
 -- Plays a sound-novel page set: the opening by default, or the true ending.
 function A:ShowOpening(nextStep,story)
@@ -413,8 +451,8 @@ function A:OpeningAct(action)
     local o=self.opening; if not o then return end
     if action=="back" then return self:FinishOpening() end
     if action~="confirm" then return end
-    local _,timeline=self:OpeningPage()
-    if not timeline then return self:FinishOpening() end
+    local page,timeline=self:OpeningPage()
+    if not page then return self:FinishOpening() end
     if o.time<timeline.total then o.time=timeline.total; return end
     if o.page>=#o.pages then return self:FinishOpening() end
     o.page=o.page+1; o.time=0; o.pageTime=0; play("openingPage")
@@ -448,6 +486,7 @@ function A:TitleAct(action)
     end
     if action~="confirm" then return end
     local row=self:Selected(); if not row then return end
+    if row.command=="registerCurrent" then self:ConfirmCurrentRegistration(); self.index=1; return end
     if row.command=="found" then self:ShowOpening("naming"); return end
     if row.command=="opening" then self:ShowOpening("title"); return end
     if row.command=="trueEnding" then self:ShowOpening("title","trueEnding"); return end
@@ -457,10 +496,6 @@ function A:TitleAct(action)
         self.notice=self.namingFirst and "あなたの商会の名前を決めてください" or "新しい商会名を決めてください"
     elseif row.command=="continue" then
         self.screen="map"; self.tab=1; self.index=1; self:BeginSession()
-        if self.visitReport then
-            self.notice=self.visitReport; self:Flash("discovery","実在地点を "..self.pendingVisitsApplied.." 件 現地確認",3)
-            self.visitReport=nil
-        end
     elseif row.command=="keyboard" then self.keyboardRequested=true
     elseif row.command=="pick" then
         self.pendingName=row.name; self.notice="「"..row.name.."」でよければ「決定」を選んでください"
@@ -531,7 +566,7 @@ function A:Act(action)
     if action=="next" then return self:Tab(1) end
     if action=="info" and self.screen=="battle" then return self:RequestWithdraw() end
     if action=="info" then
-        self.modal={text="交易の手引き\n\n地域 → 物件 → ×で交渉開始。\n相手は左、自社は右。交渉は待ち時間中もリアルタイムで進みます。\n資金要求は独立危険度を上げ、離反判定を発生させます。\n閃いた系列を必要数そろえると連合調達が使えます。\n根回しは最も危険な自社物件を安定させます。\n投入資金は不成立・撤退でも戻りません。\n10期ごとの交易会議で市場事件に対応する経営方針を選びます。\n第2章からは相手が「構え」で守ることがあります。構えが立つ間は資金が効きにくく、対応する駆け引き・グループ・同盟で崩すと積んだ出資が満額で効き始めます。\n通常物件は経営台帳から委任できます。章目標・本社・最終居城は委任不可で、防衛契約が三段階に発動する重要交渉です。\n各交渉後に敵の攻撃判定、内政、資金力ランキング、決算があります。"}; return
+        self.modal={text="交易の手引き\n\n地域 → 物件 → ×で交渉開始。\n相手は左、自社は右。交渉は待ち時間中もリアルタイムで進みます。\n資金要求は独立危険度を上げ、離反判定を発生させます。\n必要数がそろった系列の構成物件へ資金要求すると連合を閃くことがあり、その場で連合調達が発動します。\n根回しは最も危険な自社物件を安定させます。\n投入資金は不成立・撤退でも戻りません。\n10期ごとの交易会議で市場事件に対応する経営方針を選びます。\n第2章からは相手が「構え」で守ることがあります。構えが立つ間は資金が効きにくく、対応する駆け引き・グループ・同盟で崩すと積んだ出資が満額で効き始めます。\n通常物件は経営台帳から委任できます。商会本体は地域の物件一覧から直接買収でき、成功すると傘下物件も取得します。章目標・商会本体・中枢・最終居城は委任不可の重要交渉です。\n各交渉後に敵の攻撃判定、内政、資金力ランキング、決算があります。"}; return
     end
     if self.screen=="strategy" then
         local row=self:Selected()
@@ -607,19 +642,9 @@ function A:Act(action)
     elseif self.screen=="properties" or self.screen=="owned" then
         if row.property.owner==C.playerId then self.modal={text=self:Detail(row.property)}
         elseif not M.IsPropertyVisited(self.state,row.property) then
-            self.notice="実在地点はESO内で現地を訪問すると買収できます"
-            self.modal={text=row.label.."\n\n未訪問の実在地点です。\nESO本編でこの場所へ実際に移動すると、買収交渉が解放されます。\n\n× / ○：閉じる"}
-        else
-            local ally=M.IsAllied(self.state,row.property.owner) and self.state.alliances[row.property.owner]
-            local warning=ally and ("\n\n◆ 同盟商会 "..self.state.companies[row.property.owner].name.." の物件です。\n買収に成功すると信頼 -"..C.alliance.acquireTrust.."（現在 "..ally.trust.."）。0になると同盟は解消されます。") or ""
-            local value,headquarters=M.NegotiationValue(self.state,row.property)
-            if headquarters then
-                warning=warning.."\n\n◆ "..self.state.companies[row.property.owner].name.."の本社です。グループ全体が総力で守ります。\n交渉価値："..comma(value).."（グループ総資産）\n本社をすべて買収すると、商会ごと傘下に収められます。"
-            end
-            local advice=self:StanceAdvice(M.NegotiationStances(self.state,row.property))
-            if advice then warning=warning.."\n\n"..advice end
-            self.pendingId=row.id; self.modal={action="start",text=row.label.."\n\n買収交渉を始めますか？\n単体調達で物件の負担が増えます。\n投入資金は結果にかかわらず消費します。"..warning.."\n\n×：開始　○：戻る"}
-        end
+            self.notice="実在地点は現地で物件登録すると、以後どこからでも買収できます"
+            self.modal={text=row.label.."\n\n未登録の実在地点です。\nESO本編でこの場所へ移動して物件登録すると、以後は交易地図からどこにいても買収できます。\n\n× / ○：閉じる"}
+        else self:PromptAcquisition(row.property) end
     elseif self.screen=="delegate_pick" then
         if row.enabled==false or not row.property then self.notice=row.hint or "委任できません"; return end
         self.pendingDelegateId=row.id
@@ -661,7 +686,7 @@ function A:Act(action)
         else ok,why=self.engine:Treasury(row.amount) end
         self.notice=ok and "出資・工作が届きました" or why
         if ok then self:Save(); if row.command=="tactic" then self:StartTacticScene(info) end end
-        if ok and row.command=="group" then
+        if ok and info and info.group then
             -- The call goes out first; the group's coins only start falling once it has been heard.
             self.groupCall={name=info.group.name,time=0,heldBid=bidBefore}
             if PBTrade.Audio and PBTrade.Audio.Play then PBTrade.Audio.Play("groupCall") end
@@ -669,12 +694,13 @@ function A:Act(action)
         if ok and info then
             local messages={}
             for _,id in ipairs(info.discoveries or {}) do messages[#messages+1]=D.groups[id].name.."を閃いた！" end
+            if #(info.discoveries or {})>0 and info.group then messages[#messages+1]=info.group.name.."をそのまま発動します。" end
             if info.defected==true then messages[#messages+1]=info.property.name.."が離反しました。"
             elseif type(info.defected)=="table" then for _,p in ipairs(info.defected) do messages[#messages+1]=p.name.."が離反しました。" end end
             if #messages>0 then
-                self.modal={text=table.concat(messages,"\n").."\n\n× / ○：交渉へ戻る"}
                 local defected=info.defected==true or (type(info.defected)=="table" and #info.defected>0)
                 local discovered=#(info.discoveries or {})>0
+                self.modal={pauseBattle=discovered,text=table.concat(messages,"\n").."\n\n× / ○：交渉へ戻る"}
                 self:Flash(defected and "defection" or (discovered and "groupDiscovery" or "discovery"),messages[1],2.5)
                 -- A group discovery always gets its own cue, even alongside a defection alert.
                 if defected and discovered and PBTrade.Audio and PBTrade.Audio.Play then PBTrade.Audio.Play("groupDiscovery") end
@@ -699,7 +725,7 @@ function A:ManagementDetail(row)
         return "BGM\n\nESOのUI音楽を画面ごとに切り替えます。\nタイトル・オープニング：エンディングの曲\n台帳・内政・ランキング：トリビュート（カード遊戯）の曲\n交渉：決闘の曲\n\n× でオン／オフを切り替えます。"
     elseif row.command=="endless" then
         local owned,total=M.EverythingStatus(self.state)
-        return "果てしない交易モード\n\nすべての物件（通常の物件と、訪れた実在地点）を買収するまで終わらない交易です。\n開始すると、自社物件の"..math.floor(C.endless.independenceShare*100).."%（本社・章の目標物件を除く）が独立して中立に戻ります。\nすべてを買収すると、真のエンディングを見られます。\n\n現在の所有：全物件 "..owned.." / "..total
+        return "果てしない交易モード\n\nすべての物件（通常の物件と、登録済みの実在地点）を買収するまで終わらない交易です。\n開始すると、自社物件の"..math.floor(C.endless.independenceShare*100).."%（本社・章の目標物件を除く）が独立して中立に戻ります。\nすべてを買収すると、真のエンディングを見られます。\n\n現在の所有：全物件 "..owned.." / "..total
     elseif row.command=="assetRoot" then
         return "画像の読み込み先\n\n独自画像を読み込むフォルダの指定です。\n① アドオン相対：PBsTradeGame/assets/…（PBsTetrisと同じ標準の方式）\n② ESOの格納先：ESOが報告するアドオンの実フォルダ\n\n画像が表示されない場合に × で切り替えて、表示されるほうを選んでください。\n切り替えはこのプレイ中だけ有効で、次に起動すると①に戻ります。"
     elseif row.command=="skip" then
@@ -708,7 +734,7 @@ function A:ManagementDetail(row)
         return "画像の読み込み確認\n\n"..PBTrade.Assets.Describe()
     elseif row.command=="here" then
         return "現在地の確認\n\n"..(PBTrade.LiveCatalog and PBTrade.LiveCatalog.Describe(self.state) or "取得できません")
-            .."\n\nESOの実在地点は、現地へ行くと買収できるようになります。\n屋内（住宅・一部の酒場・洞窟）では、その場所の名前で照合します。"
+            .."\n\nESOの実在地点は現地で一度物件登録すると、以後はどこからでも交易地図を通じて買収できます。\n屋内（住宅・一部の酒場・洞窟）では、その場所の名前で照合します。"
     elseif row.command=="rebuild" then
         local need,grant,cheapest=M.RebuildTerms(self.state)
         return "再建融資\n\n資金力が"..comma(need).."未満のとき、"..comma(grant)
@@ -776,7 +802,12 @@ function A:CounterattackCheck()
         if ok then
             self.screen="battle"; self.index=1; self.battleCategory=1; self.battleIndexes={}
             self.notice=message
-            if PBTrade.Audio and PBTrade.Audio.Play then PBTrade.Audio.Play("counterattack") end
+            if PBTrade.Audio and PBTrade.Audio.Play then
+                -- A sharp warning followed by the battle horn makes an incoming acquisition
+                -- unmistakable even when the player is not looking at the result flow.
+                PBTrade.Audio.Play("counterattackWarning")
+                PBTrade.Audio.Play("counterattack")
+            end
             self.modal={pauseBattle=true,text="敵商会が買収を仕掛けました\n\n"..message.."\n攻撃元："..self.state.properties[attack.sourcePropertyId].name.."\n\n境目を左端まで押し返せば防衛成功。\n右端到達・期限切れ・撤退では物件を失います。\n防衛が終わると内政へ進みます。\n\n×：防衛戦へ"}
             return
         end
@@ -871,9 +902,11 @@ function A:Detail(p)
     local groupNames={}; for _,id in ipairs(p.groups) do if self.state.learnedGroups[id] then groupNames[#groupNames+1]=D.groups[id].name end end
     local risk=M.RiskLabel(p.independenceRisk)
     local text=p.name.."\n"..D.categories[p.category]
-        ..(p.companyHeadquarters and (" / "..D.companies[p.companyHeadquarters].name.."本社（本社をすべて買収すると商会ごと傘下）") or (p.isHeadquarters and " / 地域本部" or "")).."\n\n所有："..company.name..(M.IsAllied(self.state,p.owner) and ("（同盟・信頼 "..self.state.alliances[p.owner].trust.."）") or "")
+        ..(p.companyHeadquarters and (p.companyBody and (" / "..D.companies[p.companyHeadquarters].name.."本体（買収すると全傘下を取得）")
+            or (" / "..D.companies[p.companyHeadquarters].name.."中枢（全中枢の買収で傘下化）")) or (p.isHeadquarters and " / 地域本部" or ""))
+        .."\n\n所有："..company.name..(M.IsAllied(self.state,p.owner) and ("（同盟・信頼 "..self.state.alliances[p.owner].trust.."）") or "")
         .."\n経営："..(p.profileName or "個別設計")..(p.valueTier and ("（種類："..p.valueTier.."）") or (p.canonical and "（種類：一般・市場相場）" or ""))
-        ..(p.canonical and "\n現地確認："..(M.IsPropertyVisited(self.state,p) and "訪問済み・買収可能" or "未訪問・買収不可") or "")
+        ..(p.canonical and "\n物件登録："..(M.IsPropertyVisited(self.state,p) and "登録済み・どこからでも買収可能" or "未登録・買収不可") or "")
         .."\n評価額："..comma(p.marketValue).."\n予想収益："..comma(p.expectedProfit).." / 期（参考）"
         .."\n調達用手元資金："..comma(p.reserve).."\n独立負担："..risk.." "..p.independenceRisk.." / 128"
         .."\n要求時の負担増：+"..p.independenceIncrease.."\n交渉の推進力："..p.gaugeAcceleration
@@ -955,7 +988,7 @@ function A:Tick(dt)
     end
     if self.fx then self.fx.remaining=self.fx.remaining-dt; if self.fx.remaining<=0 then self.fx=nil end end
     if self.opening then self.opening.time=self.opening.time+dt; self.opening.pageTime=self.opening.pageTime+dt end
-    if self.groupCall then
+    if self.groupCall and not (self.modal and self.modal.pauseBattle) then
         self.groupCall.time=self.groupCall.time+dt
         if self.groupCall.time>=C.groupCall.seconds or self.screen~="battle" then self.groupCall=nil end
     end

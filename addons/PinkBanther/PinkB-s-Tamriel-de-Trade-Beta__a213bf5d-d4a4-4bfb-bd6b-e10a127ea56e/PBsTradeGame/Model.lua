@@ -73,7 +73,9 @@ function M.IsPropertyVisited(s,p)
     return not p.canonical or p.requiresVisit==false or s.visitedProperties[p.id]==true
 end
 function M.Assets(s)
-    local total = s.cash
+    -- Force a floating-point accumulator.  Long campaigns can legitimately exceed the
+    -- signed 64-bit integer range in desktop Lua even though ESO's Lua number is a double.
+    local total = 0.0+s.cash
     for _, p in ipairs(M.Owned(s)) do total = total + p.marketValue end
     return total
 end
@@ -358,7 +360,7 @@ function M.Takeover(s,propertyId)
     for _,id in ipairs(D.companyHeadquarters[company]) do
         if s.properties[id].owner~=C.playerId then return nil end
     end
-    local report={company=company,name=c.name,count=0,value=0,cash=math.floor(c.cash*C.takeover.cashShare)}
+    local report={company=company,name=c.name,count=0,value=0,cash=math.floor(c.cash*C.takeover.cashShare),body=c.ordinaryCompany==true}
     for _,definition in ipairs(D.properties) do
         local p=s.properties[definition.id]
         if p and p.owner==company then
@@ -380,7 +382,7 @@ function M.CheckTakeovers(s)
 end
 -- A rival's size: cash plus the value (and the reserves) of every property it holds.
 function M.CompanyAssets(s,id)
-    local c=s.companies[id]; local value,reserves=c and c.cash or 0,0
+    local c=s.companies[id]; local value,reserves=0.0+(c and c.cash or 0),0.0
     for _,p in pairs(s.properties) do if p.owner==id then value=value+p.marketValue; reserves=reserves+(p.reserve or 0) end end
     return value,reserves
 end
@@ -427,7 +429,7 @@ function M.StanceSummary(ids,separator)
     return #parts>0 and table.concat(parts,separator or "\n") or nil
 end
 function M.FundingPower(s)
-    local total=s.cash; for _,p in ipairs(M.Owned(s)) do total=total+p.reserve end; return total
+    local total=0.0+s.cash; for _,p in ipairs(M.Owned(s)) do total=total+p.reserve end; return total
 end
 -- Cheapest property the player could negotiate for right now (nil when none is open).
 function M.CheapestTarget(s)
@@ -491,6 +493,7 @@ function M.RivalTurn(s,random)
                     if seller then seller.cash=seller.cash+math.floor(price*R.sellerShare) end
                     deals[#deals+1]={buyer=id,seller=best.owner,property=best,price=price}
                     best.owner=id
+                    if #deals>=(R.maxDealsPerPeriod or math.huge) then break end
                 end
             end
         end
@@ -742,13 +745,19 @@ end
 -- Player company name: trimmed, single line, at most companyNameMaxChars UTF-8 characters.
 function M.NormalizeCompanyName(text)
     if type(text)~="string" then return nil end
-    -- Split into whole UTF-8 characters first, then trim. (A multi-byte character such as the
-    -- full-width space must never sit inside a Lua [...] class: it would match single bytes
-    -- and cut Japanese characters apart, e.g. the trailing byte of 局 or 銀.)
     -- `%c` is locale-sensitive in the client and can classify UTF-8 continuation bytes as
     -- controls on console. Replace ASCII controls explicitly so Japanese bytes stay intact.
     text=text:gsub("%z"," "):gsub("[\1-\31\127]"," ")
-    local chars={}; for ch in text:gmatch("[%z\1-\127\194-\244][\128-\191]*") do chars[#chars+1]=ch end
+    -- Do not use a byte-range gmatch here. The console client can return only its ASCII
+    -- matches, which turns "PinkBanther商会" into "PinkBanther" when the name is confirmed.
+    -- Walk complete UTF-8 code points directly, as the opening typewriter does.
+    local chars={}; local i=1
+    while i<=#text do
+        local first=text:byte(i)
+        local width=first<128 and 1 or (first<224 and 2 or (first<240 and 3 or 4))
+        chars[#chars+1]=text:sub(i,i+width-1)
+        i=i+width
+    end
     local function blank(ch) return ch==" " or ch=="　" or ch=="\t" end
     while chars[1] and blank(chars[1]) do table.remove(chars,1) end
     while chars[#chars] and blank(chars[#chars]) do chars[#chars]=nil end
@@ -788,6 +797,7 @@ function M.Export(s)
 end
 function M.Load(saved)
     if type(saved)~="table" then return M.New() end
+    local moneyMigration=(saved.schemaVersion or 0)<9
     -- Saved real places whose id no longer exists (the client renumbered its map points) are
     -- matched by region and name; visit-created places are restored from their full record.
     local remap={}; local L=PBTrade.LiveCatalog
@@ -804,21 +814,46 @@ function M.Load(saved)
     local function current(id) return remap[id] or id end
     local s=M.New()
     for _,key in ipairs(stateFields) do if saved[key]~=nil then s[key]=saved[key] end end
+    if moneyMigration then
+        if saved.cash~=nil then s.cash=C.Money(s.cash,"saved:cash") end
+        if saved.debt~=nil then s.debt=C.Money(s.debt,"saved:debt") end
+    end
     if s.companyName and not M.SetCompanyName(s,s.companyName) then s.companyName=nil end
     local restored={}
     for savedId,record in pairs(saved.properties or {}) do
         local id=current(savedId); local p=s.properties[id]; restored[id]=true; if p then
             if record.owner and s.companies[record.owner] then p.owner=record.owner end
             if type(record.independenceRisk)=="number" then p.independenceRisk=math.max(0,math.min(C.battle.riskMax,record.independenceRisk)) end
-            if type(record.reserve)=="number" then p.reserve=math.max(0,record.reserve) end
-            if type(record.marketValue)=="number" then p.marketValue=math.max(1,math.min(C.economy.maximumPropertyValue,record.marketValue)) end
+            if type(record.reserve)=="number" then
+                local value=moneyMigration and C.Money(record.reserve,id..":reserve") or record.reserve
+                p.reserve=math.max(0,value)
+            end
+            if type(record.marketValue)=="number" then
+                local value=moneyMigration and C.Money(record.marketValue,id..":value") or record.marketValue
+                p.marketValue=math.max(1,math.min(C.economy.maximumPropertyValue,value))
+            end
             if type(record.investCount)=="number" then p.investCount=math.max(0,math.floor(record.investCount)) end
-            if type(record.expectedProfit)=="number" then p.expectedProfit=math.max(1,math.min(C.economy.maximumExpectedProfit,record.expectedProfit)) end
+            if type(record.expectedProfit)=="number" then
+                local value=moneyMigration and C.Money(record.expectedProfit,id..":profit") or record.expectedProfit
+                p.expectedProfit=math.max(1,math.min(C.economy.maximumExpectedProfit,value))
+            end
         end
     end
     for id,record in pairs(saved.companies or {}) do
-        if s.companies[id] and type(record.cash)=="number" then s.companies[id].cash=math.max(0,record.cash) end
+        if s.companies[id] and type(record.cash)=="number" then
+            local value=moneyMigration and C.Money(record.cash,id..":cash") or record.cash
+            s.companies[id].cash=math.max(0,value)
+        end
         if s.companies[id] and record.dissolved then s.companies[id].dissolved=true end
+    end
+    -- v8 introduced regional companies.  Existing player acquisitions are sacred; other
+    -- generated businesses adopt the new initial owner so old campaigns gain the wider market.
+    local companyMigration=(saved.schemaVersion or 0)<8 and not saved.molagTakeover
+    if companyMigration then
+        for _,definition in ipairs(D.properties) do
+            local p=s.properties[definition.id]
+            if definition.generatedName and p and p.owner~=C.playerId then p.owner=definition.owner end
+        end
     end
     for _,key in ipairs({"visited","visitedProperties","unlocked","learnedTactics","learnedGroups","alliances"}) do if type(saved[key])=="table" then s[key]=M.Copy(saved[key]) end end
     for oldId,newId in pairs(remap) do if s.visitedProperties[oldId] then s.visitedProperties[oldId]=nil; s.visitedProperties[newId]=true end end
@@ -832,7 +867,9 @@ function M.Load(saved)
         end
     end
     s.canonicalValuation=C.canonical.version
-    s.learnedTactics.smile=true; s.schemaVersion=C.schemaVersion; M.Unlock(s); return s
+    s.learnedTactics.smile=true; s.schemaVersion=C.schemaVersion; M.Unlock(s)
+    if companyMigration then M.CheckTakeovers(s) end
+    return s
 end
 -- One decision per offensive battle cycle. Defense settlement does not recurse.
 function M.RollCounterattack(s,random)

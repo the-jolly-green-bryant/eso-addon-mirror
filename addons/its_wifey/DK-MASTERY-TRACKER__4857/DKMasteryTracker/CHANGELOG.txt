@@ -1,0 +1,7 @@
+DK Mastery Tracker — Change Log
+
+v1.0.4
+- Mastery HUD now hides when the player dies.
+- Mastery HUD automatically returns after resurrection.
+- Updated internal version metadata to match v1.0.4.
+- No changes intended to mastery tracking or functionality.

@@ -1,5 +1,6 @@
 QuestTrackerImproved = {}
 local QTI = QuestTrackerImproved
+local EM = EVENT_MANAGER
 
 QTI.name = "QuestTrackerImproved"
 
@@ -294,9 +295,9 @@ function QTI.RefreshAll()
 	QTI.RefreshHeaderIcons()
 end
 
-function QTI.OnAddOnLoaded(eventCode, addOnName)
+function QTI.OnAddOnLoaded(_, addOnName)
 	if addOnName ~= QTI.name then return end
-	EVENT_MANAGER:UnregisterForEvent(QTI.name, EVENT_ADD_ON_LOADED)
+	EM:UnregisterForEvent(QTI.name, EVENT_ADD_ON_LOADED)
 
 	QTI.SV = ZO_SavedVars:NewAccountWide("QuestTrackerImproved_SV", 1, nil, defaultSV)
 
@@ -308,8 +309,11 @@ function QTI.OnAddOnLoaded(eventCode, addOnName)
 	QTI.HookIcons()
 	QTI.TimerTweaks()
 	QTI.ResizePanel()
-
 	QTI.RefreshHeaderIcons()
+	
+	EM:RegisterForEvent(QTI.name, EVENT_QUEST_ADVANCED, function(_, questIndex)
+        FOCUSED_QUEST_TRACKER:ForceAssist(questIndex)
+    end)
 end
 
-EVENT_MANAGER:RegisterForEvent(QTI.name, EVENT_ADD_ON_LOADED, QTI.OnAddOnLoaded)
+EM:RegisterForEvent(QTI.name, EVENT_ADD_ON_LOADED, QTI.OnAddOnLoaded)

@@ -15,24 +15,26 @@ EVENT_MANAGER:RegisterForEvent(C.addonId,EVENT_ADD_ON_LOADED,function(_,name)
     -- ledger lasts only for the session, so a path that fails can never stick across launches.
     T.saved.assetRoot=nil
     T.Assets.Initialize(1)
-    -- Keep load light: the 1,302-property session is created when the scene first opens.
+    -- Keep load light: the 1,303-property session is created when the scene first opens.
     T.ui=T.UI.New(function() T.app=T.app or T.Controller.New(nil,T.saved); return T.app end); T.HookMenu()
     -- Visits are observed from login onward. Before the ledger's first open they are kept as
-    -- small pending records; afterwards they unlock properties immediately.
+    -- small pending records; the current unregistered place is then offered on the title screen.
     local lastVisitKey
     function T.ObserveVisit()
         local L=T.LiveCatalog; if not L then return end
-        local record=L.Observe(); if not record then return end
+        local record=L.Observe()
+        if not record then
+            lastVisitKey=nil
+            return
+        end
         local key=(record.zoneId or "?").."|"..record.name
         -- Same place as the last poll: nothing new to record.
         if key==lastVisitKey then return end
         lastVisitKey=key
-        if not T.app then L.RecordPending(T.saved,record); return end
-        local property,newlyVisited=L.Apply(T.app.state,record)
-        if property and newlyVisited then
-            T.app.notice=property.name.."を現地確認しました。買収交渉が解放されました"
-            T.app:Flash("discovery",property.name.."を現地確認！",2.8); T.app:Save()
-        end
+        L.RecordPending(T.saved,record)
+        -- Detection only prepares the title command.  The player explicitly registers the
+        -- place there; merely walking through it must not silently alter the trade ledger.
+        if T.app then T.app:RefreshCurrentLocation(record) end
     end
     function T.ReportHere()
         local text=T.LiveCatalog and T.LiveCatalog.Describe(T.app and T.app.state) or "現在地を取得できません"

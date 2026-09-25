@@ -1,6 +1,4 @@
--- Guild recruitment chat filter, following PB's ChatFilter's proven formatter-wrapper pattern.
--- A Guild Finder advert contains a real guild link. Matching that markup is language-independent
--- and leaves ordinary conversation (and every non-guild link) alone.
+-- Optional chat filters, following PB's ChatFilter's proven formatter-wrapper pattern.
 if not PBS_CHAT_ASSISTANT then
 	return
 end
@@ -12,6 +10,7 @@ local GUILD_LINK_PATTERN = "|H%d+:"
 
 local GUILD_CHANNELS = {}
 local WHISPER_CHANNELS = {}
+local NPC_CHANNELS = {}
 
 local function AddChannel(target, channel)
 	if type(channel) == "number" then
@@ -31,6 +30,10 @@ AddChannel(GUILD_CHANNELS, CHAT_CHANNEL_OFFICER_4)
 AddChannel(GUILD_CHANNELS, CHAT_CHANNEL_OFFICER_5)
 AddChannel(WHISPER_CHANNELS, CHAT_CHANNEL_WHISPER)
 AddChannel(WHISPER_CHANNELS, CHAT_CHANNEL_WHISPER_SENT)
+AddChannel(NPC_CHANNELS, CHAT_CHANNEL_MONSTER_SAY)
+AddChannel(NPC_CHANNELS, CHAT_CHANNEL_MONSTER_YELL)
+AddChannel(NPC_CHANNELS, CHAT_CHANNEL_MONSTER_WHISPER)
+AddChannel(NPC_CHANNELS, CHAT_CHANNEL_MONSTER_EMOTE)
 
 local function ContainsGuildLink(text)
 	return type(text) == "string" and text:find(GUILD_LINK_PATTERN) ~= nil
@@ -54,8 +57,17 @@ end
 
 addon.ContainsGuildRecruitmentLink = ContainsGuildLink
 
-function addon:ShouldShowRecruitment(channel, fromName, text, fromDisplayName)
-	if not self.sv or not self.sv.enabled or not self.sv.recruitFilterEnabled then
+function addon:ShouldShowChatMessage(channel, fromName, text, fromDisplayName)
+	if not self.sv or not self.sv.enabled then
+		return true
+	end
+	-- These four channels contain world/NPC speech, not player messages. Subtitles use a separate
+	-- UI event and are unaffected; this only prevents a line being added to the chat log.
+	if self.sv.npcChatFilterEnabled and NPC_CHANNELS[channel] then
+		self.hiddenNpcChat = (self.hiddenNpcChat or 0) + 1
+		return false
+	end
+	if not self.sv.recruitFilterEnabled then
 		return true
 	end
 	-- A guild link inside a guild's own channel is conversation, not an advert to filter.
@@ -93,7 +105,7 @@ function addon:InstallRecruitmentFilter()
 
 	CHAT_ROUTER:RegisterMessageFormatter(EVENT_CHAT_MESSAGE_CHANNEL,
 		function(channel, fromName, text, isCustomerService, fromDisplayName, ...)
-			if not self:ShouldShowRecruitment(channel, fromName, text, fromDisplayName) then
+			if not self:ShouldShowChatMessage(channel, fromName, text, fromDisplayName) then
 				return nil
 			end
 			return original(channel, fromName, text, isCustomerService, fromDisplayName, ...)

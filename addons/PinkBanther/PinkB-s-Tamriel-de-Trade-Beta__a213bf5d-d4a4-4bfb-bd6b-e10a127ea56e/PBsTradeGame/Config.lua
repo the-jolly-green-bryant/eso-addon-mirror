@@ -1,8 +1,8 @@
 PBTrade = {}
 PBTrade.Config = {
     addonId = "PBsTradeGame", title = "PinkB's Tamriel Trade Game",
-    displayTitle = "タムリエル交易戦", version = "0.16.3", scene = "pbTradeGame",
-    playerId = "player", neutralId = "neutral", schemaVersion = 7,
+    displayTitle = "タムリエル交易戦", version = "0.17.7", scene = "pbTradeGame",
+    playerId = "player", neutralId = "neutral", schemaVersion = 9,
     savedVariables="PBsTradeGameSavedVariables",
     -- Seconds, not frames. A fixed simulation step keeps 30/60/120fps equivalent.
     battle = {
@@ -14,7 +14,7 @@ PBTrade.Config = {
         centerSpeed = .75, edgeSpeed = 2.4, edgeCurve = 1.8, paceScale = 2.0,
         -- Idle pressure: when the side being pushed has not funded or used a tactic for
         -- idleGrace seconds, extra acceleration toward its loss ramps up over idleRamp.
-        idleGrace = 4, idleRamp = 4, idleAcceleration = 3.0,
+        idleGrace = 4, idleRamp = 4, idleAcceleration = 2.6,
         -- Negotiation calendar: a day passes after turnsPerDay player actions or daySeconds,
         -- whichever comes first.
         turnsPerDay = 3, daySeconds = 15,
@@ -37,7 +37,7 @@ PBTrade.Config = {
     -- Tactic banner: seconds for the move, the opponent's reaction and the verdict.
     -- Two lines over the battle title; the negotiation keeps running underneath.
     tacticScene = {intro=.9, react=1.3, result=2.6, typeSpeed=34},
-    campaign = {startingCash = 6500, unlockOwnedStep = 2, chapterOneAssets=5000000,
+    campaign = {startingCash = 6500, unlockOwnedStep = 2, chapterOneAssets=700000,
         -- Entering chapter 5, this share of every property not already Molag Bal's defects to it
         -- at random (the player's holdings included). Runs once per save.
         molagTakeoverChapter = 5, molagTakeoverShare = .70, molagCompany = "molag",
@@ -62,7 +62,7 @@ PBTrade.Config = {
     -- Rival trading, once per settlement: each active rival may buy one neutral or rival property.
     -- Only `samples` random properties are examined per rival, so the cost stays tiny.
     rivals = {tradeChance = .45, samples = 6, priceFactor = .9, maxCashShare = .5,
-        sellerShare = .6, biasWeight = 1.5, reportLines = 3},
+        sellerShare = .6, biasWeight = 1.5, reportLines = 3,maxDealsPerPeriod=4},
     counterattack = {baseChance = .20, aggressionWeight = .30, maxChance = .60,
         minimumCash = 500, riskWeight = .4, headquartersWeight = .3},
     -- Every ten settlements the board chooses a policy after learning the new market event.
@@ -105,6 +105,9 @@ PBTrade.Config = {
         pileWidth = 270, floorY = 202, tipY = 58, viewportHeight = 248,
         -- Stack scroll (px/s): the plate slides down smoothly while the tip stays in view.
         scrollFollowRate = 7, scrollMinSpeed = 240, scrollMaxSpeed = 1200, scrollMaxLag = 4000,
+        -- The stack follows the camera immediately; the stone plate may trail it by at most
+        -- this much, preventing the plate from visually outrunning the bottom coins.
+        plinthLagFactor = .25, plinthMaxLag = 44,
         -- Beyond visualLinearUnits coins the drawn height grows logarithmically.
         -- visualMaxUnits keeps the drawn height inside scrollMaxLag so the plate never jumps.
         visualLinearUnits = 320, visualLogGain = 2, visualMaxUnits = 7800,
@@ -114,7 +117,7 @@ PBTrade.Config = {
             {count=5,x=30,y=0,scale=1,shade=1}},
         pillarSpacing = 44, plinthWidth = 302, plinthHeight = 96, plinthOffsetY = -52,
         maxFalling = 72, burstSprites = 96,
-        soundEnabled = true, soundKey = "ITEM_MONEY_CHANGED", soundInterval = .18},
+        soundEnabled = true, soundKey = "ITEM_MONEY_CHANGED"},
     -- Group funding: "<group>を知るもの来たれ！" is called for `seconds`, then the coins fall.
     groupCall = {seconds = 1.5},
     -- Taking every headquarters of a rival dissolves it: all its properties and this share of its cash.
@@ -129,7 +132,12 @@ PBTrade.Config = {
     -- mult scales the average value of the regular properties at that moment (so prices follow
     -- the market as periods pass); yield is profit per value. Unmatched places get mult 1.
     -- `base` is only a fallback when no average can be taken. Bump `version` to re-price saves.
-    canonical = {version = 2, base = 9000, jitter = .15, defaultYield = .06, tiers = {
+    canonical = {version = 4, base = 9000, jitter = .15, defaultYield = .06,
+        -- Exact localized-name overrides are checked after punctuation/space normalization.
+        -- They enter the market at this fixed value; later settlements and investment can grow it.
+        specialValues = { ["トールドライオク"]={value=1000000000000,yield=.06,label="特別物件",category="market"} },
+        houseRegions = {[1]="auridon",[2]="glenumbra"},
+        tiers = {
         {label="銀行", mult=24, yield=.09, category="market", words={"銀行","両替","金庫","bank","vault","exchequer"}},
         {label="宮殿・王城", mult=18, yield=.05, category="fighters", words={"宮殿","王宮","王城","城","palace","castle","citadel","keep"}},
         {label="大聖堂・神殿", mult=10, yield=.05, category="books", words={"大聖堂","神殿","聖堂","寺院","祠堂","cathedral","temple","chapel","shrine"}},
@@ -169,7 +177,42 @@ PBTrade.Config = {
         -- Hire: a seasoned negotiator joins the next negotiation (opening momentum, quicker messengers).
         hireCostShare = .015, hireMinimumCost = 1500, hireMomentum = 1.2, hireWaitFactor = .75, hireSeconds = 60},
     -- Opening narration: seconds per character (punctuation adds pauses), background fade and drift.
-    opening = {charSeconds = .055, fadeSeconds = .7, driftSeconds = 9, driftZoom = .06},
-    uiSounds={counterattack="AVA_KEEP_CAPTURED",takeover="GUILD_KEEP_CLAIMED",openingStart="BOOK_OPEN",openingPage="BOOK_PAGE_TURN",openingEnd="BOOK_CLOSE",groupDiscovery="SKILL_LINE_ADDED",groupCall="ANTIQUITIES_FANFARE_COMPLETED",tactic="DUEL_START",tacticSuccess="TELVAR_GAINED",tacticFail="GENERAL_ALERT_ERROR",discovery="ACHIEVEMENT_AWARDED",defection="GENERAL_ALERT_ERROR",
+    opening = {fontSize = 34, charSeconds = .055, fadeSeconds = .7, driftSeconds = 9, driftZoom = .06},
+    uiSounds={counterattackWarning="GENERAL_ALERT_ERROR",counterattack="AVA_KEEP_CAPTURED",takeover="GUILD_KEEP_CLAIMED",openingStart="BOOK_OPEN",openingPage="BOOK_PAGE_TURN",openingEnd="BOOK_CLOSE",groupDiscovery="SKILL_LINE_ADDED",groupCall="ANTIQUITIES_FANFARE_COMPLETED",tactic="DUEL_START",tacticSuccess="TELVAR_GAINED",tacticFail="GENERAL_ALERT_ERROR",discovery="ACHIEVEMENT_AWARDED",defection="GENERAL_ALERT_ERROR",statusPositive="TELVAR_GAINED",statusNegative="GENERAL_ALERT_ERROR",
         chapter="QUEST_OBJECTIVE_STARTED",ending="ACHIEVEMENT_AWARDED",settlement="TELVAR_GAINED"},
 }
+-- v0.17.1 changes every economic unit to 10,000 of the former unit.  `Money` may add a
+-- stable sub-10,000 remainder so catalog prices look like negotiated figures rather than
+-- round debug values.  The same key always yields the same amount on every client.
+local C=PBTrade.Config
+C.currencyScale=10000; C.currencyVersion=1
+function C.Money(value,key)
+    local raw=1.0*(value or 0)*C.currencyScale
+    -- Lua 5.4's math.floor converts to a signed integer and wraps values above 2^63-1.
+    -- ESO uses doubles, but keeping the shared model portable prevents late-campaign goals
+    -- late-campaign totals from becoming negative in desktop tests and tooling.
+    local outsideInteger=math.maxinteger and (raw>math.maxinteger or raw<math.mininteger)
+    local scaled=outsideInteger and raw or math.floor(raw+.5)
+    if scaled==0 or not key then return scaled end
+    local hash=23; key=tostring(key)
+    for i=1,#key do hash=(hash*131+key:byte(i))%C.currencyScale end
+    return scaled+hash
+end
+C.battle.treasuryMinimum=C.Money(C.battle.treasuryMinimum)
+C.independence.stabilizeCost=C.Money(C.independence.stabilizeCost)
+C.campaign.startingCash=C.Money(C.campaign.startingCash,"player:cash")
+C.campaign.chapterOneAssets=C.Money(C.campaign.chapterOneAssets)
+C.economy.rebuildThreshold=C.Money(C.economy.rebuildThreshold)
+C.economy.rebuildGrant=C.Money(C.economy.rebuildGrant)
+C.economy.maximumPropertyValue=C.Money(C.economy.maximumPropertyValue)
+C.economy.maximumExpectedProfit=C.Money(C.economy.maximumExpectedProfit)
+C.counterattack.minimumCash=C.Money(C.counterattack.minimumCash)
+C.canonical.base=C.Money(C.canonical.base)
+for _,special in pairs(C.canonical.specialValues) do special.value=C.Money(special.value) end
+C.alliance.minimumCost=C.Money(C.alliance.minimumCost)
+C.alliance.fundMinimum=C.Money(C.alliance.fundMinimum)
+C.admin.lobbyMinimumCost=C.Money(C.admin.lobbyMinimumCost)
+C.admin.guardMinimumCost=C.Money(C.admin.guardMinimumCost)
+C.admin.bondMinimum=C.Money(C.admin.bondMinimum)
+C.admin.sabotageMinimumCost=C.Money(C.admin.sabotageMinimumCost)
+C.admin.hireMinimumCost=C.Money(C.admin.hireMinimumCost)

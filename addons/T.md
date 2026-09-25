@@ -24,7 +24,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tamriel Master Ledger - DEV](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Tamriel-Master-Ledger---DEV__89ecfc27-e76b-48ae-8d40-e76bbf0c5c13) | xPricee | Console | — |
 | [Tamriel Progress Map](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Racconplayz/Tamriel-Progress-Map__4799) | Racconplayz | PC / Mac | 2.7.4 Hotfix |
 | [Tamriel Races](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Tamriel-Races__167ff6ab-0d5c-4582-83cc-0ec8ced35cc1) | SugaComa | Console | — |
-| [Tamriel Sky Dial](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MemphisKane991/Tamriel-Sky-Dial__4860) | MemphisKane991 | PC / Mac | 1.0 |
+| [Tamriel Sky Dial](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MemphisKane991/Tamriel-Sky-Dial__4860) | MemphisKane991 | PC / Mac | 1.1 |
 | [Tamriel Tomes Map Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/runcarsnowpen/Tamriel-Tomes-Map-Pins__4591) | runcarsnowpen | PC / Mac | 1.2.1 |
 | [Tamriel Trade Centre](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/cyxui/Tamriel-Trade-Centre__1245) | cyxui | PC / Mac | 4.27.281.39281 |
 | [Tamriel Trade Centre - Patch Italiana](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dusty82/Tamriel-Trade-Centre---Patch-Italiana__3033) | Dusty82 | PC / Mac | 4.10.146.18293 |
@@ -67,7 +67,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Tel Var Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/EHansonn/Tel-Var-Saver__3664) | EHansonn | PC / Mac | 1.9 |
 | [Teleport - general purpose teleporting tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Schrodi/Teleport---general-purpose-teleporting-tool__2781) | Schrodi | PC / Mac | 1.1.3 |
 | [Teleport Tool](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/deagl0r/Teleport-Tool__1333) | deagl0r | PC / Mac | 1.24.0.0 |
-| [TemplarMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/TemplarMastery__4827) | its_wifey | PC / Mac | 1.4 |
+| [TemplarMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/TemplarMastery__4827) | its_wifey | PC / Mac | 1.7 |
 | [TESO Ingame Messenger - TIM (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Migoda/TESO-Ingame-Messenger---TIM-for-Update-6__944) | Migoda | PC / Mac | 5.52 |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satuve/test__3735024b-209d-4fab-966c-339f5adffcb5) | satuve | Console | — |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/test__081b2e52-b426-454f-9be3-3a9a4aa5678f) | sirinsidiator | Console | — |
@@ -195,6 +195,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Troublemaker (French version - Unofficial)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Provision/Troublemaker-French-version---Unofficial__1087) | Provision | PC / Mac | 0.3.3 |
 | [True (De)Buffs Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-De-Buffs-Bars__c3d7fa6e-9024-4480-a02b-a9672c9da86e) | Toudidef | Console | — |
 | [True Bounty](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/True-Bounty__3008) | kawamonkey | PC / Mac | 1.0 |
+| [True Combat Text](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Combat-Text__9c4d5a13-410a-4a89-9024-319578ddd3a4) | Toudidef | Console | — |
 | [True Corpse Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-Corpse-Alert__adbd69da-20f5-4260-8760-56cbb7eff9b2) | Toudidef | Console | — |
 | [True DarkConvergence timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toudidef/True-DarkConvergence-timer__b73a092a-bcf8-4b42-9833-97402a32ed87) | Toudidef | Console | — |
 | [True Exploration](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/True-Exploration__a095f0da-9f45-4dde-a150-2c9b09ba7317) | Shinni42 | Console | — |

@@ -305,10 +305,10 @@ local function RegisterLAM()
     local LAM=LibAddonMenu2
     if not LAM then return end
     local options = {
-        {type="checkbox",name="Tracker aktivieren",
+        {type="checkbox",name="Enable tracker",
          getFunc=function() return sv.enabled end,
          setFunc=function(v) sv.enabled=v; RefreshVisibility() end, default=defaults.enabled},
-        {type="slider",name="Icon-Größe",min=32,max=128,step=2,
+        {type="slider",name="Icon size",min=32,max=128,step=2,
          getFunc=function() return sv.iconSize end,
          setFunc=function(v)
              sv.iconSize=v
@@ -318,15 +318,15 @@ local function RegisterLAM()
              ApplyTimerSize()
              ApplyGroupCountSize()
          end,default=defaults.iconSize},
-        {type="slider",name="Timer-Größe",min=20,max=100,step=5,
-         tooltip="Größe der Countdown-Zahl relativ zur Icon-Größe. 100% füllt das Icon in der Höhe nahezu vollständig aus.",
+        {type="slider",name="Timer size",min=20,max=100,step=5,
+         tooltip="Size of the countdown number relative to the icon. 100% nearly fills the icon height.",
          getFunc=function() return sv.timerSizePercent end,
          setFunc=function(v)
              sv.timerSizePercent = v
              ApplyTimerSize()
          end,
         },
-        {type="checkbox",name="Gruppen-Buff-Zähler anzeigen",
+        {type="checkbox",name="Show group buff counter",
          tooltip="Zeigt oben rechts, wie viele Gruppenmitglieder Bright Harbinger aktuell haben.",
          getFunc=function() return sv.groupCountEnabled end,
          setFunc=function(v)
@@ -334,41 +334,41 @@ local function RegisterLAM()
              UpdateGroupCount()
          end,
          default=true},
-        {type="slider",name="Gruppenzähler-Größe",min=20,max=100,step=5,
-         tooltip="Größe der Gruppenzahl relativ zur Icon-Größe. Standard 50%. Die Zahl bleibt oben rechts innerhalb des Icons.",
+        {type="slider",name="Group counter size",min=20,max=100,step=5,
+         tooltip="Size of the group count relative to the icon. Default is 50%. The number stays inside the top-right of the icon.",
          getFunc=function() return sv.groupCountSizePercent end,
          setFunc=function(v)
              sv.groupCountSizePercent = v
              ApplyGroupCountSize()
          end},
-        {type="header",name="Timer separat verschieben"},
+        {type="header",name="Timer position"},
         {type="slider",name="Timer X",min=-300,max=300,step=1,
-         tooltip="Verschiebt nur den Timer horizontal relativ zum Icon.",
+         tooltip="Moves only the timer horizontally relative to the icon.",
          getFunc=function() return tonumber(sv.timerOffsetX) or 0 end,
          setFunc=function(v) sv.timerOffsetX=v; ApplyTimerPosition() end},
         {type="slider",name="Timer Y",min=-300,max=300,step=1,
-         tooltip="Verschiebt nur den Timer vertikal relativ zum Icon.",
+         tooltip="Moves only the timer vertically relative to the icon.",
          getFunc=function() return tonumber(sv.timerOffsetY) or 0 end,
          setFunc=function(v) sv.timerOffsetY=v; ApplyTimerPosition() end},
 
-        {type="header",name="Stacks separat verschieben"},
+        {type="header",name="Stack counter position"},
         {type="slider",name="Stacks X",min=-300,max=300,step=1,
-         tooltip="Verschiebt nur den Group-Counter horizontal relativ zum Icon.",
+         tooltip="Moves only the group counter horizontally relative to the icon.",
          getFunc=function() return tonumber(sv.groupOffsetX) or 0 end,
          setFunc=function(v) sv.groupOffsetX=v; ApplyGroupPosition() end},
         {type="slider",name="Stacks Y",min=-300,max=300,step=1,
-         tooltip="Verschiebt nur den Group-Counter vertikal relativ zum Icon.",
+         tooltip="Moves only the group counter vertically relative to the icon.",
          getFunc=function() return tonumber(sv.groupOffsetY) or 0 end,
          setFunc=function(v) sv.groupOffsetY=v; ApplyGroupPosition() end},
 
-        {type="header",name="Gamepad Positionierung"},
+        {type="header",name="Gamepad positioning"},
         {type="slider",name="Gamepad move speed",min=100,max=1000,step=25,
          getFunc=function() return sv.gamepadMoveSpeed or 420 end,
          setFunc=function(v) sv.gamepadMoveSpeed=v end,default=420},
         {type="button",name="Toggle move mode",func=ToggleGamepadMoveMode,width="full"},
 
-        {type="button",name="Timer testen",func=StartCooldown,width="half"},
-        {type="button",name="Timer zurücksetzen",func=ResetCooldown,width="half"},
+        {type="button",name="Test timer",func=StartCooldown,width="half"},
+        {type="button",name="Reset timer",func=ResetCooldown,width="half"},
     }
     if TrackersByJH_RegisterMenu then TrackersByJH_RegisterMenu("Bright Harbinger Tracker", options) end
 end

@@ -18,7 +18,7 @@
     "NightbladeMastery"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4850/",
-  "fingerprint": "bd69b53c344c416dd18513431203952b2996f9ba15ccdf0388e974c06943a7d6",
+  "fingerprint": "6c6574a4929be45d117e866da950d951f4aef3ad7619a1e0f162cc4b42413b01",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17428.png",
     "https://cdn-eso.mmoui.com/preview/pvw17431.png",
@@ -30,11 +30,11 @@
   "source_id": "4850",
   "source_url": "https://www.esoui.com/downloads/info4850-NightbladeMasteryTracker.html",
   "stats": {
-    "downloads": 7,
+    "downloads": 57,
     "favorites": 0,
-    "monthly_downloads": 4
+    "monthly_downloads": 52
   },
   "title": "Nightblade Mastery Tracker",
-  "updated_at": 1789764059000,
-  "version": "1.0"
+  "updated_at": 1790297343000,
+  "version": "1.1"
 }

@@ -1,0 +1,48 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Rytic/RyticCombat-RaidTools__4854",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Rytic",
+  "canonical_id": "esoui:4854",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    },
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4854",
+  "deleted": false,
+  "directories": [
+    "RyticTankTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4854/",
+  "fingerprint": "396c513cf0295cac3f602e60e434499c27cecb35ad783161d7f675e34e8bbef6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17534.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17535.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17533.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17536.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17537.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17538.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17539.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4854",
+  "source_url": "https://www.esoui.com/downloads/info4854-RyticCombatRaidTools.html",
+  "stats": {
+    "downloads": 58,
+    "favorites": 1,
+    "monthly_downloads": 51
+  },
+  "title": "RyticCombat&RaidTools",
+  "updated_at": 1790296743000,
+  "version": "3.0"
+}

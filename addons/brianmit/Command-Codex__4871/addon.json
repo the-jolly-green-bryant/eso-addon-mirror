@@ -1,0 +1,42 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/brianmit/Command-Codex__4871",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "brianmit",
+  "canonical_id": "esoui:4871",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4871",
+  "deleted": false,
+  "directories": [
+    "CommandCodex"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4871/",
+  "fingerprint": "e021d509454a018b0eabeca367699330bc806a260d3c535c2a967842f23cf608",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17540.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17542.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17543.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17544.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17545.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4871",
+  "source_url": "https://www.esoui.com/downloads/info4871-CommandCodex.html",
+  "stats": {
+    "downloads": 5,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Command Codex",
+  "updated_at": 1790301894000,
+  "version": "1.0.0"
+}

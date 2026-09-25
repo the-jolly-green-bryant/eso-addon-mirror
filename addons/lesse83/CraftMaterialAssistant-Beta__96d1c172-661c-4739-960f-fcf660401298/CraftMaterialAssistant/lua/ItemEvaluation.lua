@@ -5,14 +5,14 @@ function CMA:DetermineItemAction(bag, slotIndex)
     local itemType, specializedItemType = GetItemType(bag, slotIndex)
 
     -- TODO: Turn on for Item-Identification
-    -- local i = GetItemLink(bag, slotIndex)
-    -- local id = GetItemLinkItemId(itemLink)
-    -- self:SendChatMessage(i)
-    -- self:SendChatMessage("id: " .. id)
-    -- self:SendChatMessage("itemType: " .. itemType)
-    -- if specializedItemType ~= null then
-    --     self:SendChatMessage("specializedItemType: " .. specializedItemType)
-    -- end
+    local i = GetItemLink(bag, slotIndex)
+    local id = GetItemLinkItemId(itemLink)
+    self:SendChatMessage(i)
+    self:SendChatMessage("id: " .. id)
+    self:SendChatMessage("itemType: " .. itemType)
+    if specializedItemType ~= null then
+        self:SendChatMessage("specializedItemType: " .. specializedItemType)
+    end
 
     -- handle the categories only having an on|off state
     if itemType == ITEMTYPE_FURNISHING_MATERIAL then
@@ -102,7 +102,7 @@ function CMA:DetermineItemAction(bag, slotIndex)
             return "ignore"
         else
             local scriptId = GetItemLinkItemUseReferenceId(itemLink)
-            local names, count = self:GetCharactersWithoutKnowledge(scriptId)
+            local names, count = self:GetCharactersWithoutScriptKnowledge(scriptId)
             if names == nil or count == nil then
                 -- no LibCharacterKnowledge available -> ignore
                 return "ignore"
@@ -179,6 +179,17 @@ function CMA:DetermineItemAction(bag, slotIndex)
             qualityThreshold = self.db.bankQualityThresholdProvisioning
         end
     else
+        -- all the other unlocked gear - try if its trait researchable... but only if selected to handle it
+        if self.db.bankResearchableItems and not IsItemPlayerLocked(bag, slotIndex) then
+            -- call the logic to get trait info and check with LibCharacterKnowledge if all chars know it
+            local traitResearchResult = self:HandleTraitItem(bag, slotIndex)
+            if traitResearchResult == "bank" then
+                return traitResearchResult
+            elseif traitResearchResult == "learned" then
+                return self.simpleMaterialDecisionMap[self.db.actionKnownTraitItems]
+            end
+        end
+        -- if that point is reached, its not a supported item with no traits to research
         return "unknown"
     end
 
@@ -196,15 +207,14 @@ function CMA:DetermineItemAction(bag, slotIndex)
         -- category turned off, ignore the item
         return "ignore"
     elseif (
-        self.db.bankProvisioningWritIngredientsOnly and
         (itemType == ITEMTYPE_INGREDIENT) and
         (specializedItemType ~= SPECIALIZED_ITEMTYPE_INGREDIENT_RARE)
     ) then
         -- handle the case of writ ingredients only
         if (self.provisioningTopLevelWritIngredientsMap[itemId] ~= nil) then
-            return "bank"
+             return self.db.bankProvisioningKeepWritIngredients and "bank" or "junk"
         else
-            return "junk"
+            return self.db.bankProvisioningKeepOtherIngredients and "bank" or "junk"
         end
     elseif (
         ((qualityThreshold == nil) or (quality >= self.qualityMap[qualityThreshold])) and

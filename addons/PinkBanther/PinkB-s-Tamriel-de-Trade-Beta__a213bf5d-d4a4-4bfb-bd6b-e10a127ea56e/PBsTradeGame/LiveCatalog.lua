@@ -33,6 +33,42 @@ local function zoneForIndex(zoneIndex)
     return cached or nil
 end
 L.ZoneForName=zoneForName
+local function zoneForId(zoneId)
+    if not zoneId or zoneId==0 then return nil end
+    local name=type(GetZoneNameById)=="function" and GetZoneNameById(zoneId) or nil
+    local zone=name and zoneForName(name)
+    if zone or type(GetZoneIndex)~="function" then return zone end
+    local ok,indexValue=pcall(GetZoneIndex,zoneId)
+    return ok and indexValue and zoneForIndex(indexValue) or nil
+end
+-- Player housing exposes the stable houseId and the outdoor zone where that house is found.
+-- The small table is a last resort for the two base-game inn rooms if that API is unavailable.
+local function houseTradeZone(houseId)
+    if not houseId or houseId==0 then return nil end
+    if type(GetHouseFoundInZoneId)=="function" then
+        local ok,zoneId=pcall(GetHouseFoundInZoneId,houseId)
+        if ok then local zone=zoneForId(zoneId); if zone then return zone,"housingApi" end end
+    end
+    local zoneId=C.canonical.houseRegions and C.canonical.houseRegions[houseId]
+    return zoneId and D.zoneById[zoneId] or nil,"houseTable"
+end
+L.HouseTradeZone=houseTradeZone
+-- Interiors use their own zone index. Walk the client zone hierarchy so an add-on loaded
+-- after the player is already inside an inn/house can still file it under its outdoor region.
+local function parentZoneForIndex(zoneIndex)
+    if type(GetZoneId)~="function" or type(GetParentZoneId)~="function" then return nil end
+    local zoneId=GetZoneId(zoneIndex); local seen={}
+    for _=1,12 do
+        if not zoneId or zoneId==0 or seen[zoneId] then break end
+        seen[zoneId]=true
+        local parentId=GetParentZoneId(zoneId)
+        if not parentId or parentId==0 or parentId==zoneId then break end
+        local zone=zoneForId(parentId)
+        if zone then return zone end
+        zoneId=parentId
+    end
+end
+L.ParentZoneForIndex=parentZoneForIndex
 local categoryWords={
     {"鉱","mine","quarry","採掘","mine"},{"製材","lumber","sawmill","lumber"},{"鍛冶","forge","smith","forge"},
     {"仕立","tailor","cloth","tailor"},{"錬金","alchemy","apothec","alchemy"},{"酒場","tavern","pub","tavern"},
@@ -65,7 +101,12 @@ L.Hash=hash
 function L.Find(zoneId,name)
     local key=L.Key(name)
     for _,p in ipairs(L.byKey[key] or {}) do if p.zone==zoneId then return p end end
-    for _,id in ipairs(D.propertyIdsByZone[zoneId] or {}) do if L.Key(D.propertyById[id].name)==key then return D.propertyById[id] end end
+    -- A live ESO location must never resolve to one of the fictional campaign businesses.
+    -- Only canonical records participate in current-location matching.
+    for _,id in ipairs(D.propertyIdsByZone[zoneId] or {}) do
+        local p=D.propertyById[id]
+        if p.canonical and L.Key(p.name)==key then return p end
+    end
 end
 -- Interiors (houses, instanced taverns, delves) are their own zones; match them by name anywhere.
 function L.FindAnywhere(name)
@@ -85,8 +126,14 @@ function L.PriceFactor(id,name)
     return (tier and tier.mult or 1)*jitter,(tier and tier.yield or K.defaultYield),tier
 end
 function L.BaseValue(id,name,average)
+    local special=C.canonical.specialValues and C.canonical.specialValues[L.Key(name)]
+    if special then
+        local tier={label=special.label or "特別物件",category=special.category,yield=special.yield or C.canonical.defaultYield}
+        return special.value,math.floor(special.value*tier.yield),tier
+    end
     local factor,yield,tier=L.PriceFactor(id,name)
-    local value=math.max(500,math.floor((average or L.CatalogAverage())*factor/50)*50)
+    local value=math.max(C.Money(500),math.floor((average or L.CatalogAverage())*factor/(50*C.currencyScale))*(50*C.currencyScale))
+    value=value+hash(id..name..":value")%C.currencyScale
     return value,math.floor(value*yield),tier
 end
 -- Average value of the regular (non-real-place) catalog before any period has passed.
@@ -141,6 +188,18 @@ function L.Import()
             end
         end
     end
+    -- A few base-game interiors are important registration anchors but are not exposed as
+    -- house fast-travel nodes on every platform/client state.  Add name-based fallbacks after
+    -- the live import; `add` suppresses them when the client already supplied the same place.
+    local knownInteriors={
+        {id="eso_known_drunken_lion",name="酔いどれライオン",zone="glenumbra",category="inn"},
+        {id="eso_known_maras_kiss",name="マーラの口付け",zone="auridon",category="inn"},
+        {id="eso_known_maras_kiss_pub",name="パブ マーラの口付け",zone="auridon",category="tavern"},
+    }
+    for _,place in ipairs(knownInteriors) do
+        add(place.id,place.name,D.zoneById[place.zone],place.category,
+            "ESO内の実在する宿屋・酒場。現地で明示的に物件登録できます。","eso_known",{known=true})
+    end
     return L.count
 end
 -- Where the player is right now, as the client reports it. Cheap enough for a 2 s poll.
@@ -151,7 +210,13 @@ function L.ReadHere()
         location=type(GetPlayerLocationName)=="function" and GetPlayerLocationName() or "",
         houseId=type(GetCurrentZoneHouseId)=="function" and GetCurrentZoneHouseId() or 0}
     here.zone=zoneForIndex(zoneIndex)
-    if here.zone then L.lastOutdoorZone=here.zone.id end
+    if not here.zone and here.houseId~=0 then here.parentZone,here.tradeZoneSource=houseTradeZone(here.houseId) end
+    if not here.zone and not here.parentZone then
+        here.parentZone=parentZoneForIndex(zoneIndex)
+        if here.parentZone then here.tradeZoneSource="parentZone" end
+    end
+    local tradeZone=here.zone or here.parentZone
+    if tradeZone then L.lastOutdoorZone=tradeZone.id end
     return here
 end
 -- A visit record: outdoors it is the local place name inside a trade region; inside an
@@ -160,16 +225,27 @@ function L.Observe()
     local here=L.ReadHere(); if not here then return nil end
     if here.zone then
         if here.location=="" or L.Key(here.location)==L.Key(here.zone.name) then return nil end
-        return {zoneId=here.zone.id,name=here.location}
+        return {zoneId=here.zone.id,name=here.location,houseId=here.houseId}
     end
     local name=here.zoneName~="" and here.zoneName or here.location
     if name=="" then return nil end
-    return {zoneId=L.lastOutdoorZone,name=name,alt=here.location~=name and here.location or nil,interior=true}
+    return {zoneId=here.parentZone and here.parentZone.id or L.lastOutdoorZone,
+        name=name,alt=here.location~=name and here.location or nil,interior=true,houseId=here.houseId}
 end
-function L.Apply(state,record)
+-- Resolve a live record to a canonical property without marking it as registered.  This is
+-- used by the title screen so the player can review and explicitly register the current place.
+function L.Resolve(state,record)
     if not state or not record then return nil end
     local p=record.zoneId and L.Find(record.zoneId,record.name)
     if not p and record.interior then p=L.FindAnywhere(record.name) or (record.alt and L.FindAnywhere(record.alt)) end
+    -- POI/node indices can be renumbered between client versions. When no exact canonical
+    -- name match exists, a house gets a stable ID based on the API's houseId instead.
+    if not p and record.zoneId and record.houseId and record.houseId~=0 then
+        local zone=D.zoneById[record.zoneId]
+        local id="eso_houseid_"..record.houseId
+        p=D.propertyById[id] or add(id,record.name,zone,"inn",
+            "ESOの住宅IDから所在地を確認した宿屋・住宅。","eso_house",{houseId=record.houseId})
+    end
     if not p and record.zoneId then
         local zone=D.zoneById[record.zoneId]
         local id=string.format("eso_location_%s_%d",record.zoneId,hash(record.name))
@@ -177,16 +253,26 @@ function L.Apply(state,record)
             record.interior and "プレイヤーが実際に立ち入ったESO内の建物・屋内。" or "プレイヤーが実際に訪れたESO内の地点。","eso_location",{})
     end
     if not p then return nil end
-    state.visitedProperties=state.visitedProperties or {}
-    local newlyVisited=not state.visitedProperties[p.id]
-    state.visitedProperties[p.id]=true
     if not state.properties[p.id] then
         state.properties[p.id]=PBTrade.Model.Copy(p)
         PBTrade.Model.PriceCanonical(state,state.properties[p.id])
     end
+    return p
+end
+function L.Apply(state,record)
+    local p=L.Resolve(state,record)
+    if not p then return nil end
+    state.visitedProperties=state.visitedProperties or {}
+    local newlyVisited=not state.visitedProperties[p.id]
+    state.visitedProperties[p.id]=true
     return p,newlyVisited
 end
 function L.CaptureCurrent(state) return L.Apply(state,L.Observe()) end
+function L.PreviewCurrent(state,record)
+    record=record or L.Observe()
+    local p=L.Resolve(state,record)
+    return p,record,p and state.visitedProperties and state.visitedProperties[p.id] or false
+end
 -- Visits made before the ledger is first opened are kept as small records in saved variables.
 function L.RecordPending(saved,record)
     if not saved or not record then return end
@@ -194,7 +280,8 @@ function L.RecordPending(saved,record)
     local key=(record.zoneId or "?").."|"..L.Key(record.name)
     for _,r in ipairs(saved.pendingVisits) do if r.key==key then return end end
     if #saved.pendingVisits>=200 then table.remove(saved.pendingVisits,1) end
-    saved.pendingVisits[#saved.pendingVisits+1]={key=key,zoneId=record.zoneId,name=record.name,alt=record.alt,interior=record.interior}
+    saved.pendingVisits[#saved.pendingVisits+1]={key=key,zoneId=record.zoneId,name=record.name,alt=record.alt,
+        interior=record.interior,houseId=record.houseId}
 end
 -- Returns how many places were newly confirmed, and their names (for the opening notice).
 function L.ApplyPending(state,saved)
@@ -211,9 +298,14 @@ end
 function L.Describe(state)
     local here=L.ReadHere()
     if not here then return "現在地を取得できません（ESOクライアント外）" end
+    local tradeRegion
+    if here.zone then tradeRegion=here.zone.name
+    elseif here.parentZone then
+        local source=here.tradeZoneSource=="housingApi" and "住宅所在地API" or (here.tradeZoneSource=="houseTable" and "住宅ID" or "親地域")
+        tradeRegion=here.parentZone.name.."（"..source.."から判定）"
+    else tradeRegion="対応なし・屋内扱い"..(L.lastOutdoorZone and ("（直前の地域 "..D.zoneById[L.lastOutdoorZone].name.."）") or "") end
     local lines={"ESOの地域："..here.zoneName.."（zoneIndex "..here.zoneIndex..(here.houseId~=0 and (" / 住宅ID "..here.houseId) or "")..")",
-        "地名："..(here.location~="" and here.location or "（なし）"),
-        "交易地域："..(here.zone and here.zone.name or ("対応なし・屋内扱い"..(L.lastOutdoorZone and ("（直前の地域 "..D.zoneById[L.lastOutdoorZone].name.."）") or "")))}
+        "地名："..(here.location~="" and here.location or "（なし）"),"交易地域："..tradeRegion}
     local record=L.Observe()
     if not record then lines[#lines+1]="物件：なし（地域名そのもの、または地名なし）"
     else
@@ -221,9 +313,10 @@ function L.Describe(state)
         if not p and record.interior then p=L.FindAnywhere(record.name) or (record.alt and L.FindAnywhere(record.alt)) end
         if p then
             local sp=state and state.properties[p.id]
-            lines[#lines+1]="物件："..p.name.."（"..(state and state.visitedProperties[p.id] and "訪問済み" or "未訪問")
+            lines[#lines+1]="物件："..p.name.."（"..(state and state.visitedProperties[p.id] and "登録済み・遠隔買収可" or "未登録")
                 ..(sp and (" / 評価額 "..sp.marketValue) or "").."）"
-        else lines[#lines+1]="物件：未登録（「"..record.name.."」として次の確認で登録されます）" end
+        elseif record.zoneId then lines[#lines+1]="物件：未登録（「"..record.name.."」として現在地の再確認時に登録できます）"
+        else lines[#lines+1]="物件：未登録（所属する交易地域を特定できません。一度屋外へ出てから入り直してください）" end
     end
     return table.concat(lines,"\n")
 end

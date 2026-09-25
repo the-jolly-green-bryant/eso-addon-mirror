@@ -1,9 +1,10 @@
 ## Title: Tamriel Sky Dial
-## Author: |c88CCFF<you>|r
+## Author: MemphisKane991
 ## Version: 1.0
-## APIVersion: 101046 101047
+## AddOnVersion: 1
+## APIVersion: 101050 101051
 ## SavedVariables: TamrielSkyDial_SV
-## DependsOn: LibClockTST LibAddonMenu-2.0>=30
-## Description: A movable, scalable time-of-day dial. Shows an animated sun/moon/sky sprite for the current in-game time, cross-fading as the day turns. Time is read from LibClockTST. Portions of this add-on were created with AI assistance.
+## DependsOn: LibClockTST>=1 LibAddonMenu-2.0>=43
+## Description: A movable, scalable in-game time-of-day dial with a cross-fading sun/moon/sky sprite, read from LibClockTST. Add-on code was created with AI assistance; the sun/moon/sky artwork is the author's own. Credits: LibClockTST (Phinix), LibAddonMenu-2.0 (sirinsidiator).
 
 TamrielSkyDial.lua

@@ -1,8 +1,8 @@
 ## Title: PvPTargetInfo
 ## Author: Bucketmore
 ## Description: PvP用ターゲット情報パネル (敵のBUFF/DEBUFF/自分のセットProc検知)
-## Version: 1.5.0
-## AddOnVersion: 35
+## Version: 1.4.25
+## AddOnVersion: 36
 ;; 以下のAPIVersionは2026年8月時点の最新パッチ(12.0.8)の値です。
 ;; ずれている場合はゲーム内チャット欄で /script d(GetAPIVersion()) を実行し、
 ;; 表示された数値に置き換えてください。一致しないとアドオンはロードされません。

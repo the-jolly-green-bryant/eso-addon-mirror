@@ -29,8 +29,7 @@ function CMA:CreateSettingsMenu()
         {
             type = "checkbox",
             name = "Use character specific settings",
-            tooltip = "Turn on for character specific settings. If turned off, it will use the account wide settings.",
-            warning = "Changing the state will immediately trigger an UI reload.",
+            tooltip = "Turn on for character specific settings. If turned off, it will use the account wide settings.\n\nChanging the state will immediately trigger an UI reload.",
             getFunc = function() return self.dbCharSpecific.useCharacterSettings end,
             setFunc = function(v)
                 self.dbCharSpecific.useCharacterSettings = v
@@ -336,10 +335,19 @@ function CMA:CreateSettingsMenu()
                 },
                 {
                     type = "checkbox",
-                    name = "Bank only Writ Ingredients",
-                    tooltip = "When banking Provisioning Ingredients only keep those needed by top-level Daily Writs.",
-                    getFunc = function() return self.db.bankProvisioningWritIngredientsOnly end,
-                    setFunc = function(v) self.db.bankProvisioningWritIngredientsOnly = v end,
+                    name = "Bank Writ Ingredients",
+                    tooltip = "Keep Ingredients needed by top-level Daily Writs.",
+                    getFunc = function() return self.db.bankProvisioningKeepWritIngredients end,
+                    setFunc = function(v) self.db.bankProvisioningKeepWritIngredients = v end,
+                    disabled = function() return (not self.db.enableAddon) or (not self.db.bankProvisioning) end,
+                    width = "half"
+                },
+                {
+                    type = "checkbox",
+                    name = "Bank other Ingredients",
+                    tooltip = "Keep other Ingredients (those not needed by top-level Daily Writs).",
+                    getFunc = function() return self.db.bankProvisioningKeepOtherIngredients end,
+                    setFunc = function(v) self.db.bankProvisioningKeepOtherIngredients = v end,
                     disabled = function() return (not self.db.enableAddon) or (not self.db.bankProvisioning) end,
                     width = "half"
                 },
@@ -527,7 +535,32 @@ function CMA:CreateSettingsMenu()
                     width = "half"
                 }
             }
-        }
+        },
+        {
+            type = "submenu",
+            name = "Trait Research Gear",
+            controls = {
+                {
+                    type = "checkbox",
+                    name = "Enable banking",
+                    tooltip = "REQUIRES LibCharacterKnowledge!\n\nEnable banking of UNLOCKED gear having unknown, researchable Traits.\n\nAlso writes a chat message who is able to learn it.",
+                    getFunc = function() return self.db.bankResearchableItems end,
+                    setFunc = function(v) self.db.bankResearchableItems = v end,
+                    disabled = function() return not self.db.enableAddon end,
+                    width = "half"
+                },
+                {
+                    type = "dropdown",
+                    name = "Handling of researched gear trait",
+                    tooltip = "Applied if all characters have researched this trait.\n\nBank: Move to the bank.\nSell: Mark as junk to be sold at the vendor.\nIgnore: Don't do anything.",
+                    choices = self.simpleMaterialChoices,
+                    getFunc = function() return self.db.actionKnownTraitItems end,
+                    setFunc = function(v) self.db.actionKnownTraitItems = v end,
+                    disabled = function() return (not self.db.enableAddon) or not(self.db.bankResearchableItems) end,
+                    width = "half"
+                }
+            }
+        },
     }
     LAM:RegisterOptionControls("Craft Material Assistant", optionsData)
 end

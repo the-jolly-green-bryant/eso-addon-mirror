@@ -3,10 +3,10 @@ local RM=RyticRaidMode
 local EM=EVENT_MANAGER
 local WM=WINDOW_MANAGER
 RM.name="RyticRaidMode"
-RM.version="0.3.1"
+RM.version="1.1"
 
 local defaults={
- autoPrompt=true, active=false, snapshot=nil, windowHidden=false,
+ active=false, snapshot=nil, windowHidden=false, lastInTrial=false,
  raidProfile={}, roleProfiles={HEALER={}}, classProfiles={}, zoneProfiles={},
 }
 
@@ -220,23 +220,58 @@ local function restore()
  zo_callLater(function() ReloadUI("ingame") end,350)
 end
 
-local function inGroupInstance()
- if IsPlayerInRaid and IsPlayerInRaid() then return true end
- if IsUnitInDungeon then local ok,v=pcall(IsUnitInDungeon,"player"); if ok and v then return true end end
+-- Trial-only prompt detection. Keep the known-good EVENT_PLAYER_ACTIVATED path and
+-- simply filter the current zone by trial name. This deliberately avoids changing
+-- the popup/event system that was validated in Cloudrest, Sanity's Edge and Dreadsail Reef.
+local TRIAL_ZONES={
+ "aetherianarchive",
+ "helracitadel",
+ "sanctumophidia",
+ "mawoflorkhaj",
+ "hallsoffabrication",
+ "asylumsanctorium",
+ "cloudrest",
+ "sunspire",
+ "kyne'saegis", "kynesaegis",
+ "rockgrove",
+ "dreadsailreef",
+ "sanity'sedge", "sanitysedge",
+ "lucentcitadel",
+ "osseincage",
+}
+
+local function inTrial()
+ local z=norm(currentZoneName())
+ if z=="" then return false end
+ for _,trialName in ipairs(TRIAL_ZONES) do
+  if z==norm(trialName) then return true end
+ end
  return false
 end
 
-local function prompt(entering)
- local body=entering and
-  "Group instance detected.\n\nLoad the smart Raid profile for this character, role and instance?" or
-  "Raid Mode is active and you left the instance.\n\nRestore your exact pre-raid addon setup?"
- ZO_Dialogs_ShowDialog("RYTIC_RAID_MODE_PROMPT",{entering=entering},{mainTextParams={body}})
+local function promptEnterTrial()
+ local body="Trial detected.\n\nLoad the smart Raid profile for this character, role and trial?"
+ ZO_Dialogs_ShowDialog("RYTIC_RAID_MODE_PROMPT",{entering=true},{mainTextParams={body}})
 end
+
+local function promptLeaveTrial()
+ local body="You left the Trial.\n\nRestore your pre-raid addon setup?"
+ ZO_Dialogs_ShowDialog("RYTIC_RAID_MODE_PROMPT",{entering=false},{mainTextParams={body}})
+end
+
 local function zoneCheck()
- if not RM.saved.autoPrompt then return end
- local inside=inGroupInstance()
- if inside and not RM.saved.active then zo_callLater(function() prompt(true) end,1400)
- elseif not inside and RM.saved.active then zo_callLater(function() prompt(false) end,1400) end
+ local nowInTrial=inTrial()
+ local wasInTrial=RM.saved.lastInTrial==true
+
+ -- Persist the zone state so ReloadUI after applying Raid Mode does not lose
+ -- the fact that we are already inside a Trial.
+ RM.saved.lastInTrial=nowInTrial
+
+ if nowInTrial and not wasInTrial and not RM.saved.active then
+  zo_callLater(promptEnterTrial,1400)
+ elseif not nowInTrial and wasInTrial and RM.saved.active then
+  zo_callLater(promptLeaveTrial,1400)
+ end
 end
 
 local function dependencyNames(a)
@@ -350,19 +385,18 @@ local function makeUI()
   end
   w:SetHidden(true)
  end)
- button(w,"AUTO PROMPT",15,188,140,function() RM.saved.autoPrompt=not RM.saved.autoPrompt; RM.Refresh() end)
- button(w,"PRINT PROFILE",165,188,140,function()
+ button(w,"PRINT PROFILE",15,188,140,function()
   local p=buildSmartProfile(); msg("Smart profile:")
   local names={}; for n,v in pairs(p) do if v then names[#names+1]=n end end
   table.sort(names); for _,n in ipairs(names) do d("  "..n) end
  end)
- button(w,"LIST ALL ADDONS",315,188,150,printAddonInventory)
+ button(w,"LIST ALL ADDONS",165,188,150,printAddonInventory)
 end
 function RM.Refresh()
  if not RM.status then return end
  local p=buildSmartProfile(); local n=0; for _,v in pairs(p) do if v then n=n+1 end end
- RM.status:SetText(string.format("State: %s\nClass: %s    Role: %s\nZone: %s\nSmart Raid stack: %d addons/libraries    Auto Prompt: %s",
-  RM.saved.active and "RAID MODE" or "NORMAL",currentClass(),currentRole(),currentZoneName(),n,RM.saved.autoPrompt and "ON" or "OFF"))
+ RM.status:SetText(string.format("State: %s\nClass: %s    Role: %s\nZone: %s\nSmart Raid stack: %d addons/libraries",
+  RM.saved.active and "RAID MODE" or "NORMAL",currentClass(),currentRole(),currentZoneName(),n))
 end
 
 local function attachHudFragment()
@@ -389,13 +423,11 @@ local function slash(arg)
  elseif arg=="raid" then applyRaid()
  elseif arg=="restore" then restore()
  elseif arg=="save" then saveCurrentAsRaidProfile()
- elseif arg=="auto on" then RM.saved.autoPrompt=true; RM.Refresh(); msg("Auto Prompt ON.")
- elseif arg=="auto off" then RM.saved.autoPrompt=false; RM.Refresh(); msg("Auto Prompt OFF.")
  elseif arg=="profile" then
   local p=buildSmartProfile(); local names={}; for n,v in pairs(p) do if v then names[#names+1]=n end end
   table.sort(names); msg("Smart profile:"); for _,n in ipairs(names) do d("  "..n) end
  elseif arg=="addons" then printAddonInventory()
- else msg("/rrm show | hide | save | raid | restore | profile | addons | auto on/off") end
+ else msg("/rrm show | hide | save | raid | restore | profile | addons") end
 end
 
 local function loaded(_,name)

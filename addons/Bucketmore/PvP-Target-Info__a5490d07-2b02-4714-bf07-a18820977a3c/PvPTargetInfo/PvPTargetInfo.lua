@@ -4,21 +4,6 @@
     メインエントリポイント。名前空間の定義、SavedVariablesの管理、
     スラッシュコマンド(/pti)、他モジュールの初期化呼び出しを行う。
 
-    ============================================================
-    v1.5.0: クリーン再基準版(2026年9月)
-    ============================================================
-    v1.4.24〜v1.4.49で行われた実験的変更(EnemyTargetDetector連携、
-    targetEnemyOnly/enemyOnly、フィールド表示、その他の追加設定)は
-    一切引き継いでいない。本ファイルはv1.4.23を唯一の基準として、
-    以下の4機能のみで再構成した:
-      - UI①: 敵プレイヤーの重要BUFF
-      - UI②: 敵プレイヤーの重要DEBUFF
-      - UI③: 自分のCondition(UI①②とは完全に独立、戦闘状態と無関係)
-      - 戦闘時UI自動表示(UI①②のみ対象。PTI.UI.combatGateActiveと
-        combatAutoShow設定を参照。検知・分類・表示内容には一切関与しない)
-    以下より下の変更履歴(v1.4.0〜v1.4.23)は、この基準版に至った
-    設計判断の記録として残しているが、v1.4.24以降の履歴は存在しない。
-
     v1.4.0で大幅仕様変更:
       - HP表示・処刑ライン警告・自分のバフ/デバフ表示を廃止
       - UI①(敵の重要バフ)・UI②(敵の重要デバフ)・UI③(自分のProc)の
@@ -317,7 +302,7 @@ PvPTargetInfo = PvPTargetInfo or {}
 local PTI = PvPTargetInfo
 
 PTI.name = "PvPTargetInfo"
-PTI.version = "1.5.0"
+PTI.version = "1.4.25"
 
 local SV_VERSION = 2
 
@@ -391,16 +376,6 @@ local defaults = {
 
     procConfig = {
         idsText = "", -- AbilityIdをカンマ区切りで並べた形式("id,id,...")。名前はGetAbilityNameで自動取得する
-    },
-
-    -- 戦闘時UI自動表示: UI①②(buffUI/debuffUI)のみが対象。UI③(Condition)は
-    -- 完全に独立しており、この設定の影響を受けない(常にProc/Condition自身の
-    -- 発動をトリガーに表示される)。
-    -- 挙動: リロード/ログイン直後はUI①②を隠しておき、最初に戦闘状態に
-    -- 入った時点で表示する。以後は戦闘が終了しても再び隠さない
-    -- (既存仕様=常時表示に戻るだけで、新しい非表示処理は追加しない)。
-    combatAutoShow = {
-        enabled = true,
     },
 }
 

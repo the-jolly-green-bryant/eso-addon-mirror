@@ -1,8 +1,8 @@
 local AMT = {}
 local ADDON_NAME = "ArcanistMasteryTracker"
 
--- Public release v1.4.
-AMT.version = "1.4"
+-- Public release v1.5.
+AMT.version = "1.6"
 
 -- Mastery / effect IDs proven by the existing v1.3 tracker.
 local MAJOR_FORCE_ID = 61747
@@ -49,7 +49,8 @@ local defaults = {
     blockUnlocked=false, blockHideOutOfCombat=true,
 }
 
-local sv, inCombat=false
+local sv, charSv, inCombat=false
+local ARCANIST_CLASS_ID = CLASS_ID_ARCANIST or 117
 local selected, indices, controls = {}, {}, {}
 local masteryFrame, cruxFrame, cruxTexture, cruxNumberLabel
 local gibberFrame, gibberTitleLabel, gibberBar, gibberTimerLabel
@@ -63,6 +64,7 @@ local gibberActive, gibberEndTime = false, 0
 
 
 local function IsHUDShowing()
+    if IsUnitDead("player") then return false end
     if not HUD_SCENE or not HUD_UI_SCENE then return false end
     return HUD_SCENE:IsShowing() or HUD_UI_SCENE:IsShowing()
 end
@@ -306,6 +308,7 @@ local function ScanCurrentCrux()
 end
 local function UpdateCrux()
     if not IsHUDShowing() then cruxFrame:SetHidden(true); return end
+    if GetUnitClassId("player") ~= ARCANIST_CLASS_ID then cruxFrame:SetHidden(true); return end
     if not sv.cruxEnabled or (sv.cruxHideOutOfCombat and not inCombat and not sv.cruxUnlocked) then cruxFrame:SetHidden(true); return end
     cruxFrame:SetHidden(false); cruxNumberLabel:SetText(tostring(currentCrux))
 end
@@ -327,7 +330,7 @@ local function GetBlockMitigationPercent()
 end
 local function UpdateBlock()
     if not IsHUDShowing() then blockFrame:SetHidden(true); return end
-    if not sv.blockEnabled or (sv.blockHideOutOfCombat and not inCombat and not sv.blockUnlocked) then blockFrame:SetHidden(true); return end
+    if not charSv.blockEnabled or (sv.blockHideOutOfCombat and not inCombat and not sv.blockUnlocked) then blockFrame:SetHidden(true); return end
     blockFrame:SetHidden(false)
     local pct=math.floor(GetBlockMitigationPercent()+.5)
     if pct>=BLOCK_MITIGATION_CAP then
@@ -431,11 +434,12 @@ local function CreateSettings()
     opts[#opts+1]={type="checkbox",name="Hide Crux Out of Combat",getFunc=function() return sv.cruxHideOutOfCombat end,setFunc=function(v) sv.cruxHideOutOfCombat=v UpdateCrux() end,default=true}
     opts[#opts+1]={type="slider",name="Crux Counter Size",min=50,max=200,step=1,getFunc=function() return sv.cruxSize end,setFunc=function(v) sv.cruxSize=v; cruxFrame:SetDimensions(v,v) end,default=110}
     opts[#opts+1]={type="slider",name="Crux Number Size",min=20,max=80,step=1,getFunc=function() return sv.cruxTextSize end,setFunc=function(v) sv.cruxTextSize=v; cruxNumberLabel:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick",v)) end,default=38}
+    opts[#opts+1]={type="colorpicker",name="Crux Number Color",getFunc=function() local c=sv.cruxTextColor; return c.r,c.g,c.b,c.a end,setFunc=function(r,g,b,a) sv.cruxTextColor={r=r,g=g,b=b,a=a}; cruxNumberLabel:SetColor(r,g,b,a) end,default={r=1,g=1,b=1,a=1}}
     opts[#opts+1]={type="header",name="Gibbering Shield"}
     opts[#opts+1]={type="checkbox",name="Enable Gibbering Shield",getFunc=function() return sv.gibberEnabled end,setFunc=function(v) sv.gibberEnabled=v UpdateGibber() end,default=true}
     opts[#opts+1]={type="checkbox",name="Unlock Gibbering Shield",getFunc=function() return sv.gibberUnlocked end,setFunc=function(v) sv.gibberUnlocked=v Unlock(gibberFrame,v); UpdateGibber() end,default=false}
     opts[#opts+1]={type="header",name="Block Mitigation"}
-    opts[#opts+1]={type="checkbox",name="Enable Block Mitigation",getFunc=function() return sv.blockEnabled end,setFunc=function(v) sv.blockEnabled=v UpdateBlock() end,default=true}
+    opts[#opts+1]={type="checkbox",name="Enable Block Mitigation",getFunc=function() return charSv.blockEnabled end,setFunc=function(v) charSv.blockEnabled=v UpdateBlock() end,default=true}
     opts[#opts+1]={type="checkbox",name="Unlock Block Mitigation",getFunc=function() return sv.blockUnlocked end,setFunc=function(v) sv.blockUnlocked=v Unlock(blockFrame,v); UpdateBlock() end,default=false}
     opts[#opts+1]={type="checkbox",name="Hide Block Out of Combat",getFunc=function() return sv.blockHideOutOfCombat end,setFunc=function(v) sv.blockHideOutOfCombat=v UpdateBlock() end,default=true}
     LAM:RegisterOptionControls(ADDON_NAME.."Options",opts)
@@ -467,6 +471,7 @@ local function OnLoaded(_,addonName)
     if addonName~=ADDON_NAME then return end
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME,EVENT_ADD_ON_LOADED)
     sv=ZO_SavedVars:NewAccountWide("ArcanistMasteryTrackerSavedVariables",2,nil,defaults)
+    charSv=ZO_SavedVars:NewCharacterIdSettings("ArcanistMasteryTrackerCharacterSavedVariables",1,nil,{blockEnabled=true})
     -- Migration safety for users coming from v1.3.
     if not sv.masteryEnabled then sv.masteryEnabled={ink=true,abyssal=true,fate=true,unbound=true,erudite=true} end
     if not sv.textColor or sv.textColor.r then sv.textColor={1,1,1,1} end

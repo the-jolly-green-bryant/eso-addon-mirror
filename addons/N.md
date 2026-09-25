@@ -43,7 +43,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [NGear-dev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/unacntble/NGear-dev__842f6e57-44cf-436d-b2fb-b38615f20346) | unacntble | Console | — |
 | [Night Market Faction Score Hider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ZareShadows/Night-Market-Faction-Score-Hider__4558) | ZareShadows | PC / Mac | 1.0.1 |
 | [Night Market Keys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/romilly/Night-Market-Keys__4575) | romilly | PC / Mac | 1.0.4 |
-| [Nightblade Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Nightblade-Mastery-Tracker__4850) | its_wifey | PC / Mac | 1.0 |
+| [Nightblade Mastery Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/Nightblade-Mastery-Tracker__4850) | its_wifey | PC / Mac | 1.1 |
 | [Nika Brave GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/Nika-Brave-GuildHall__3064) | Verling | PC / Mac | 1.0.6 |
 | [Nine Resourcez - Track 3 keeps and 9 resources quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Nine-Resourcez---Track-3-keeps-and-9-resources-quests__3391) | Toirealach | PC / Mac | 1.5.5a |
 | [Nirn Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KingBloodWings/Nirn-Icons__3621) | KingBloodWings | PC / Mac | 1.0.5 |

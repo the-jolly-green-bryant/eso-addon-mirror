@@ -1,0 +1,7 @@
+Warden Mastery — Change Log
+
+Version 1.3
+- Added player-death HUD handling.
+- Mastery tracker UI now hides while the player is dead.
+- Tracker UI resumes normal visibility/update behavior after resurrection.
+- Existing mastery detection, timers, settings, positions, and out-of-combat behavior were otherwise left unchanged.

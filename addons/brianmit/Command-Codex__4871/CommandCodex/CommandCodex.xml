@@ -1,0 +1,74 @@
+<GuiXml>
+    <Controls>
+        <!-- Category in the tree on the left (All, Favorites, Addons, ...). -->
+        <Control name="CommandCodex_Category" virtual="true" mouseEnabled="true">
+            <Dimensions x="260" y="30" />
+            <OnMouseEnter>CommandCodex.Category_OnMouseEnter(self)</OnMouseEnter>
+            <OnMouseExit>CommandCodex.Category_OnMouseExit(self)</OnMouseExit>
+            <OnMouseUp>CommandCodex.Category_OnMouseUp(self, button, upInside)</OnMouseUp>
+            <Controls>
+                <Texture name="$(parent)Arrow" textureFile="EsoUI/Art/Buttons/tree_closed_up.dds">
+                    <Dimensions x="18" y="18" />
+                    <Anchor point="LEFT" />
+                </Texture>
+                <Label name="$(parent)Text" font="ZoFontHeader" color="C5C29E" verticalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" offsetX="22" />
+                    <Anchor point="RIGHT" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- One addon under "Addons" in the tree. -->
+        <Control name="CommandCodex_SubCategory" virtual="true" mouseEnabled="true">
+            <Dimensions x="260" y="24" />
+            <OnMouseEnter>CommandCodex.Category_OnMouseEnter(self)</OnMouseEnter>
+            <OnMouseExit>CommandCodex.Category_OnMouseExit(self)</OnMouseExit>
+            <OnMouseUp>CommandCodex.Category_OnMouseUp(self, button, upInside)</OnMouseUp>
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontGame" color="C5C29E" verticalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" offsetX="34" />
+                    <Anchor point="RIGHT" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- One command in the list on the right. -->
+        <Control name="CommandCodex_Row" virtual="true" mouseEnabled="true">
+            <Dimensions x="420" y="28" />
+            <OnMouseEnter>CommandCodex.Row_OnMouseEnter(self)</OnMouseEnter>
+            <OnMouseExit>CommandCodex.Row_OnMouseExit(self)</OnMouseExit>
+            <OnMouseUp>CommandCodex.Row_OnMouseUp(self, button, upInside)</OnMouseUp>
+            <OnMouseDoubleClick>CommandCodex.Row_OnMouseDoubleClick(self, button)</OnMouseDoubleClick>
+            <Controls>
+                <Texture name="$(parent)Star" textureFile="EsoUI/Art/Collections/Favorite_StarOnly.dds">
+                    <Dimensions x="18" y="18" />
+                    <Anchor point="LEFT" offsetX="6" />
+                </Texture>
+                <Label name="$(parent)Name" font="ZoFontGame" color="C5C29E" verticalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+                    <Dimensions x="170" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Star" relativePoint="RIGHT" offsetX="8" />
+                </Label>
+                <!-- Small play arrow on the right: click it to run the command. -->
+                <Texture name="$(parent)Play" textureFile="CommandCodex/Textures/play.dds" alpha="0.35">
+                    <Dimensions x="14" y="14" />
+                    <Anchor point="RIGHT" offsetX="-10" />
+                </Texture>
+                <Label name="$(parent)Info" font="ZoFontGameSmall" color="8F8B7A" verticalAlignment="CENTER" horizontalAlignment="RIGHT" maxLineCount="1" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="6" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)Play" relativePoint="LEFT" offsetX="-10" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- Addon name above its commands when all addons are shown. -->
+        <Control name="CommandCodex_Header" virtual="true">
+            <Dimensions x="420" y="34" />
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontWinH4" color="E8DFAF" verticalAlignment="BOTTOM" maxLineCount="1" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="6" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-4" />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

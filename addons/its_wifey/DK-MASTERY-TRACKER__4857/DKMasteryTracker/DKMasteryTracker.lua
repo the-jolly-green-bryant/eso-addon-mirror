@@ -1,7 +1,7 @@
 local D = {}
 D.name = "DKMasteryTracker"
 D.displayName = "DK Mastery Tracker"
-D.version = "1.0.1"
+D.version = "1.0.4"
 local EM = EVENT_MANAGER
 
 local IDS = {
@@ -190,6 +190,7 @@ local function refreshLayout()
 end
 
 local function shouldShow(key)
+    if IsUnitDead("player") then return false end
     if not D.sv.enabled or not D.sv.trackers[key].enabled then return false end
     -- A preview may temporarily show any tracker, but normal HUD display is limited
     -- to masteries the current character has actually purchased.

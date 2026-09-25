@@ -79,11 +79,62 @@ D.businessProfiles={
     {id="network",name="伝達・機動型",yield=.060,risk=15,increase=12,acceleration=2.1,description="調達額よりも交渉の勢いを生む連絡網に強みがあります。"},
     {id="anchor",name="資産保全型",yield=.038,risk=8,increase=8,acceleration=1.3,description="資産価値を守り、系列の安定した拠点となる事業です。"},
 }
-local marks={"暁","夕","灯","風","星","銀","環","翼","鈴","帆","印","冠",
-    "雨","晴","虹","露","泉","波","雲","霞","紋","橋","門","庭"}
-local businessNames={mine="鉱業所",lumber="木材問屋",forge="鍛造房",tailor="織物座",alchemy="調合房",
-    tavern="酒造所",inn="旅籠",port="船荷場",caravan="運送隊",farm="栽培園",ranch="牧畜舎",
-    books="書房",mages="秘術研究所",fighters="護送詰所",jewelry="宝飾房",market="交易座"}
+-- Generated businesses still have stable IDs, but their display names are assembled from
+-- regional heraldry, terrain vocabulary and trade-specific house names.  This keeps all
+-- 1,272 generated names distinct without touching the individually authored or ESO names.
+local nameMarks={"黎明","黄昏","灯火","疾風","北星","銀月","円環","白翼"}
+local biomeEmblems={
+    island={"潮","白帆","珊瑚"}, forest={"若葉","古根","樹冠"}, savanna={"陽炎","双月","金草"},
+    volcanic={"火硝","黒曜","熔鉄"}, marsh={"葦露","泥蓮","蛍沼"}, nord={"霜","雪角","炉火"},
+    breton={"青盾","石橋","薔薇"}, desert={"砂鐘","星泉","金砂"}, imperial={"白塔","月桂","赤鷲"},
+    underground={"青燐","深晶","残響"}, realm={"虚空","骸星","鎖炎"},
+    mechanical={"真鍮","歯環","時針"}, arcane={"秘文","星霊","時環"},
+}
+local businessNames={
+    mine={"採掘坑","鉱脈院","鉱業会"}, lumber={"製材座","材木商館","樵業組合"},
+    forge={"鍛造房","炉匠院","鉄工組合"}, tailor={"織房","服飾商館","染織組合"},
+    alchemy={"調合所","霊薬院","錬金商会"}, tavern={"酒房","醸造亭","杯商会"},
+    inn={"旅籠","客館","宿泊組合"}, port={"波止場","港務院","海運商館"},
+    caravan={"隊商宿","駅逓院","運送組合"}, farm={"果樹園","耕作院","農産商会"},
+    ranch={"牧場","厩務院","畜産組合"}, books={"書房","写本院","書籍商会"},
+    mages={"秘術工房","魔導院","呪具商会"}, fighters={"護衛所","武門会館","傭兵組合"},
+    jewelry={"彫金房","宝玉院","宝飾商会"}, market={"市庭","取引院","交易商館"},
+}
+local kanaRegionRoots={
+    auridon="オーリドン",grahtwood="グラーウッド",greenshade="グリーンシェイド",reapers="リーパーズマーチ",
+    stonefalls="ストーンフォール",deshaan="デシャーン",rift="リフト",stormhaven="ストームヘヴン",
+    rivenspire="リベンスパイアー",alikr="アリクル",khenarthi="ケナーシズルースト",malabal="マラバルトール",
+    glenumbra="グレナンブラ",bangkorai="バンコライ",stros="ストロスエムカイ",betnikh="ベトニク",
+    bleakrock="ブリークロック",balfoyen="バルフォイエン",eastmarch="イーストマーチ",shadowfen="シャドウフェン",
+    cyrodiil="シロディール",imperialcity="インペリアルシティ",sewers="インペリアルセワーズ",craglorn="クラグローン",
+    wrothgar="ロスガー",hewsbane="ヒューズベイン",goldcoast="ゴールドコースト",vvardenfell="ヴァーデンフェル",
+    summerset="サマーセット",murkmire="マークマイア",northelsweyr="ノーザンエルスウェア",southelsweyr="サザンエルスウェア",
+    tideholm="タイドホルム",westskyrim="ウェスタンスカイリム",reach="リーチ",blackreach_greymoor="グレイムーアブラックリーチ",
+    blackreach_arkthzand="アークスザンドブラックリーチ",blackwood="ブラックウッド",highisle="ハイアイルアメノス",
+    galen="ガレンイフェロン",telvanni="テルヴァンニ",westweald="ウェストウィールド",solstice="ソルスティス",
+    coldharbour="コールドハーバー",clockwork="クロックワークシティ",brassfortress="ブラスフォートレス",
+    artaeum="アルテウム",eyevea="アイベア",earthforge="アースフォージ",deadlands="デッドランド",
+    fargrave="ファーグレイブ",apocrypha="アポクリファ",nightmarket="ナイトマーケット",
+}
+local kanaMarks={"アルバ","ヴェスパー","ルーメン","ゼフィール","アステル","アルジェン","オルビス","アラ",
+    "カンパナ","ヴェラム","セレネ","ノクス","ソラリス","ウンブラ","コロナ","ファロス",
+    "ミラージュ","テンペスト","ルーン","シグナム","オーロラ","クレスト","エクリプス","フォルトゥナ"}
+local kanaBusiness={mine="マイニング",lumber="ティンバー",forge="フォージ",tailor="アトリエ",alchemy="アルケミア",
+    tavern="タヴェルナ",inn="ロッジ",port="ハーバー",caravan="キャラバン",farm="オーチャード",ranch="ランチ",
+    books="スクリプトリウム",mages="アルカナ",fighters="ガード",jewelry="ジュエルズ",market="バザール"}
+local kanaSlots={ [1]=true,[3]=true,[6]=true,[8]=true,[10]=true,[13]=true,[15]=true,[18]=true,[20]=true,[23]=true }
+local function generatedBusinessName(zone,category,slot)
+    if kanaSlots[slot] then
+        return assert(kanaRegionRoots[zone.id]).."・"..kanaMarks[slot].."・"..assert(kanaBusiness[category]),true
+    end
+    local cycle=math.floor((slot-1)/8)+1
+    local mark=nameMarks[(slot-1)%8+1]
+    local emblem=assert(biomeEmblems[zone.biome])[cycle]
+    local house=assert(businessNames[category])[cycle]
+    if cycle==1 then return zone.motif.."の"..mark..emblem..house,false end
+    if cycle==2 then return mark..emblem.."の"..zone.motif..house,false end
+    return zone.motif.."・"..mark..emblem..house,false
+end
 local function contains(list,id) for _,v in ipairs(list) do if v==id then return true end end end
 local tacticKeys={"smile","gift","rumor","bard","justice","messenger","falseMessenger","banquet","council","freeze","bargain","defection","roots"}
 for i,z in ipairs(catalog) do
@@ -93,10 +144,10 @@ for i,z in ipairs(catalog) do
     D.zones[#D.zones+1]=zone; D.zoneById[zone.id]=zone; D.propertyIdsByZone[zone.id]={}
     D.groups["region_"..zone.id]={name=zone.name.."交易連合",minimum=3,bonus=1.35,discoveryChance=.15}
     -- Region-wide grand market: most of a zone's businesses under one banner.
-    D.groups["grand_"..zone.id]={name=zone.name.."大商圏",minimum=10,bonus=2.2,discoveryChance=.12,discoverAt=5,tier="grand"}
+    D.groups["grand_"..zone.id]={name=zone.name.."大商圏",minimum=10,bonus=2.2,discoveryChance=.12,discoverAt=10,tier="grand"}
 end
 -- Super-scale groups: the three alliances, the imperial heartland and all of Tamriel.
--- They can only be discovered once half of their required members are already owned.
+-- They can only be discovered once their full activation requirement is already owned.
 D.alliances={
     {id="alliance_dominion",name="アルドメリ・ドミニオン交易同盟",zones={"auridon","khenarthi","grahtwood","greenshade","malabal","reapers","summerset"}},
     {id="alliance_covenant",name="ダガーフォール・カバナント交易同盟",zones={"stros","betnikh","glenumbra","stormhaven","rivenspire","alikr","bangkorai"}},
@@ -105,10 +156,10 @@ D.alliances={
 }
 D.allianceByZone={}
 for _,a in ipairs(D.alliances) do
-    D.groups[a.id]={name=a.name,minimum=a.minimum or 30,bonus=a.bonus or 3.0,discoveryChance=.1,discoverAt=math.floor((a.minimum or 30)/2),tier="alliance"}
+    D.groups[a.id]={name=a.name,minimum=a.minimum or 30,bonus=a.bonus or 3.0,discoveryChance=.1,discoverAt=a.minimum or 30,tier="alliance"}
     for _,zoneId in ipairs(a.zones) do D.allianceByZone[zoneId]=a.id end
 end
-D.groups.tamriel={name="タムリエル大交易網",minimum=120,bonus=4.0,discoveryChance=.08,discoverAt=60,tier="tamriel"}
+D.groups.tamriel={name="タムリエル大交易網",minimum=120,bonus=4.0,discoveryChance=.08,discoverAt=120,tier="tamriel"}
 for category,name in pairs(D.categories) do D.groups["industry_"..category]={name=name.."職能組合",minimum=4,bonus=1.5,discoveryChance=.12} end
 -- Thematic groups shared by generated properties and real ESO places.
 function D.ThemeGroups(zone,category)
@@ -143,6 +194,41 @@ local function indexProperty(p)
 end
 D.AddProperty=indexProperty
 for _,p in ipairs(D.properties) do indexProperty(p) end
+-- One ordinary trading company is rooted in every region.  Four established companies use
+-- their existing headquarters; the remaining regions receive a local company whose body is
+-- itself a purchasable property.  Boss organisations are added separately below.
+local legacyRegionalCompanies={stormhaven="amber",rivenspire="ash",stonefalls="iron",glenumbra="ink"}
+local companyLabels={"商会","交易社","産業組合","共同商団","物産会"}
+local companyPersonalities={"steady","wealth","aggressive","information","subversion"}
+local companyTactics={steady="smile",wealth="gift",aggressive="messenger",information="rumor",subversion="defection"}
+local regionalCompanyByZone={}
+for zi,z in ipairs(D.zones) do
+    local id=legacyRegionalCompanies[z.id] or ("regional_"..z.id)
+    regionalCompanyByZone[z.id]=id
+    if not D.companies[id] then
+        local katakana=zi%5==1 or zi%5==2
+        local personality=companyPersonalities[(zi-1)%#companyPersonalities+1]
+        D.companies[id]={id=id,
+            name=katakana and (assert(kanaRegionRoots[z.id]).."・トレーディング") or (z.motif..companyLabels[(zi-1)%#companyLabels+1]),
+            cash=14000+z.unlockTier*4500+zi*650,personality=personality,
+            aggression=.38+(zi*7%39)/100,defense=.40+(zi*11%41)/100,
+            tacticBias=companyTactics[personality],acquisitionBias=biomeCategories[z.biome][1],
+            minChapter=z.minChapter,alliances={},ordinaryCompany=true,homeZone=z.id,katakanaName=katakana}
+    else
+        D.companies[id].ordinaryCompany=true; D.companies[id].homeZone=z.id
+    end
+end
+-- These established Great Houses dominate their home regions while retaining the ordinary
+-- company rules: one directly purchasable body and a 10–20 property starting portfolio.
+D.companies.regional_telvanni.name="テルヴァンニ家"
+D.companies.regional_telvanni.katakanaName=true
+D.companies.veil.bossCompany=true; D.companies.worm.bossCompany=true; D.companies.molag.bossCompany=true
+local reservedBossBodyZones={grahtwood=true,deshaan=true,rivenspire=true,bangkorai=true,eastmarch=true,cyrodiil=true,
+    coldharbour=true,deadlands=true,fargrave=true}
+local regionalBodySlot={}
+for _,z in ipairs(D.zones) do
+    if not legacyRegionalCompanies[z.id] then regionalBodySlot[z.id]=reservedBossBodyZones[z.id] and 23 or 24 end
+end
 for zi,z in ipairs(D.zones) do
     local categories=biomeCategories[z.biome]
     for slot=1,24 do
@@ -150,13 +236,12 @@ for zi,z in ipairs(D.zones) do
         local profile=D.businessProfiles[(slot+math.floor((slot-1)/#categories)+zi-2)%#D.businessProfiles+1]
         local value=math.floor((1800+z.unlockTier*1250+slot*210+(zi*137)%1100)*(1+(slot%3)*.15)/50)*50
         local owner="neutral"; local minChapter=z.minChapter
-        if z.atlas=="beyond" then owner="molag"
+        local regionalSlot=slot<=10 or (slot>=12 and slot<=16) or slot==24 or regionalBodySlot[z.id]==slot
+        if regionalCompanyByZone[z.id]=="amber" and slot==16 then regionalSlot=false end
+        if regionalSlot then owner=regionalCompanyByZone[z.id]
+        elseif z.atlas=="beyond" then owner="molag"
         elseif slot==11 then owner="veil"; minChapter=3
-        elseif slot==17 then owner="worm"; minChapter=4
-        elseif slot%5==0 then owner="ash"
-        elseif slot%4==0 then owner="ink"
-        elseif slot%3==0 then owner="iron"
-        elseif slot%2==0 then owner="amber" end
+        elseif slot==17 then owner="worm"; minChapter=4 end
         local groups=D.ThemeGroups(z,category)
         local resistances={}
         for ti,key in ipairs(tacticKeys) do
@@ -165,15 +250,16 @@ for zi,z in ipairs(D.zones) do
         resistances.roots=0; resistances.council=0; resistances.messenger=0
         if category=="fighters" then resistances.gift=1 end
         if category=="mages" then resistances.rumor=1 end
+        local generatedName,katakanaName=generatedBusinessName(z,category,slot)
         local p={id=z.id.."_trade_"..string.format("%02d",slot),
-            name=z.motif..marks[slot].."の"..businessNames[category],zone=z.id,category=category,
+            name=generatedName,zone=z.id,category=category,
             marketValue=value,expectedProfit=math.floor(value*profile.yield),owner=owner,
             independenceRisk=profile.risk+(zi%4),independenceIncrease=profile.increase,
             gaugeAcceleration=profile.acceleration+(slot%3)*.1,groups=groups,
-            negotiationResistances=resistances,isHeadquarters=slot==24,
+            negotiationResistances=resistances,isHeadquarters=false,
             businessProfile=profile.id,profileName=profile.name,
             description=z.name.."に根を張る独立事業者。"..profile.description,
-            minChapter=minChapter,
+            minChapter=minChapter,generatedName=true,katakanaName=katakanaName,
         }
         D.properties[#D.properties+1]=p; indexProperty(p)
     end
@@ -197,8 +283,15 @@ local campaignHeadquarters={
     grahtwood_trade_24="veil",deshaan_trade_24="veil",rivenspire_trade_24="veil",
     bangkorai_trade_24="worm",eastmarch_trade_24="worm",cyrodiil_trade_24="worm",
 }
+local campaignHeadquartersNames={
+    grahtwood_trade_24="樹冠盟約の大評議所",deshaan_trade_24="灰蓮の封印商府",rivenspire_trade_24="霧冠の守護院",
+    bangkorai_trade_24="星砂の黒繭会堂",eastmarch_trade_24="凍炉の黒繭商城",cyrodiil_trade_24="白塔地下の繭議院",
+    coldharbour_trade_24="コールドハーバー・チェイン・コンツェルン",
+    deadlands_trade_24="デッドランド・フレイム・コンツェルン",
+    fargrave_trade_24="ファーグレイブ・ゲート・コンツェルン",
+}
 for id,owner in pairs(campaignHeadquarters) do
-    local p=assert(D.propertyById[id]); p.owner=owner; p.minChapter=D.companies[owner].minChapter
+    local p=assert(D.propertyById[id]); p.owner=owner; p.minChapter=D.companies[owner].minChapter; p.name=campaignHeadquartersNames[id] or p.name
 end
 -- Company headquarters: owning every one of a company's headquarters dissolves the company
 -- and brings all of its remaining properties under the player's banner.
@@ -208,33 +301,68 @@ D.companyHeadquarters={
     worm={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},
     molag={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},
 }
+for id,name in pairs(campaignHeadquartersNames) do
+    local p=D.propertyById[id]; if p then p.name=name end
+end
+for _,z in ipairs(D.zones) do
+    local company=regionalCompanyByZone[z.id]
+    if not legacyRegionalCompanies[z.id] then
+        local id=z.id.."_trade_"..string.format("%02d",regionalBodySlot[z.id])
+        D.companyHeadquarters[company]={id}
+        local p=assert(D.propertyById[id]); p.name=D.companies[company].name; p.owner=company; p.companyBody=true
+        p.katakanaName=D.companies[company].katakanaName or false
+    end
+end
 -- A rival can be taken over from its own chapter onward (headquarters bought earlier still count).
-D.companyTakeoverChapter={amber=2,ash=2,iron=3,ink=3,veil=3,worm=4,molag=5}
+D.companyTakeoverChapter={amber=1,ash=1,iron=1,ink=1,veil=3,worm=4,molag=5}
+for company in pairs(D.companyHeadquarters) do
+    if D.companies[company].ordinaryCompany then D.companyTakeoverChapter[company]=1 end
+end
 D.headquartersOf={}
+local ordinaryBodyNames={ink="エリック社本館",iron="鉄環輸送組合本部",ash="レイヴンウォッチ城館"}
 for company,ids in pairs(D.companyHeadquarters) do
     for _,id in ipairs(ids) do
         local p=assert(D.propertyById[id],"missing headquarters "..id)
         p.owner=company; p.isHeadquarters=true; p.companyHeadquarters=company
+        if D.companies[company].ordinaryCompany then
+            p.companyBody=true
+            if ordinaryBodyNames[company] then p.name=ordinaryBodyNames[company] end
+        end
         if (D.companies[company].minChapter or 1)>(p.minChapter or 1) then p.minChapter=D.companies[company].minChapter end
         D.headquartersOf[id]=company
     end
 end
 D.campaigns={
     {id=1,title="第1章　小さな羅針盤",subtitle="商会の足場を築く",background="chapter_1",
-        description="二つの小さな事業を束ね、五十期を見据えた商会の土台を築きます。成長する市場で買収先を見極め、総資産500万ゴールドを達成してください。",
-        objective={type="assets",target=PBTrade.Config.campaign.chapterOneAssets,minimumCycles=50}},
+        description="二つの小さな事業を束ね、八十期を見据えた商会の土台を築きます。成長する市場で買収先を見極め、総資産70億ゴールドを達成してください。",
+        objective={type="assets",target=PBTrade.Config.campaign.chapterOneAssets,minimumCycles=80}},
     {id=2,title="第2章　琥珀帆を越えて",subtitle="大商会への挑戦",background="chapter_2",
-        description="市場は毎期複利で拡大し、琥珀帆商会も再投資を続けます。第150期と総資産2億5000万ゴールドを越え、大交易所を獲得してください。",
-        objective={type="properties",targets={"str_hq"},assetTarget=250000000,minimumCycles=150}},
+        description="市場は毎期複利で拡大し、琥珀帆商会も再投資を続けます。第200期と総資産5000億ゴールドを越え、大交易所を獲得してください。",
+        objective={type="properties",targets={"str_hq"},assetTarget=50000000,minimumCycles=200}},
     {id=3,title="第3章　ベールの向こう側",subtitle="守護者連合を解体する",background="chapter_3",
-        description="長期成長した三つの中枢を奪い、第300期を越え、総資産200億ゴールドの広域商会を築いて守護者連合を解体してください。",
-        objective={type="properties",targets={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"},assetTarget=20000000000,minimumCycles=300}},
+        description="長期成長した三つの中枢を奪い、第350期を越え、総資産40兆ゴールドの広域商会を築いて守護者連合を解体してください。",
+        objective={type="properties",targets={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"},assetTarget=4000000000,minimumCycles=350}},
     {id=4,title="第4章　黒繭の帳簿",subtitle="虫の教団を解体する",background="chapter_4",
-        description="黒繭交易教団は膨張した市場を直接支配します。第450期、総資産1兆ゴールド、三中枢の支配をすべて満たしてください。",
-        objective={type="properties",targets={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},assetTarget=1000000000000,minimumCycles=450}},
+        description="黒繭交易教団は膨張した市場を直接支配します。第525期、総資産5000兆ゴールド、三中枢の支配をすべて満たしてください。",
+        objective={type="properties",targets={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},assetTarget=500000000000,minimumCycles=525}},
     {id=5,title="第5章　鎖の外へ",subtitle="モラグ・バル コンツェルンとの戦い",background="chapter_5",
-        description="帳簿の最終頁はタムリエルの外へ続いていました。異界三中枢を買収すると、コンツェルン最後の物件「モラグ・バルの居城」への道が開きます。資金源の消耗と離反を抑えながら、第600期、総資産100兆ゴールド、居城の買収をすべて達成してください。",
-        objective={type="properties",targets={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},assetTarget=100000000000000,minimumCycles=600}},
+        description="帳簿の最終頁はタムリエルの外へ続いていました。異界三中枢を買収すると、コンツェルン最後の物件「モラグ・バルの居城」への道が開きます。資金源の消耗と離反を抑えながら、第750期、総資産300京ゴールド、居城の買収をすべて達成してください。",
+        objective={type="properties",targets={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},assetTarget=300000000000000,minimumCycles=750}},
 }
-D.catalogVersion=2
+-- Convert the former abstract unit to gold.  Every property/company gets a deterministic
+-- lower-than-10,000 remainder; campaign milestones stay deliberately round.
+for _,p in ipairs(D.properties) do
+    p.marketValue=PBTrade.Config.Money(p.marketValue,p.id..":value")
+    p.expectedProfit=PBTrade.Config.Money(p.expectedProfit,p.id..":profit")
+end
+for id,company in pairs(D.companies) do company.cash=PBTrade.Config.Money(company.cash,id..":cash") end
+for _,chapter in ipairs(D.campaigns) do
+    if chapter.objective.assetTarget then chapter.objective.assetTarget=PBTrade.Config.Money(chapter.objective.assetTarget) end
+end
+D.catalogVersion=5
+local staticNames={}
+for _,p in ipairs(D.properties) do
+    assert(not staticNames[p.name],"Duplicate property name: "..p.name)
+    staticNames[p.name]=p.id
+end
 assert(#D.properties>=1000,"Trade catalog must contain at least 1000 properties")

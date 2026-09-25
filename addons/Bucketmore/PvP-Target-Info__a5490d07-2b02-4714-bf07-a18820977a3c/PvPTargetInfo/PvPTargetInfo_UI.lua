@@ -326,12 +326,16 @@ end
 -- 開いたまま位置を微調整したい」という用途はプレビューONの時に限って
 -- 引き続き可能にしつつ、通常プレイ中(プレビューOFF)はメニュー/マップを
 -- 開いたら確実にパネルが隠れるようにしている。
--- 戦闘時UI自動表示のゲート状態。UI①②(buff/debuff)のみが対象で、UI③(proc/
--- Condition)は常にfalse扱い(このゲートの影響を受けない)。
--- リロード直後はtrue(=戦闘ゲートにより非表示)。最初に戦闘状態へ入った
--- 時点でfalseへ固定され、以後は戦闘終了時も再びtrueへは戻さない。
-PTI.UI.combatGateActive = { buff = true, debuff = true }
-
+--
+-- STEP5で追加: UI①(buff)・UI②(debuff)のみ、戦闘状態(PTI.UI.hiddenByCombat)を
+-- 表示条件に追加した。UI③(proc/Condition)には一切影響しない。previewMode中は
+-- この新条件も無視して従来通り表示する(位置調整のため)。
+--
+-- STEP6で追加: UI③(proc/Condition)は戦闘状態と完全に無関係に、「実際に表示
+-- する行があるか(=登録したConditionが発動している、またはプレビュー中)」
+-- だけを条件にした(PTI.UI.procHasContent。Procs.lua側のRefreshProcUIが
+-- 毎ティック更新する)。UI①②の表示状態には一切依存しないし、UI③の表示状態も
+-- UI①②には一切影響しない。previewMode中はこの新条件も無視して従来通り表示する。
 function PTI.UI.SetWindowVisible(key)
     local entry = PTI.UI.windows[key]
     local sv = SVFor(key)
@@ -339,15 +343,18 @@ function PTI.UI.SetWindowVisible(key)
 
     local hiddenByScene = PTI.UI.hiddenByScene and not PTI.sv.previewMode
 
-    -- 戦闘ゲート: combatAutoShowが有効な場合のみ、UI①②に適用する。
-    -- previewMode(位置調整プレビュー)中は常に表示できるよう、ゲートを無視する。
-    local hiddenByCombatGate = false
-    if PTI.sv.combatAutoShow and PTI.sv.combatAutoShow.enabled
-        and PTI.UI.combatGateActive[key] and not PTI.sv.previewMode then
-        hiddenByCombatGate = true
+    local hiddenByCombat = false
+    if key == "buff" or key == "debuff" then
+        hiddenByCombat = PTI.UI.hiddenByCombat and not PTI.sv.previewMode
     end
 
-    local shouldShow = PTI.sv.enabled and not hiddenByScene and sv.enabled ~= false and not hiddenByCombatGate
+    local hiddenByEmptyProc = false
+    if key == "proc" then
+        hiddenByEmptyProc = (not PTI.sv.previewMode) and not PTI.UI.procHasContent
+    end
+
+    local shouldShow = PTI.sv.enabled and not hiddenByScene and not hiddenByCombat
+        and not hiddenByEmptyProc and sv.enabled ~= false
     entry.window:SetHidden(not shouldShow)
 end
 
@@ -355,6 +362,15 @@ function PTI.UI.RefreshVisibility()
     for key in pairs(PTI.UI.windows) do
         PTI.UI.SetWindowVisible(key)
     end
+end
+
+-- STEP5で追加: EVENT_PLAYER_COMBAT_STATEのハンドラ。ESO本体が戦闘に入った/
+-- 抜けた瞬間にだけ1回発火する標準イベントで、常時ポーリングは発生しない
+-- (PS5/CS向けの軽量方針に合致)。UI①②の表示だけを切り替え、検知ロジック・
+-- UI③には一切触れない。
+function PTI.UI.OnCombatStateChanged(_, inCombat)
+    PTI.UI.hiddenByCombat = not inCombat
+    PTI.UI.RefreshVisibility()
 end
 
 function PTI.UI.Initialize()
@@ -366,7 +382,18 @@ function PTI.UI.Initialize()
     PTI.UI.RefreshRowLayout("buff")
     PTI.UI.RefreshRowLayout("debuff")
     PTI.UI.RefreshRowLayout("proc")
+
+    -- STEP5で追加: リロードUI等で既に戦闘中の場合に備え、IsUnitInCombatで
+    -- 初期値を正しく設定してからRefreshVisibility()する(以後はイベント駆動)。
+    PTI.UI.hiddenByCombat = not IsUnitInCombat("player")
+
+    -- STEP6で追加: procHasContentはProcs.lua側の最初のTickが来るまではfalse
+    -- (=非表示)としておく(「発動していない時は勝手に表示しない」仕様のため)。
+    PTI.UI.procHasContent = false
+
     PTI.UI.RefreshVisibility()
+
+    EVENT_MANAGER:RegisterForEvent(PTI.name .. "UICombat", EVENT_PLAYER_COMBAT_STATE, PTI.UI.OnCombatStateChanged)
 
     -- v1.4.9で修正: 以前は「ワールドマップを開いた時だけ」自動的に隠す
     -- 作りだったため、インベントリ・キャラクターシート・クラフト・
@@ -381,18 +408,6 @@ function PTI.UI.Initialize()
         local isGameplayScene = (sceneName == "hud" or sceneName == "hudui")
 
         PTI.UI.hiddenByScene = not isGameplayScene
-        PTI.UI.RefreshVisibility()
-    end)
-
-    -- 戦闘時UI自動表示: UI①②のみ対象。戦闘に入った時点でそのキャラクターの
-    -- 今回のセッション中は恒久的にゲートを解除する(戦闘終了時に再度隠す
-    -- 処理は行わない=既存仕様に従う)。検知・分類・表示内容には一切関与しない。
-    local combatEventName = PTI.name .. "CombatState"
-    EVENT_MANAGER:RegisterForEvent(combatEventName, EVENT_PLAYER_COMBAT_STATE, function(eventCode, inCombat)
-        if not inCombat then return end
-        if not (PTI.UI.combatGateActive.buff or PTI.UI.combatGateActive.debuff) then return end
-        PTI.UI.combatGateActive.buff = false
-        PTI.UI.combatGateActive.debuff = false
         PTI.UI.RefreshVisibility()
     end)
 end

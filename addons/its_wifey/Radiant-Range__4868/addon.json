@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/Radiant-Range__4868",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4868",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season One",
+      "version": "12.1.0"
+    }
+  ],
+  "content_id": "esoui:4868",
+  "deleted": false,
+  "directories": [
+    "RadiantRange"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4868/",
+  "fingerprint": "8fd715a264c426c11b250103e4739eb46a49e8ea7e52c36512c555a096812360",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17525.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17526.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4868",
+  "source_url": "https://www.esoui.com/downloads/info4868-RadiantRange.html",
+  "stats": {
+    "downloads": 16,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Radiant Range",
+  "updated_at": 1790264947000,
+  "version": "1.0.2"
+}

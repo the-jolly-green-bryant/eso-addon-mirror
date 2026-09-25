@@ -10,7 +10,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [WarCry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/m00nyONE/WarCry__3191) | m00nyONE | PC / Mac | 1.2.0 |
 | [Ward Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ratparol101/Ward-Helper__1676) | @ratparol101 | PC / Mac | 1.1a |
 | [Ward Shield Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Supplier/Ward-Shield-Reminder__2456) | Supplier | PC / Mac | 1.1 |
-| [WardenMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WardenMastery__4832) | its_wifey | PC / Mac | 1.1 |
+| [WardenMastery](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/its_wifey/WardenMastery__4832) | its_wifey | PC / Mac | 1.3 |
 | [WareGuild - Guild Banks Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/WareGuild---Guild-Banks-Manager__3877) | MelanAster | PC / Mac | 0.23 |
 | [Warhorn Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uta.karas/Warhorn-Timer__1964) | uta.karas | PC / Mac | 1.31.1 |
 | [WarHorn Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/WarHorn-Tracker__d978b81f-b679-4aa8-b9a2-6d1b0511c3b3) | codeWarrior82 | Console | — |
