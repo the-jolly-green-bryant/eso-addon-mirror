@@ -13,7 +13,7 @@ local PAD = 28
 local TREE_W = 260
 
 local DATA_TYPE_CATEGORY, DATA_TYPE_SUBCATEGORY = 1, 2
-local DATA_TYPE_COMMAND, DATA_TYPE_HEADER = 1, 2
+local DATA_TYPE_COMMAND, DATA_TYPE_HEADER, DATA_TYPE_NOTE = 1, 2, 3
 
 -- ESO's own text colors.
 local COLOR = {
@@ -52,10 +52,6 @@ local CATEGORIES = {
     { view = "emotes",    key = "CAT_EMOTES" },
 }
 
-local METHOD_NOTE = {
-    name = "TT_METHOD_NAME",
-    load = "TT_METHOD_LOAD",
-}
 
 local function HexToRGB(hex)
     return tonumber(hex:sub(1, 2), 16) / 255, tonumber(hex:sub(3, 4), 16) / 255, tonumber(hex:sub(5, 6), 16) / 255
@@ -279,13 +275,8 @@ local function AddonKey(data)
     return data.owner or OTHER_ADDON
 end
 
-local function IsHiddenLibrary(data)
-    return S.sv.hideLibraries and data.isLibrary
-end
-
 local function IsAddonCommand(data)
     return not data.isEmote and data.ownerMethod ~= "game" and data.ownerMethod ~= "alias"
-        and not IsHiddenLibrary(data)
 end
 
 local function InView(data)
@@ -293,8 +284,6 @@ local function InView(data)
     if view == "recent" then return data.recentTime ~= nil end
     if view == "favorites" then return data.favorite end
     if view == "emotes" then return data.isEmote end
-    -- Library commands stay hidden while "Hide libraries" is ticked (unless starred).
-    if IsHiddenLibrary(data) and not data.favorite then return false end
     if view == "all" then return true end   -- truly everything, emotes included
     if data.isEmote then return false end
     if view == "aliases" then return data.alias ~= nil end
@@ -445,7 +434,9 @@ local function SetupRow(row, data)
     elseif data.isEmote and S.sv.view ~= "emotes" then
         text = L("EMOTE")
     elseif S.sv.view ~= "addons" and data.ownerTitle then
-        text = data.ownerTitle
+        -- "~" = probably: the game can't tell which addon added a command
+        -- (only Command Codex's own commands are certain).
+        text = data.ownerMethod == "self" and data.ownerTitle or ("~ " .. data.ownerTitle)
     end
     info:SetText(text)
     SetHexColor(info, color)
@@ -453,6 +444,10 @@ end
 
 local function SetupHeader(control, data)
     control:GetNamedChild("Text"):SetText(zo_strupper(data.title))
+end
+
+local function SetupNote(control, data)
+    control:GetNamedChild("Text"):SetText(data.text)
 end
 
 local function ViewTitle()
@@ -475,6 +470,11 @@ local function RefreshList(commands)
 
     ZO_ScrollList_Clear(ui.list)
     local scrollData = ZO_ScrollList_GetDataList(ui.list)
+
+    -- Addons category: say up front that the addon names are a best guess.
+    if S.sv.view == "addons" and #rows > 0 then
+        scrollData[#scrollData + 1] = ZO_ScrollList_CreateDataEntry(DATA_TYPE_NOTE, { text = L("GUESS_BANNER") })
+    end
 
     if S.sv.view == "addons" and S.sv.addon == nil then
         -- All addons: one header per addon, its commands below.
@@ -558,9 +558,12 @@ function S.Row_OnMouseEnter(row)
     if data.alias then
         InformationTooltip:AddLine(L("TT_ALIAS", data.alias), "ZoFontGameSmall", HexToRGB(COLOR.alias))
     elseif data.ownerTitle then
-        InformationTooltip:AddLine(L("TT_FROM", data.ownerTitle), "ZoFontGameSmall", ZO_NORMAL_TEXT:UnpackRGB())
-        if METHOD_NOTE[data.ownerMethod] then
-            InformationTooltip:AddLine(L(METHOD_NOTE[data.ownerMethod]), "ZoFontGameSmall", HexToRGB(COLOR.dim))
+        if data.ownerMethod == "self" then
+            InformationTooltip:AddLine(L("TT_FROM", data.ownerTitle), "ZoFontGameSmall", ZO_NORMAL_TEXT:UnpackRGB())
+        else
+            -- The game can't tell which addon added a command: say it's a guess.
+            InformationTooltip:AddLine(L("TT_PROBABLY_FROM", data.ownerTitle), "ZoFontGameSmall", ZO_NORMAL_TEXT:UnpackRGB())
+            InformationTooltip:AddLine(L("TT_GUESS_NOTE"), "ZoFontGameSmall", HexToRGB(COLOR.dim))
         end
     elseif data.ownerMethod == "game" then
         InformationTooltip:AddLine(L("TT_GAME"), "ZoFontGameSmall", ZO_NORMAL_TEXT:UnpackRGB())
@@ -991,20 +994,11 @@ local function CreateWindow()
     search:SetHandler("OnTextChanged", function() S.RefreshAll() end)
     ui.search = search
 
-    local hideLibs = MakeCheck("CommandCodex_HideLibs", win, L("HIDE_LIBS"),
-        function() return S.sv.hideLibraries end,
-        function(checked)
-            S.sv.hideLibraries = checked
-            if checked and S.sv.addon and S.IsLibrary(S.sv.addon) then S.sv.addon = nil end
-            S.RefreshAll()
-        end,
-        L("HIDE_LIBS_TT"))
-    hideLibs:SetAnchor(TOPLEFT, searchBox, BOTTOMLEFT, 2, 12)
     local quickBar = MakeCheck("CommandCodex_ShowBar", win, L("SHOW_FAVS"),
         function() return S.sv.quickBarShown end,
         function(checked) S.SetQuickBarShown(checked) end,
         L("SHOW_FAVS_TT"))
-    quickBar:SetAnchor(TOPLEFT, hideLibs, BOTTOMLEFT, 0, 10)
+    quickBar:SetAnchor(TOPLEFT, searchBox, BOTTOMLEFT, 2, 12)
     ui.quickBarCheck = quickBar
 
     -- Padlock: faint and closed = favorites locked in place; click to open it and drag them around.
@@ -1012,7 +1006,7 @@ local function CreateWindow()
     -- which otherwise stretches over it and catches the clicks.
     local lock = WINDOW_MANAGER:CreateControl("CommandCodex_LockIcon", win, CT_BUTTON)
     lock:SetDimensions(18, 18)
-    lock:SetAnchor(TOPRIGHT, searchBox, BOTTOMRIGHT, -2, 37)
+    lock:SetAnchor(TOPRIGHT, searchBox, BOTTOMRIGHT, -2, 11)
     lock:SetDrawLevel(20)
     lock:SetMouseEnabled(true)
     LeftClickOnly(lock)
@@ -1059,7 +1053,7 @@ local function CreateWindow()
     end)
 
     local tree = WINDOW_MANAGER:CreateControlFromVirtual("CommandCodex_Tree", win, "ZO_ScrollList")
-    tree:SetAnchor(TOPLEFT, searchBox, BOTTOMLEFT, 0, 88)
+    tree:SetAnchor(TOPLEFT, searchBox, BOTTOMLEFT, 0, 62)
     tree:SetAnchor(BOTTOMLEFT, divider2, TOPLEFT, 0, -8)
     tree:SetWidth(TREE_W)
     ZO_ScrollList_AddDataType(tree, DATA_TYPE_CATEGORY, "CommandCodex_Category", 30, SetupCategory)
@@ -1079,6 +1073,7 @@ local function CreateWindow()
     list:SetAnchor(BOTTOMRIGHT, divider2, TOPRIGHT, 0, -8)
     ZO_ScrollList_AddDataType(list, DATA_TYPE_COMMAND, "CommandCodex_Row", 28, SetupRow)
     ZO_ScrollList_AddDataType(list, DATA_TYPE_HEADER, "CommandCodex_Header", 34, SetupHeader)
+    ZO_ScrollList_AddDataType(list, DATA_TYPE_NOTE, "CommandCodex_Note", 40, SetupNote)
     ZO_ScrollList_EnableHighlight(list, "ZO_ThinListHighlight")
     ZO_ScrollList_EnableSelection(list, "ZO_ThinListHighlight", OnSelectionChanged)
     ui.list = list

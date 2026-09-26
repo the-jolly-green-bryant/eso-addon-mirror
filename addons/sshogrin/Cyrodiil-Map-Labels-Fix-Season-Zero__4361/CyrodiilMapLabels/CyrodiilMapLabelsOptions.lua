@@ -9,14 +9,27 @@ CyrodiilMapLabelsAddon = {
 }
 
 CyrodiilMapLabelsDefaults = {
-    version = "1.8.1",
+    version = "1.9.0",
     variableVersion = 1,
     datasetChoice = "Long Names",
     useAllianceColors = true,
     fontScale = 1.0,
+    fontStyle = "EsoUI/Common/Fonts/Univers57.slug|14|soft-shadow-thin",
     fallbackR = 0.2,
     fallbackG = 1.0,
     fallbackB = 0.0,
+}
+
+-- Built in core game fonts
+CyrodiilMapLabelsFonts = {
+    ["Trajan Pro (Stone Tablet)"]   = "EsoUI/Common/Fonts/TrajanPro-Regular.slug|16|soft-shadow-thin",
+    ["Trajan Pro (Heavy Outline)"]  = "EsoUI/Common/Fonts/TrajanPro-Regular.slug|16|thick-outline",
+    ["Standard Sans-Serif"]         = "EsoUI/Common/Fonts/Univers57.slug|14|soft-shadow-thin",
+    ["Standard Sans-Serif (BOLD)"]  = "EsoUI/Common/Fonts/Univers67.slug|14|soft-shadow-thick", -- True Univers Bold
+    ["Universal Hand (Chat)"]       = "EsoUI/Common/Fonts/Univers57.slug|14",
+    ["Futura Condensed"]            = "EsoUI/Common/Fonts/ftn57.slug|16|soft-shadow-thin",
+    ["Futura Condensed (BOLD)"]     = "EsoUI/Common/Fonts/ftn87.slug|16|soft-shadow-thick",  -- True Futura Bold
+    ["Standard Outlined"]           = "EsoUI/Common/Fonts/Univers57.slug|14|outline",
 }
 
 CyrodiilMapLabelsData = CyrodiilMapLabelsData or {}
@@ -29,7 +42,6 @@ local function IsPlayerInCyrodiilMainMap()
     return zoneId == 181 and string.find(mapTexture:lower(), "ava_whole") ~= nil
 end
 
--- Completely reliable loop to extract the live game engine controls for any map pin
 local function FindLivePinForKeep(keepId)
     if not ZO_WorldMapPins or not ZO_WorldMapPins.m_pinPanels then return nil end
     
@@ -56,7 +68,6 @@ end
 function CyrodiilMapLabelsAddon.UpdateLabels()
     local db = CyrodiilMapLabelsAddon.db
     
-    -- Hide all existing controls first to clean the canvas cleanly
     for _, labelPair in pairs(labels) do
         if labelPair.shadow then labelPair.shadow:SetHidden(true) end
         if labelPair.main then labelPair.main:SetHidden(true) end
@@ -69,6 +80,9 @@ function CyrodiilMapLabelsAddon.UpdateLabels()
     if not mapWidth or not mapHeight or mapWidth == 0 or mapHeight == 0 then return end
     
     local activeData = CyrodiilMapLabelsData
+    if db and db.datasetChoice == "Short Names" then
+        activeData = CyrodiilMapLabelsDataShort
+    end
     if not activeData or type(activeData) ~= "table" or #activeData == 0 then return end
 
     local ALLIANCE_COLORS = {}
@@ -77,10 +91,8 @@ function CyrodiilMapLabelsAddon.UpdateLabels()
     ALLIANCE_COLORS[3] = { r = 0.2, g = 0.5, b = 0.9 } -- DC (Blue)
 
     local currentScale = db and db.fontScale or CyrodiilMapLabelsDefaults.fontScale
+    local activeFont = db and db.fontStyle or CyrodiilMapLabelsDefaults.fontStyle
     local prefix = "SI_CYRODIILMAPLABELS_"
-
-    -- This is your static pixel gap directly below the target center.
-    -- Because it anchors to the TOP edge of the text, 12-16px provides a perfect uniform layout.
     local baseDistance = 6
 
     for index, keep in ipairs(activeData) do
@@ -96,20 +108,20 @@ function CyrodiilMapLabelsAddon.UpdateLabels()
                 main = wm:CreateControl(mName, ZO_WorldMapContainer, CT_LABEL)
             }
             
-            labels[index].shadow:SetFont("ZoFontGameBold")
             labels[index].shadow:SetColor(0, 0, 0, 1)
             labels[index].shadow:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             labels[index].shadow:SetDimensions(150, 25)
             labels[index].shadow:SetDrawLayer(DL_OVERLAY)
             labels[index].shadow:SetDrawTier(DT_HIGH)
             
-            labels[index].main:SetFont("ZoFontGameBold")
             labels[index].main:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             labels[index].main:SetDimensions(150, 25)
             labels[index].main:SetDrawLayer(DL_OVERLAY)
             labels[index].main:SetDrawTier(DT_HIGH)
         end
 
+        labels[index].shadow:SetFont(activeFont)
+        labels[index].main:SetFont(activeFont)
         labels[index].shadow:SetScale(currentScale)
         labels[index].main:SetScale(currentScale)
 
@@ -122,7 +134,7 @@ function CyrodiilMapLabelsAddon.UpdateLabels()
         local displayName = GetString(_G[targetGlobalKey])
 
         if displayName == "" or displayName == nil then
-            displayName = (db and db.datasetChoice == "Short Names") and CyrodiilMapLabelsDataShort[index].name or keep.name
+            displayName = keep.name
         end
 
         local shouldShowFactionColor = true
@@ -157,33 +169,27 @@ function CyrodiilMapLabelsAddon.UpdateLabels()
         labels[index].shadow:ClearAnchors()
         labels[index].main:ClearAnchors()
 
-        -- Look for the actual active game pin control
         local livePin = FindLivePinForKeep(keep.keepId)
 
         if livePin and livePin.GetNamedChild and livePin:GetLeft() then
-            -- THE ZOOM DRIFT SOLUTION:
-            -- Instead of using static math on the canvas, we read the exact real-time screen pixels 
-            -- of the physical keep icon. We calculate its center and anchor to that position.
             local pinLeft, pinTop = livePin:GetLeft(), livePin:GetTop()
             local pinWidth, pinHeight = livePin:GetDimensions()
             
-            -- Find the absolute visual center pixel of the live pin control
             local pinCenterX = pinLeft + (pinWidth / 2)
             local pinCenterY = pinTop + (pinHeight / 2)
             
-            -- Convert the visual pixels back into the main map container coordinates safely
             local containerLeft, containerTop = ZO_WorldMapContainer:GetLeft(), ZO_WorldMapContainer:GetTop()
             local finalX = pinCenterX - containerLeft
             local finalY = pinCenterY - containerTop
 
-            -- Anchor the TOP edge of our text block directly under that dynamic pixel spot.
-            -- This means no matter how far you zoom, the text tracks the icon pixel-for-pixel.
             labels[index].shadow:SetAnchor(TOP, ZO_WorldMapContainer, TOPLEFT, finalX + 2, finalY + baseDistance + 2)
             labels[index].main:SetAnchor(TOP, ZO_WorldMapContainer, TOPLEFT, finalX, finalY + baseDistance)
         else
-            -- STATIC FALLBACK: If the map pin is currently off-screen or unrendered, fall back to table data
-            labels[index].shadow:SetAnchor(TOP, ZO_WorldMapContainer, TOPLEFT, targetX * mapWidth + 2, targetY * mapHeight + baseDistance + 2)
-            labels[index].main:SetAnchor(TOP, ZO_WorldMapContainer, TOPLEFT, targetX * mapWidth, targetY * mapHeight + baseDistance)
+            local finalX = targetX * mapWidth
+            local finalY = targetY * mapHeight
+
+            labels[index].shadow:SetAnchor(TOP, ZO_WorldMapContainer, TOPLEFT, finalX + 2, finalY + baseDistance + 2)
+            labels[index].main:SetAnchor(TOP, ZO_WorldMapContainer, TOPLEFT, finalX, finalY + baseDistance)
         end
 
         labels[index].shadow:SetHidden(false)
@@ -193,35 +199,31 @@ end
 
 ZO_WorldMapContainer:SetHandler("OnRectChanged", CyrodiilMapLabelsAddon.UpdateLabels)
 
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, CyrodiilMapLabelsAddon.UpdateLabels)
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ZONE_CHANGED, CyrodiilMapLabelsAddon.UpdateLabels)
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_SCREEN_RESIZED, CyrodiilMapLabelsAddon.UpdateLabels)
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_KEEP_ALLIANCE_CHANGED, function() CyrodiilMapLabelsAddon.UpdateLabels() end)
+local function OnWorldMapChanged()
+    CyrodiilMapLabelsAddon.UpdateLabels()
+end
 
-EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, addonName)
+EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(event, addonName)
     if addonName == ADDON_NAME then
+        EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
+        
         CyrodiilMapLabelsAddon.db = ZO_SavedVars:NewAccountWide("CyrodiilMapLabelsSavedVars", CyrodiilMapLabelsDefaults.variableVersion, nil, CyrodiilMapLabelsDefaults)
+        
         if CyrodiilMapLabelsAddon.CreateSettingsMenu then
             CyrodiilMapLabelsAddon.CreateSettingsMenu()
         end
+        
+        EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_WORLD_MAP_CHANGED, OnWorldMapChanged)
+        
+        WORLD_MAP_SCENE:RegisterCallback("StateChange", function(oldState, newState)
+            if newState == SCENE_HIDDEN then
+                for _, labelPair in pairs(labels) do
+                    if labelPair.shadow then labelPair.shadow:SetHidden(true) end
+                    if labelPair.main then labelPair.main:SetHidden(true) end
+                end
+            end
+        end)
+        
         zo_callLater(function() CyrodiilMapLabelsAddon.UpdateLabels() end, 500)
     end
-    -- Fixes map zone browsing: Fires when the map view changes to a different zone
-CALLBACK_MANAGER:RegisterCallback("OnWorldMapChanged", function()
-    CyrodiilMapLabelsAddon.UpdateLabels()
-end)
-
--- Fixes map scene changes: Clears labels completely when closing the map
-WORLD_MAP_SCENE:RegisterCallback("StateChange", function(oldState, newState)
-    if newState == SCENE_HIDING then
-        -- Run your cleanup code loop directly
-        for _, labelPair in pairs(labels) do
-            if labelPair.shadow then labelPair.shadow:SetHidden(true) end
-            if labelPair.main then labelPair.main:SetHidden(true) end
-        end
-    elseif newState == SCENE_SHOWING then
-        CyrodiilMapLabelsAddon.UpdateLabels()
-    end
-end)
-
 end)

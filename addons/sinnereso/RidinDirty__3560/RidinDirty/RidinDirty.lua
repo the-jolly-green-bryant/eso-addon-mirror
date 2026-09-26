@@ -1,7 +1,7 @@
 RidinDirty = {
 	name = "RidinDirty",
 	author = "@sinnereso",
-	version = "2026.09.14",
+	version = "2026.09.25",
 	svName = "RidinDirtyVars",
 	svVersion = 1,
 	tradeTable = {},
@@ -213,44 +213,34 @@ local function CheckBankMemory()
 end
 
 local function SaveBankMemory()
-	ESO_Dialogs["BANK_MEMORY_SAVE_CONFIRM_DIALOG"] = {
-		canQueue = true,
-		title = {
-			text = "Confirm SAVE Bank Inventory",
-		},
-		mainText = {
-			text = "Are you sure you want to continue?",
-		},
-		buttons = {
-			[1] = {
-				text = SI_DIALOG_CONFIRM,
-				callback = function(dialog)
-					ZO_ClearTable(RidinDirty.savedVariables["Banked Memory"])
-					RidinDirty.bankedMemory["version"] = 1
-					for slotIndex = 0, GetBagSize(BAG_BANK) - 1 do
-						itemId = GetItemId(BAG_BANK, slotIndex)
-						itemLink = GetItemLink(BAG_BANK, slotIndex, LINK_STYLE_BRACKETS)
-						if itemId ~= nil and itemId ~= 0 then RidinDirty.bankedMemory[itemId] = itemLink end
-					end
-					if IsESOPlusSubscriber() then
-						for slotIndex = 0, GetBagSize(BAG_SUBSCRIBER_BANK) - 1 do
-							itemId = GetItemId(BAG_SUBSCRIBER_BANK, slotIndex)
-							itemLink = GetItemLink(BAG_SUBSCRIBER_BANK, slotIndex, LINK_STYLE_BRACKETS)
-							if itemId ~= nil and itemId ~= 0 then RidinDirty.bankedMemory[itemId] = itemLink end
-						end
-					end
-					ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank inventory saved.")
-				end,
-			},
-			[2] = {
-				text = SI_DIALOG_CANCEL,
-				callback = function(dialog)
-				end,
-			},
-		},
-	}
-	ZO_Dialogs_ShowDialog("BANK_MEMORY_SAVE_CONFIRM_DIALOG")
+	ZO_ClearTable(RidinDirty.savedVariables["Banked Memory"])
+	RidinDirty.bankedMemory["version"] = 1
+	for slotIndex = 0, GetBagSize(BAG_BANK) - 1 do
+		itemId = GetItemId(BAG_BANK, slotIndex)
+		itemLink = GetItemLink(BAG_BANK, slotIndex, LINK_STYLE_BRACKETS)
+		if itemId ~= nil and itemId ~= 0 then RidinDirty.bankedMemory[itemId] = itemLink end
+	end
+	if IsESOPlusSubscriber() then
+		for slotIndex = 0, GetBagSize(BAG_SUBSCRIBER_BANK) - 1 do
+			itemId = GetItemId(BAG_SUBSCRIBER_BANK, slotIndex)
+			itemLink = GetItemLink(BAG_SUBSCRIBER_BANK, slotIndex, LINK_STYLE_BRACKETS)
+			if itemId ~= nil and itemId ~= 0 then RidinDirty.bankedMemory[itemId] = itemLink end
+		end
+	end
+	ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Bank memory saved.")
 end
+
+local function PvPAddonSave()
+	local addOnManager = GetAddOnManager()
+	local numAddOns = addOnManager:GetNumAddOns()
+	ZO_ClearTable(RidinDirty.savedVariables["Addon Memory"])
+	RidinDirty.addonMemory["version"] = 1
+	for addonIndex = 1, numAddOns do
+		local addonName, addonTitle, addonAuthor, addonDescription, isEnabled, addonState, isOutOfDate, isLibrary = addOnManager:GetAddOnInfo(addonIndex)
+		if (isEnabled and addonState == 2) or (addonName == "RidinDirty") then RidinDirty.addonMemory[addonIndex] = addonName end
+	end
+	ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", ("Performance mode addons saved."))
+end	
 --local statusControl = control:GetNamedChild("StatusTexture")--("StatusIcon")--("Status")
 --if not statusControl then return end
 --df(nameText .. " - " .. tostring(statusControl:IsHidden()))--statusControl:SetHidden(true)
@@ -754,6 +744,7 @@ local function RDInitializeControls()
 				name = "SAVE BANK MEMORY",
 				tooltip = "Saves current bank inventory to memory for comparison when opening the bank",
 				func = function() SaveBankMemory() end,
+				isDangerous = true,
 			},
 			{
 				type = "header",
@@ -1051,6 +1042,7 @@ local function RDInitializeControls()
 				tooltip = "Set to current time for daily reset & clear daily statistics for pvp personal kill feed",
 				func = function() RidinDirty.SetClearKillFeed(true) end,
 				disabled = function() return not RidinDirty.savedVariables.pvpKillFeed end,
+				isDangerous = true,
 				width = "half",
 			},
 			{
@@ -1059,6 +1051,7 @@ local function RDInitializeControls()
 				tooltip = "Reset to default original daily reset time for pvp personal kill feed",
 				func = function() RidinDirty.ResetKillFeed() end,
 				disabled = function() return not RidinDirty.savedVariables.pvpKillFeed end,
+				isDangerous = true,
 				width = "half",
 			},
 		},
@@ -1128,13 +1121,13 @@ local function RDInitializeControls()
     },
 	{
 		type = "description",
-		text = ("/tp home OR partialoverworldzonename\n/tp exact@name partialhousename\n/rdlink = group trade links for unneeded bop tradeable or set pieces\n/rdfc = time left to use forward camp in cyrodiil\n/rdpvp on/off = pvp performance mode toggle for saved addons"),
+		text = ("/tp home OR partialoverworldzonename\n/tp exact@name partialhousename\n/rdlink = group trade links for unneeded bop tradeable or set pieces\n/rdfc = time left to use forward camp in cyrodiil\n/rdpvp = pvp performance mode toggle for saved addons"),
 	},
 	{
 		type = "button",
 		name = "SAVE ENABLED ADDONS",
 		tooltip = "Saves currently selected addons you want for PvP performance mode. Only needs to be selected in addons list",
-		func = function() RidinDirty.AddonSave() end,
+		func = function() PvPAddonSave() end,
 		isDangerous = true,
 	},
 	}
@@ -2118,9 +2111,9 @@ local function UnMarkPermJunkMenu(inventorySlot, slotActions)
 end
 
 function RidinDirty.ClearJunkMemory()
-	RidinDirty.junkMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, 2, "Junk Memory", defaultJunkVars )
-	PlaySound("Click")
-	zo_callLater(function() ReloadUI() end, 500)
+	ZO_ClearTable(RidinDirty.savedVariables["Junk Memory"])
+	RidinDirty.junkMemory["version"] = 1
+	ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "Junk memory cleared.")
 end
 
 function RidinDirty.PopulateJunkMemory()
@@ -2590,12 +2583,12 @@ end
 
 function RidinDirty.SetClearKillFeed(isSetting)
 	if isSetting then
-		PlaySound("Click")
+		--PlaySound("Click")
 		local time = os.time()
 		local t = os.date("*t", time)
 		local resetTime = os.time({year = t.year, month = t.month, day = t.day, hour = t.hour, min = 0, sec = 0})
 		RidinDirty.savedVariables.pvpKillsReset = resetTime
-		ZO_Alert(UI_ALERT_CATEGORY_ALERT, "New_Mail", ("PvP Kill Feed cleared and set to " .. tostring(os.date("%H:%M:%S", resetTime)) .. " daily."))
+		ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", ("PvP Kill Feed cleared and set to " .. tostring(os.date("%H:%M:%S", resetTime)) .. " daily."))
 	else
 		local ONE_DAY = 86400
 		local time = os.time()
@@ -2614,9 +2607,8 @@ function RidinDirty.SetClearKillFeed(isSetting)
 end
 
 function RidinDirty.ResetKillFeed()
-	PlaySound("Click")
 	RidinDirty.savedVariables.pvpKillsReset = GetLastDailyReset()
-	ZO_Alert(UI_ALERT_CATEGORY_ALERT, "New_Mail", ("PvP Kill Feed reset to default " .. tostring(os.date("%H:%M:%S", RidinDirty.savedVariables.pvpKillsReset)) .. " daily."))
+	ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", ("PvP Kill Feed reset to default " .. tostring(os.date("%H:%M:%S", RidinDirty.savedVariables.pvpKillsReset)) .. " daily."))
 end
 
 function RidinDirty.PvpKillFeedToggle(toggle)
@@ -3085,12 +3077,22 @@ end
 SLASH_COMMANDS["/rdpvp"] = function (option)
 	local addOnManager = GetAddOnManager()
 	local numAddOns = addOnManager:GetNumAddOns()
-	if string.lower(option) == "on" then
-		df(rdLogo .. "PvP Performance Mode Enabled")
+	local pvpMode = false
+	for addonIndex = 1, numAddOns do
+		local addonName, addonTitle, addonAuthor, addonDescription, isEnabled, addonState, isOutOfDate, isLibrary = addOnManager:GetAddOnInfo(addonIndex)
+		if not isEnabled and addonName ~= "merTorchbug" and addonName ~= "Zgoo" and addonName ~= "TextureIt" and addonName ~= "SoundBoard" then pvpMode = true break end
+	end
+	if pvpMode then
 		for addonIndex = 1, numAddOns do
-			if addonIndex ~= nil then addOnManager:SetAddOnEnabled(addonIndex, false) end
+			local addonName, addonTitle, addonAuthor, addonDescription, isEnabled, addonState, isOutOfDate, isLibrary = addOnManager:GetAddOnInfo(addonIndex)
+			if addonName ~= "merTorchbug" and addonName ~= "Zgoo" and addonName ~= "TextureIt" and addonName ~= "SoundBoard" then
+				addOnManager:SetAddOnEnabled(addonIndex, true)
+			end
 		end
+		ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "PvP performance mode disabled.")
+	else
 		for addonIndex = 1, numAddOns do
+			addOnManager:SetAddOnEnabled(addonIndex, false)
 			local addonName, addonTitle, addonAuthor, addonDescription, isEnabled, addonState, isOutOfDate, isLibrary = addOnManager:GetAddOnInfo(addonIndex)
 			for i, v in pairs(RidinDirty.savedVariables["Addon Memory"]) do
 				if i ~= nil and i ~= "version" then
@@ -3098,31 +3100,10 @@ SLASH_COMMANDS["/rdpvp"] = function (option)
 				end
 			end
 		end
-	elseif string.lower(option) == "off" then
-		df(rdLogo .. "PvP Performance Mode Disabled")
-		for addonIndex = 1, numAddOns do
-			local addonName, addonTitle, addonAuthor, addonDescription, isEnabled, addonState, isOutOfDate, isLibrary = addOnManager:GetAddOnInfo(addonIndex)
-			if addonName ~= "merTorchbug" and addonName ~= "Zgoo" and addonName ~= "TextureIt" and addonName ~= "SoundBoard" then--<< Ignore Dev Tools
-				addOnManager:SetAddOnEnabled(addonIndex, true)
-			end
-		end
-	else 
-		df(rdLogo .. "Choose /rdpvp on/off") return
+		ZO_Alert(UI_ALERT_CATEGORY_ALERT, "PlayerAction_NotEnoughMoney", "PvP performance mode enabled.")
 	end
 	zo_callLater(function() ReloadUI() end, 2000)
 end
-
-function RidinDirty.AddonSave()
-	local addOnManager = GetAddOnManager()
-	local numAddOns = addOnManager:GetNumAddOns()
-	RidinDirty.savedVariables["Addon Memory"] = nil
-	RidinDirty.addonMemory = ZO_SavedVars:NewAccountWide( RidinDirty.svName, RidinDirty.svVersion, "Addon Memory", defaultAddonVars )
-	for addonIndex = 1, numAddOns do
-		local addonName, addonTitle, addonAuthor, addonDescription, isEnabled, addonState, isOutOfDate, isLibrary = addOnManager:GetAddOnInfo(addonIndex)
-		if (isEnabled and addonState == 2) or (addonName == "RidinDirty") then RidinDirty.addonMemory[addonIndex] = addonName end
-	end
-	ZO_Alert(UI_ALERT_CATEGORY_ALERT, "New_Mail", ("PvP performance mode addons saved."))
-end	
 
 SLASH_COMMANDS["/rdfc"] = function (option)
 	local secondsLeft = ((GetNextForwardCampRespawnTime() - GetGameTimeMilliseconds()) / 1000)

@@ -29,12 +29,20 @@ function E:Start(id, attacker)
     local opponent=attacker or p.owner
     local company=self.state.companies[opponent]; local profile=profiles[(company and company.personality) or "steady"] or profiles.steady
     local defense=attacker and ((company and company.defense) or .5) or 0
+    local assault=attacker and (C.counterattack.chapter[self.state.chapter] or C.counterattack.chapter[#C.counterattack.chapter]) or nil
     -- A rival's headquarters is fought for with the whole group behind it.
     local value,headquarters=M.NegotiationValue(self.state,p,attacker)
     local groupReserve=0
-    if headquarters then local _,reserves=M.CompanyAssets(self.state,opponent); groupReserve=reserves end
+    -- A hostile acquisition can mobilize reserves from the attacker's whole portfolio, just as
+    -- the player can call several owned properties during the defense.  Headquarters retain the
+    -- same group-reserve rule when the player is the attacker.
+    if headquarters or attacker then local _,reserves=M.CompanyAssets(self.state,opponent); groupReserve=reserves end
     local opening=math.floor(value*B.openingEnemyBidFactor*profile.opening*(1+defense*.25))
     local budget=math.floor(value*B.enemyBudgetFactor*profile.budget*(1+defense*.20))
+    if assault then
+        opening=math.floor(opening*assault.opening)
+        budget=math.floor(budget*assault.budget)
+    end
     local policy,event=M.ActivePolicy(self.state),M.ActiveMarketEvent(self.state)
     local stanceIds=M.NegotiationStances(self.state,p,attacker)
     local budgetMultiplier=(policy and policy.enemyBudgetMultiplier or 1)*(event and event.enemyBudgetMultiplier or 1)
@@ -55,6 +63,9 @@ function E:Start(id, attacker)
         momentum=0, requests={}, log={}, treasurySpent=0, baseValue=value,effectiveValue=value,
         headquarters=headquarters, critical=M.IsCriticalProperty(self.state,p), finalStronghold=p.finalStronghold==true,
         criticalStage=0, groupReserve=groupReserve, groupReserveStart=groupReserve+0,
+        assault=assault,assaultAcceleration=assault and assault.acceleration or 0,
+        enemyGroups=company and opponent~=C.neutralId and M.CompanyGroups(self.state,opponent) or {},
+        enemyGroupsUsed={},enemyGroupUses=0,
         effects={},delayedEffects={},learnedTactics={},day=1,turns=0,events={}}
     self.battle.aiProfile=profile; self.battle.aiStyle=(company and company.personality) or "steady"
     local hits=self.battle.critical and not attacker and C.stances.criticalHits or 1
@@ -69,6 +80,10 @@ function E:Start(id, attacker)
     if self.battle.critical then
         self:Log("重要交渉：相手は三段階の防衛契約を準備している")
         self:Notify("wide","重要交渉――防衛契約が段階的に発動する","alert")
+    end
+    if assault then
+        self:Log("敵攻勢："..assault.label.."（第"..self.state.chapter.."章）")
+        self:Notify("enemy","敵攻勢「"..assault.label.."」――投入速度と予算が強化","alert","negative")
     end
     for _,stance in ipairs(stances) do
         local st=D.stanceById[stance.id]
@@ -412,7 +427,7 @@ function E:Finish(result)
     b.result=result
     -- Reserves the group spent defending its headquarters come out of its properties, pro rata.
     local spent=(b.groupReserveStart or 0)-(b.groupReserve or 0)
-    if b.headquarters and spent>0 then
+    if (b.headquarters or b.mode=="defense") and spent>0 then
         local _,total=M.CompanyAssets(self.state,b.defender)
         if total>0 then
             for _,p in pairs(self.state.properties) do
@@ -480,6 +495,60 @@ function E:UseEnemyTactic(company)
     self:Log("相手が「"..tactic.name.."」を使用")
     self:Notify("enemy","駆け引き「"..tactic.name.."」を仕掛けてきた","tactic")
 end
+-- COM group funding uses only groups its company currently owns in sufficient numbers.  It
+-- consumes those members' real reserves and raises their independence risk, so a spectacular
+-- defense can weaken the rival's long game or even cause a peripheral holding to defect.
+function E:UseEnemyGroup(company)
+    local b,K=self.battle,C.enemyGroups
+    if not company or b.enemyBudget<=0 or b.enemyGroupUses>=K.maxUses[self.state.chapter] then return false end
+    if b.enemyBid-self:PlayerForce()>b.baseValue*K.maximumEnemyLeadShare then return false end
+    local best,bestRaw,bestOutput,bestContributions
+    for _,group in ipairs(b.enemyGroups or {}) do
+        if not b.enemyGroupsUsed[group.id] then
+            local raw,contributions,ownedCount=0,{},0
+            for _,p in ipairs(group.members) do
+                if p.owner==b.defender then
+                    ownedCount=ownedCount+1
+                    if p.reserve>0 then
+                        local quote=math.floor(math.min(p.reserve,p.expectedProfit*B.fundingProfitFactor+p.marketValue*B.fundingValueFactor)*K.contributionShare)
+                        if quote>0 then raw=raw+quote; contributions[#contributions+1]={property=p,amount=quote} end
+                    end
+                end
+            end
+            local multiplier=1+(group.bonus-1)*K.bonusEffect
+            local output=math.floor(raw*multiplier)
+            if ownedCount>=(group.required or group.minimum or 2) and output>(bestOutput or 0) then
+                best,bestRaw,bestOutput,bestContributions=group,raw,output,contributions
+            end
+        end
+    end
+    if not best or bestRaw<=0 then return false end
+    local cap=math.floor(b.baseValue*K.capShare[self.state.chapter])
+    local wanted=math.min(bestOutput,b.enemyBudget,cap)
+    if wanted<=0 then return false end
+    local scale=wanted/bestOutput; local rawSpent=math.max(1,math.floor(bestRaw*scale+.5))
+    local remaining=rawSpent
+    for i,row in ipairs(bestContributions) do
+        local amount=i==#bestContributions and remaining or math.min(remaining,math.floor(row.amount*scale+.5))
+        amount=math.min(amount,row.property.reserve); remaining=remaining-amount
+        row.property.reserve=row.property.reserve-amount
+        row.property.independenceRisk=clamp(row.property.independenceRisk+math.max(1,math.floor(row.property.independenceIncrease*K.riskFactor+.5)),0,B.riskMax-1)
+        if row.property.id~=b.targetId then self:CheckDefection(row.property) end
+    end
+    rawSpent=rawSpent-math.max(0,remaining)
+    local multiplier=1+(best.bonus-1)*K.bonusEffect
+    local amount=math.min(wanted,math.floor(rawSpent*multiplier))
+    if amount<=0 then return false end
+    -- Direct member deductions must not also be removed by the aggregate reserve settlement.
+    b.groupReserve=math.max(0,(b.groupReserve or 0)-rawSpent)
+    b.groupReserveStart=math.max(0,(b.groupReserveStart or 0)-rawSpent)
+    b.enemyBudget=math.max(0,b.enemyBudget-amount); b.enemyBid=b.enemyBid+amount
+    b.enemyGroupsUsed[best.id]=true; b.enemyGroupUses=b.enemyGroupUses+1; b.lastEnemyAction=b.elapsed
+    self:AddEffect("enemyAccelerationBoost",K.acceleration,K.effectSeconds)
+    self:Log("敵グループ技「"..best.name.."」  +"..comma(amount).."（"..#bestContributions.."件）")
+    self:Notify("enemy","グループ技「"..best.name.."」  +"..comma(amount),"group","negative")
+    return true,{group=best,amount=amount,spent=rawSpent}
+end
 -- The side the border is moving toward is under attack. If it has not acted for a while,
 -- the push against it keeps building so a one-sided negotiation ends quickly.
 function E:IdlePressure()
@@ -515,23 +584,25 @@ function E:Step(dt)
     if b.enemyWait<=0 then
         local profile=b.aiProfile or profiles.steady
         local pressure=clamp((self:PlayerForce()-b.enemyBid)/math.max(B.priceFloor,b.effectiveValue),0,1)
-        local amount=math.min(b.enemyBudget,math.floor(b.effectiveValue*B.enemyBidFactor*profile.bid*
-            (1+self.random()*B.enemyBidVariation+profile.react*pressure)))
+        local company=b.defender~=C.neutralId and self.state.companies[b.defender] or nil
+        local groupChance=C.enemyGroups.chance[self.state.chapter] or 0
+        local usedGroup=company and self.random()<groupChance and self:UseEnemyGroup(company)
+        local amount=0
+        if not usedGroup then amount=math.min(b.enemyBudget,math.floor(b.effectiveValue*B.enemyBidFactor*profile.bid*
+            (1+self.random()*B.enemyBidVariation+profile.react*pressure))) end
         if b.defender~=C.neutralId then
-            local company=self.state.companies[b.defender]
             -- Headquarters defence draws on the group's property reserves once cash runs out.
             amount=math.min(amount,company.cash+(b.groupReserve or 0))
             local fromCash=math.min(company.cash,amount); company.cash=company.cash-fromCash
             if amount>fromCash then b.groupReserve=b.groupReserve-(amount-fromCash) end
         end
         b.enemyBudget=b.enemyBudget-amount; b.enemyBid=b.enemyBid+amount
-        b.enemyWait=B.enemyWait*profile.wait*self:EnemyWaitFactor()
+        b.enemyWait=B.enemyWait*profile.wait*(b.assault and b.assault.wait or 1)*self:EnemyWaitFactor()
         if amount>0 then
             self:Log("相手側の追加出資  +"..comma(amount)); b.lastEnemyAction=b.elapsed
             self:Notify("enemy","追加出資  +"..comma(amount).."（計 "..comma(b.enemyBid).."）","fund")
         end
-        local company=b.defender~=C.neutralId and self.state.companies[b.defender] or nil
-        if company and self.random()<C.tactics.aiUseChance then self:UseEnemyTactic(company) end
+        if company and self.random()<math.min(.9,C.tactics.aiUseChance+(b.assault and b.assault.tactic or 0)) then self:UseEnemyTactic(company) end
     end
     b.momentum=math.max(0,b.momentum-B.momentumDecay*dt)
     -- Saturation prevents a single enormous bid from teleporting the gauge.
@@ -539,6 +610,7 @@ function E:Step(dt)
     local pressure=clamp((self:PlayerForce()-b.enemyBid)/math.max(B.priceFloor,b.effectiveValue),-1,self:PressureCap())
     b.acceleration=-pressure*B.pressureAcceleration-b.momentum+B.baseAcceleration
         -self:EffectTotal("playerAcceleration",0)-self:EffectTotal("enemyAccelerationPenalty",0)+self:EffectTotal("enemyAccelerationBoost",0)
+        +(b.assaultAcceleration or 0)
     b.acceleration=b.acceleration+self:IdlePressure()
     b.velocity=clamp(b.velocity+(b.acceleration-B.drag*b.velocity)*dt,-B.maxVelocity,B.maxVelocity)
     -- Position-dependent pace: the border creeps near the centre and races near either edge.

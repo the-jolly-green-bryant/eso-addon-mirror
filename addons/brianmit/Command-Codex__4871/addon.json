@@ -18,7 +18,7 @@
     "CommandCodex"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4871/",
-  "fingerprint": "e021d509454a018b0eabeca367699330bc806a260d3c535c2a967842f23cf608",
+  "fingerprint": "0d0f1662dba474fc076389090303caa13fcd2834cb01bd496dc4da21a242b64f",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17540.png",
     "https://cdn-eso.mmoui.com/preview/pvw17542.png",
@@ -32,11 +32,11 @@
   "source_id": "4871",
   "source_url": "https://www.esoui.com/downloads/info4871-CommandCodex.html",
   "stats": {
-    "downloads": 5,
+    "downloads": 20,
     "favorites": 0,
-    "monthly_downloads": 0
+    "monthly_downloads": 16
   },
   "title": "Command Codex",
-  "updated_at": 1790301894000,
-  "version": "1.0.0"
+  "updated_at": 1790345587000,
+  "version": "1.0.1"
 }

@@ -619,6 +619,14 @@ end
 
 function M.request_delete(index)
     if not index or not BGMeter.History.get(index) then return false end
+    if BGMeter.History.is_pinned(index) then
+        M.disarm_delete()
+        Sound.play("deny")
+        flash = string.format("|c%ssaved match  ·  release the lock to delete it|r", U.hexc(K.COLOR.accent))
+        flash_until = (BGMeter.zenimax.api.now_ms and BGMeter.zenimax.api.now_ms() or 0) + FLASH_MS
+        M.update_footer()
+        return false
+    end
     if armed_index == index then
         M.delete(index)
         return true

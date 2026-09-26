@@ -694,22 +694,17 @@ function P.Refresh()
 end
 local function ensureBoardFragment()
  if P.boardFragmentHooked then return true end
- if not HUD_FRAGMENT or not P.window then return false end
+ if not P.window then return false end
  P.boardFragmentHooked=true
- HUD_FRAGMENT:RegisterCallback("StateChange",function(_,newState)
-  if not P.window then return end
-  if newState==SCENE_FRAGMENT_HIDDEN and P.boardOpen then
-   P.CloseBoard()
-  end
+ RyticTank.UI.AttachModal(P.window,raidControlsEnabled,function()
+  clearBoardDrag(); discardEditState(); P.boardOpen=false
  end)
  return true
 end
 
 function P.CloseBoard()
- clearBoardDrag()
- discardEditState()
- P.boardOpen=false
- if P.window then P.window:SetHidden(true) end
+ if P.window then RyticTank.UI.CloseModal(P.window) end
+ clearBoardDrag(); discardEditState(); P.boardOpen=false
 end
 
 local function openBoard()
@@ -721,7 +716,7 @@ local function openBoard()
    if P.window and P.boardOpen then ensureBoardFragment() end
   end,500)
  end
- P.window:SetHidden(false)
+ if not RyticTank.UI.OpenModal(P.window) then P.CloseBoard(); return end
  P.Refresh()
 end
 

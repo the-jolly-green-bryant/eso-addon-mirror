@@ -46,6 +46,7 @@ function R.ReadyCheck()
 end
 function R.CancelPull()
     EM:UnregisterForUpdate(PULL_EVENT); R.pullEnd=nil
+    R.pullGeneration=(R.pullGeneration or 0)+1
     if R.pullText then R.pullText:SetText("") end
 end
 function R.StartPull(seconds,skipExternal)
@@ -60,7 +61,14 @@ function R.StartPull(seconds,skipExternal)
         if R.pullText then R.pullText:SetText(remain>0 and ("|c49BFFF"..remain.."|r") or "|c55FF55PULL!|r") end
         if remain~=R.lastAnnounced then
             R.lastAnnounced=remain; if remain<=3 then playCountdownSound(remain) end
-            if remain==0 then zo_callLater(function() if R.pullText then R.pullText:SetText("") end end,1200); R.CancelPull() end
+            if remain==0 then
+                EM:UnregisterForUpdate(PULL_EVENT)
+                R.pullEnd=nil
+                local generation=R.pullGeneration
+                zo_callLater(function()
+                    if R.pullGeneration==generation and R.pullText then R.pullText:SetText("") end
+                end,1200)
+            end
         end
     end)
 end
@@ -85,6 +93,10 @@ function R.GroupLoad()
     end
 end
 function R.GroupPush(name)
+    if not canLead() then d("|cFFAA00Rytic: PUSH requires group lead or assistant authority.|r"); return end
+    if name and RyticTank.GroupFrames and not RyticTank.GroupFrames.LoadProgGroup(name) then
+        d("|cFFAA00Rytic: preset not found: "..tostring(name)..".|r"); return
+    end
     if RyticTank.GroupFrames and RyticTank.GroupFrames.PushOut then
         local ok,err=RyticTank.GroupFrames.PushOut(name)
         if not ok and err then d("|cFFAA00Rytic: "..tostring(err)..".|r") end
@@ -99,85 +111,25 @@ end
 -- Modal window lifecycle helpers.  Prog Groups and Group Manager are logical
 -- HUD windows: HUD/HUDUI scene changes may temporarily hide them, while ESC/X
 -- closes them intentionally.
-local removeModalKeybind
-
-local function ensureModalLifecycle(key, window)
-    R.modalLifecycle = R.modalLifecycle or {}
-    local m = R.modalLifecycle[key]
+local function ensureModalLifecycle(key,window)
+    R.modalLifecycle=R.modalLifecycle or {}
+    local m=R.modalLifecycle[key]
     if not m then
-        m = { window=window, open=false, keybindAdded=false }
-        R.modalLifecycle[key]=m
-    else
-        m.window=window
-    end
-
-    -- Follow ESO's authoritative HUD fragment instead of owning a second HUD
-    -- fragment for each modal. This keeps ESC/open state separate from temporary
-    -- menu hiding and avoids scene-fragment ownership conflicts.
-    if not m.fragmentHooked and HUD_FRAGMENT then
-        m.fragmentHooked=true
-        HUD_FRAGMENT:RegisterCallback("StateChange",function(_,newState)
-            if not m.window then return end
-            if newState==SCENE_FRAGMENT_HIDDEN and m.open then
-                -- RaidLead management windows are modal tools, not persistent HUDs.
-                -- Leaving the HUD (Map/Inventory/Character/Game Menu/etc.) closes
-                -- the modal instead of merely hiding it and restoring it later.
-                m.open=false
-                removeModalKeybind(m)
-                m.window:SetHidden(true)
-            end
-        end)
-    end
-    if not m.fragmentHooked and zo_callLater and not m.fragmentRetryQueued then
-        m.fragmentRetryQueued=true
-        zo_callLater(function()
-            m.fragmentRetryQueued=false
-            if m.window then ensureModalLifecycle(key,m.window) end
-        end,500)
+        m={window=window,open=false}; R.modalLifecycle[key]=m
+        RyticTank.UI.AttachModal(window,function() return defaults().enabled~=false end,function() m.open=false end)
     end
     return m
 end
 
-removeModalKeybind = function(m)
-    if m and m.keybindAdded and KEYBIND_STRIP and m.keybindGroup then
-        KEYBIND_STRIP:RemoveKeybindButtonGroup(m.keybindGroup)
-        m.keybindAdded=false
-    end
-end
-
 local function closeModal(key)
     local m=R.modalLifecycle and R.modalLifecycle[key]
-    if not m then return end
-    m.open=false
-    removeModalKeybind(m)
-    if m.window then m.window:SetHidden(true) end
-end
-
-local function openModal(key,window,onOpen)
-    local m=ensureModalLifecycle(key,window)
-    m.open=true
-    if not m.keybindGroup then
-        m.keybindGroup={
-            alignment=KEYBIND_STRIP_ALIGN_RIGHT,
-            {
-                name="Close",
-                keybind="UI_SHORTCUT_NEGATIVE",
-                callback=function() closeModal(key) end,
-                visible=function() return m.open end,
-            },
-        }
-    end
-    if KEYBIND_STRIP and not m.keybindAdded then
-        KEYBIND_STRIP:AddKeybindButtonGroup(m.keybindGroup)
-        m.keybindAdded=true
-    end
-    window:SetHidden(false)
-    if onOpen then onOpen() end
+    if m then RyticTank.UI.CloseModal(m.window); m.open=false end
 end
 
 local function toggleModal(key,window,onOpen)
     local m=ensureModalLifecycle(key,window)
-    if m.open then closeModal(key) else openModal(key,window,onOpen) end
+    if m.open then closeModal(key)
+    elseif RyticTank.UI.OpenModal(window) then m.open=true; if onOpen then onOpen() end end
 end
 
 -- Named prog-group manager. Players can belong to different saved prog presets;
@@ -187,7 +139,7 @@ function R.CreateProgWindow()
     local w=WM:CreateTopLevelWindow("RyticProgGroupWindow"); R.progWindow=w
     w:SetDimensions(520,430); w:SetAnchor(CENTER,GuiRoot,CENTER,0,0); w:SetHidden(true); w:SetMovable(true); w:SetMouseEnabled(true); w:SetClampedToScreen(true); w:SetDrawTier(DT_HIGH)
     local bg=WM:CreateControl(nil,w,CT_BACKDROP); bg:SetAnchorFill(); bg:SetCenterColor(.012,.018,.028,.98); bg:SetEdgeColor(.25,.6,.9,1)
-    local title=WM:CreateControl(nil,w,CT_LABEL); title:SetFont("ZoFontWinH2"); title:SetText("RYTIC — PROG GROUPS"); title:SetAnchor(TOPLEFT,w,TOPLEFT,16,10); title:SetDimensions(400,30)
+    local title=WM:CreateControl(nil,w,CT_LABEL); title:SetFont("ZoFontWinH2"); title:SetText("RYTIC â€” PROG GROUPS"); title:SetAnchor(TOPLEFT,w,TOPLEFT,16,10); title:SetDimensions(400,30)
     local close=button(w,"X",470,8,34,function() closeModal("prog") end)
     local drag=WM:CreateControl(nil,w,CT_CONTROL); drag:SetDimensions(450,40); drag:SetAnchor(TOPLEFT,w,TOPLEFT,0,0); drag:SetMouseEnabled(true); drag:SetHandler("OnMouseDown",function(_,b) if b==MOUSE_BUTTON_INDEX_LEFT then w:StartMoving() end end); drag:SetHandler("OnMouseUp",function(_,b) if b==MOUSE_BUTTON_INDEX_LEFT then w:StopMovingOrResizing() end end)
     local prompt=WM:CreateControl(nil,w,CT_LABEL); prompt:SetFont("ZoFontGame"); prompt:SetText("Prog group name:"); prompt:SetAnchor(TOPLEFT,w,TOPLEFT,18,55); prompt:SetDimensions(150,24)
@@ -226,10 +178,10 @@ function R.CreateGroupManager()
     local w=WM:CreateTopLevelWindow("RyticGroupManagerWindow"); R.groupManager=w
     w:SetDimensions(540,520); w:SetAnchor(CENTER,GuiRoot,CENTER,0,0); w:SetHidden(true); w:SetMovable(true); w:SetMouseEnabled(true); w:SetClampedToScreen(true); w:SetDrawTier(DT_HIGH)
     local bg=WM:CreateControl(nil,w,CT_BACKDROP); bg:SetAnchorFill(); bg:SetCenterColor(.012,.018,.028,.98); bg:SetEdgeColor(.25,.6,.9,1)
-    local title=WM:CreateControl(nil,w,CT_LABEL); title:SetFont("ZoFontWinH2"); title:SetText("RYTIC — GROUP MANAGER"); title:SetAnchor(TOPLEFT,w,TOPLEFT,16,10); title:SetDimensions(430,30)
+    local title=WM:CreateControl(nil,w,CT_LABEL); title:SetFont("ZoFontWinH2"); title:SetText("RYTIC â€” GROUP MANAGER"); title:SetAnchor(TOPLEFT,w,TOPLEFT,16,10); title:SetDimensions(430,30)
     button(w,"X",490,8,34,function() closeModal("manager") end)
     local drag=WM:CreateControl(nil,w,CT_CONTROL); drag:SetDimensions(470,40); drag:SetAnchor(TOPLEFT,w,TOPLEFT,0,0); drag:SetMouseEnabled(true); drag:SetHandler("OnMouseDown",function(_,b) if b==MOUSE_BUTTON_INDEX_LEFT then w:StartMoving() end end); drag:SetHandler("OnMouseUp",function(_,b) if b==MOUSE_BUTTON_INDEX_LEFT then w:StopMovingOrResizing() end end)
-    local note=WM:CreateControl(nil,w,CT_LABEL); note:SetFont("ZoFontGameSmall"); note:SetText("ESO group leader is the authority. Assistants can manually adjust and PUSH the leader's layout. @Rytic, @Rytic's-WIFEY, @kimmi2510 and @vonziklar begin as assistants when one of them is leader. Any can still be removed for the current group."); note:SetAnchor(TOPLEFT,w,TOPLEFT,18,52); note:SetDimensions(500,54); note:SetColor(.75,.82,.9,1)
+    local note=WM:CreateControl(nil,w,CT_LABEL); note:SetFont("ZoFontGameSmall"); note:SetText("Everyone defaults to assistant. An ESO group leader with Rytic can revoke or restore assistant access and publish those permissions to the group."); note:SetAnchor(TOPLEFT,w,TOPLEFT,18,52); note:SetDimensions(500,54); note:SetColor(.75,.82,.9,1)
     R.groupManagerList=WM:CreateControl(nil,w,CT_CONTROL); R.groupManagerList:SetDimensions(500,390); R.groupManagerList:SetAnchor(TOPLEFT,w,TOPLEFT,18,112); R.groupManagerRows={}
 end
 
@@ -312,20 +264,8 @@ function R.Create()
     if R.root then return end
     local sv=defaults(); local root=WM:CreateTopLevelWindow("RyticRaidLeadRoot"); R.root=root
     local function attachFragment()
-        if R.hudFragment or not SCENE_MANAGER or not HUD_SCENE or not HUD_UI_SCENE then return end
-        local fragment=ZO_HUDFadeSceneFragment and ZO_HUDFadeSceneFragment:New(root,nil,0) or (ZO_SimpleSceneFragment and ZO_SimpleSceneFragment:New(root))
-        if fragment then
-            HUD_SCENE:AddFragment(fragment)
-            HUD_UI_SCENE:AddFragment(fragment)
-            R.hudFragment=fragment
-            fragment:RegisterCallback("StateChange",function(_,newState)
-                if newState==SCENE_FRAGMENT_SHOWN then
-                    root:SetHidden(defaults().enabled==false)
-                elseif newState==SCENE_FRAGMENT_HIDDEN then
-                    root:SetHidden(true)
-                end
-            end)
-        end
+        if R.hudFragment then return end
+        R.hudFragment=RyticTank.UI.Attach(root,function() return defaults().enabled~=false end)
     end
     root:SetDimensions(145,34)
     -- Use one coordinate system for both axes.  Older builds stored Y as a
@@ -391,7 +331,7 @@ function R.Create()
     end)
 
     R.pullText=WM:CreateControl(nil,root,CT_LABEL); R.pullText:SetFont("ZoFontWinH1"); R.pullText:SetAnchor(TOP,root,BOTTOM,0,6); R.pullText:SetDimensions(300,55); R.pullText:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-    root:SetHidden(not sv.enabled)
+    root:SetHidden(true)
     attachFragment()
     if not R.hudFragment then zo_callLater(attachFragment,500) end
     R.SetUnlocked(sv.unlocked==true)
@@ -429,15 +369,13 @@ function R.SetEnabled(enabled)
         -- clear countdown state, close RaidLead-owned windows, and relinquish
         -- the /pull hook to the command that existed before Rytic loaded.
         R.CancelPull()
-        if R.root then R.root:SetHidden(true) end
+        if R.root then RyticTank.UI.Refresh(R.root) end
         closeModal("prog")
         closeModal("manager")
-        if R.progWindow then R.progWindow:SetHidden(true) end
-        if R.groupManager then R.groupManager:SetHidden(true) end
         if RyticTank.Positions and RyticTank.Positions.SetEnabled then
             RyticTank.Positions.SetEnabled(false)
         elseif RyticTank.Positions and RyticTank.Positions.window then
-            RyticTank.Positions.window:SetHidden(true)
+            RyticTank.UI.CloseModal(RyticTank.Positions.window)
         end
         if externalPullCommand then
             SLASH_COMMANDS["/pull"]=externalPullCommand
@@ -448,7 +386,7 @@ function R.SetEnabled(enabled)
     end
 
     if RyticTank.Positions and RyticTank.Positions.SetEnabled then RyticTank.Positions.SetEnabled(true) end
-    if R.root then R.root:SetHidden(false) end
+    if R.root then RyticTank.UI.Refresh(R.root) end
     SLASH_COMMANDS["/pull"]=R.PullSlash
 end
 function R.Toggle() R.SetEnabled(not defaults().enabled) end

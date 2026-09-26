@@ -449,7 +449,7 @@ function Settings.Initialize()
     end,setFunc=function(v)
         RyticTank.saved=RyticTank.saved or {}
         RyticTank.saved.raidWarningsEnabled=(v==true)
-        if not v and RyticTank.GroupSync and RyticTank.GroupSync.rwNotice then RyticTank.GroupSync.rwNotice:SetHidden(true) end
+        if not v and RyticTank.GroupSync and RyticTank.GroupSync.rwNotice then RyticTank.UI.Refresh(RyticTank.GroupSync.rwNotice) end
     end,default=true,width="full"})
     table.insert(options,{type="dropdown",name="Enable Raid Controls",choices={"ON","OFF"},getFunc=function()
         RyticTank.saved=RyticTank.saved or {}; RyticTank.saved.raidLead=RyticTank.saved.raidLead or {enabled=true,pullSeconds=5,scale=1.0,unlocked=false}

@@ -73,6 +73,11 @@ local D = Drawer.new({
             string.format("|c%s%d won|r  ·  |c%s%d lost|r%s", g, e.w, b, e.l, (e.t > 0) and string.format("  ·  %d tied", e.t) or ""),
             string.format("avg  %s dmg  ·  %s heal  ·  |c%s%.1f K|r / |c%s%.1f D|r", F.abbrev(e.avg_dmg), F.abbrev(e.avg_heal), g, e.avg_kills, b, e.avg_deaths),
         }
+        if e.avg_bal then
+            lines[#lines + 1] = string.format("balance  %d / 100 on average%s%s", math.floor(e.avg_bal + 0.5),
+                e.avg_bal_w and string.format("  ·  wins %d", math.floor(e.avg_bal_w + 0.5)) or "",
+                e.avg_bal_l and string.format("  ·  losses %d", math.floor(e.avg_bal_l + 0.5)) or "")
+        end
         if e.best > 0 then
             local when = ago(e.bestAt)
             lines[#lines + 1] = string.format("best  |c%s%s dmg|r%s", gold, F.abbrev(e.best), when and ("  ·  " .. when) or "")

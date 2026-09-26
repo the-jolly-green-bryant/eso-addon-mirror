@@ -8,12 +8,12 @@ QTI.ENTRY_TYPE_SUBCATEGORY_CONDITION = 4
 
 QTI.ICON_QUEST = "/esoui/art/floatingmarkers/quest_icon_assisted.dds"
 QTI.ICON_ZONE_STORY = "/esoui/art/journal/gamepad/gp_questtypeicon_zonestory.dds"
-QTI.ICON_RAID = "/esoui/art/journal/gamepad/gp_questtypeicon_raid.dds"
-QTI.ICON_DUNGEON = "/esoui/art/journal/gamepad/gp_questtypeicon_instance.dds"
-QTI.ICON_GROUP_DUNGEON = "/esoui/art/journal/gamepad/gp_questtypeicon_groupdungeon.dds"
+QTI.ICON_RAID = "esoui/art/icons/mapkey/mapkey_raiddungeon.dds"
+QTI.ICON_DUNGEON = "/esoui/art/loadingtips/loadingtip_soloinstance.dds"
+QTI.ICON_GROUP_DUNGEON = "esoui/art/icons/mapkey/mapkey_groupinstance.dds"
 QTI.ICON_GROUP_DELVE = "/esoui/art/journal/gamepad/gp_questtypeicon_groupdelve.dds"
 QTI.ICON_GROUP_AREA = "/esoui/art/journal/gamepad/gp_questtypeicon_grouparea.dds"
-QTI.ICON_PUBLIC_DUNGEON = "/esoui/art/treeicons/gamepad/gp_lorelibrary_categoryicon_dungeons.dds"
+QTI.ICON_PUBLIC_DUNGEON = "/esoui/art/zonestories/completiontypeicon_publicdungeon.dds"
 QTI.ICON_DELVE = "/esoui/art/journal/gamepad/gp_questtypeicon_delve.dds"
 QTI.ICON_ENDLESS_DUNGEON = "/esoui/art/journal/gamepad/gp_questtypeicon_endlessdungeon.dds"
 QTI.ICON_COMPANION = "/esoui/art/journal/gamepad/gp_questtypeicon_companion.dds"
@@ -123,18 +123,19 @@ function QTI.ApplyHeaderIcon(questHeader)
 	local repeatableType = GetJournalQuestRepeatType(questIndex)
 
 	local icon = questHeader.icon
-	icon:SetTexture(QTI.GetQuestIconTexture(questHeader.questType, questHeader.displayType))
+	local iconTexture = QTI.GetQuestIconTexture(questHeader.questType, questHeader.displayType)
+	icon:SetTexture(iconTexture)
 	icon:SetDimensions(QTI.SV.iconSize, QTI.SV.iconSize)
 
 	icon:ClearAnchors()
 
 	local styleOffset = (QTI.SV.headerStyle == "thick-outline") and -4 or 0
-
 	local alignOffset = -((QTI.SV.iconSize - QTI.SV.headerSize) / 2)
-
 	icon:SetAnchor(TOPRIGHT, questHeader, TOPLEFT, -5, alignOffset + styleOffset + 2)
 
-	if repeatableType ~= QUEST_REPEAT_NOT_REPEATABLE then
+	local isFavorIcon = (iconTexture == QTI.ICON_FAVOR)
+
+	if not isFavorIcon and repeatableType ~= QUEST_REPEAT_NOT_REPEATABLE then
 		icon:SetColor(QTI.REPEATABLE_COLOR.r, QTI.REPEATABLE_COLOR.g, QTI.REPEATABLE_COLOR.b, QTI.REPEATABLE_COLOR.a)
 	else
 		icon:SetColor(1, 1, 1, 1)

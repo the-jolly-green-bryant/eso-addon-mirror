@@ -273,6 +273,11 @@ function GamepadOptions.BuildChatRemindersFontOption()
     return GamepadOptions.BuildFiniteListOption(CHAT_REMINDERS_PANEL_ID, 8, reminders.GetFontLabel(), reminders.GetFontTooltip(), reminders.GetFontChoices(), reminders.GetFontChoiceNames(), reminders.GetFont, reminders.SetFont)
 end
 
+function GamepadOptions.BuildChatRemindersWrapTextOption()
+    local reminders = NQOL.Features.ChatReminders
+    return GamepadOptions.BuildCheckboxOption(CHAT_REMINDERS_PANEL_ID, 14, reminders.GetWrapTextLabel(), reminders.GetWrapTextTooltip(), reminders.GetWrapText, reminders.SetWrapText, nil, reminders.GetWrapTextDefault)
+end
+
 function GamepadOptions.BuildChatRemindersFontSizeOption()
     local reminders = NQOL.Features.ChatReminders
     return GamepadOptions.BuildValueStepSliderOption(CHAT_REMINDERS_PANEL_ID, 9, reminders.GetFontSizeLabel(), reminders.GetFontSizeTooltip(), reminders.GetFontSizeMin(), reminders.GetFontSizeMax(), "%.0f", reminders.GetFontSize, reminders.SetFontSize, 1)

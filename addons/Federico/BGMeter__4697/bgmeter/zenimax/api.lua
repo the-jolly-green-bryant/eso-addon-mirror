@@ -27,7 +27,11 @@ A.get_num_rounds     = GetBattlegroundNumRounds
 A.get_round_result   = GetCurrentBattlegroundRoundResult
 A.get_rounds_won     = GetCurrentBattlegroundRoundsWonByTeam
 A.get_team_score     = GetCurrentBattlegroundScore
-A.get_team_icon      = GetBattlegroundTeamIcon
+A.get_team_icon      = function(team)
+    local f = GetBattlegroundTeamIcon or ZO_GetBattlegroundTeamIcon
+    if not f then return nil end
+    return f(team)
+end
 A.get_team_name      = GetBattlegroundTeamName
 
 A.get_num_objectives          = GetNumObjectives
@@ -132,6 +136,12 @@ A.get_map_tile_texture       = GetMapTileTexture
 A.get_group_size             = GetGroupSize
 A.get_group_unit_tag         = GetGroupUnitTagByIndex
 A.get_unit_name              = GetUnitName
+A.get_unit_display_name      = GetUnitDisplayName
+A.get_unit_veterancy_rank_of = function(tag) return GetUnitVeterancyRank(tag) end
+A.get_unit_ava_rank_of       = function(tag) return GetUnitAvARank(tag) end
+A.get_unit_bg_team           = function(tag) return GetUnitBattlegroundTeam(tag) end
+A.is_unit_player             = function(tag) return IsUnitPlayer(tag) end
+A.are_units_equal            = AreUnitsEqual
 A.get_objective_pin_info     = GetObjectivePinInfo
 A.world_map_showing          = ZO_WorldMap_IsWorldMapShowing
 

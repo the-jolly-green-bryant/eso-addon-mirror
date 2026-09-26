@@ -4,6 +4,20 @@ Full version history for Frostfall. See README.md for current features, installa
 
 ---
 
+### v3.4.33
+- **Fixed the rest-detection reticle hook reading the wrong argument.**
+  `ZO_PreHook` passes the hooked method's `self` (`RETICLE`) first -
+  confirmed in the ESOUI client source (`libraries/utility/zo_hook.lua`
+  and `ingame/reticle/reticle.lua`, 12.0.8). The hook's
+  `interactionPossible` parameter was actually receiving `RETICLE`, so it
+  was always true. It now takes `(self, interactionPossible)`.
+- **Clears the remembered prompt text when nothing is interactable.**
+  Without this, fixing the argument alone would have let an old "Sit"
+  prompt linger after looking away, so a later interact-key press with
+  nothing targeted could wrongly start a seated rest.
+- Found while reviewing LibInteriorDetection 1.2.5's identical hook. No
+  other changes. Syntax-checked; **not yet tested in-game.**
+
 ### v3.4.32
 - **Redesigned indoor shelter from a display-only mask to a real,
   accelerated recovery toward neutral.** Prompted by a follow-up report

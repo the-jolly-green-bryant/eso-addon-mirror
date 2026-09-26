@@ -27,7 +27,6 @@ local defaults = {
     docked = true,        -- window sits under the button
     launcherX = 16, launcherY = 52,   -- just under the CPBIS button
     launcherHidden = false,
-    hideLibraries = true, -- hide commands that come from libraries
     quickBarShown = true,
     quickLocked = false,  -- quick buttons can't be dragged while locked
 }
@@ -56,13 +55,18 @@ end
 -- ---------------------------------------------------------------------------
 -- Which addon added a command
 --
--- The game does not record this, so three methods are tried, best first:
+-- The game does NOT record this, so the result is only a best guess and is
+-- shown as such ("Probably from ..."). Only what was actually observed is used:
 --   "file": the Lua file the command's function lives in (debug.getinfo)
---   "load": the file that registered the command, seen while addons load
---           (debug.traceback); only catches addons that load after this one
---   "name": the command looks like an installed addon's name (/aui -> AUI)
+--   "load": the addon whose code registered the command, seen while addons
+--           load (debug.traceback); only catches addons that load after this one
+-- Anything else (including commands only seen registered by a library, which
+-- may do that for another addon) is not credited to any addon: "Other".
+-- If a command was replaced after it was seen (another addon put its own
+-- function under the same name), it is not credited either.
 -- ---------------------------------------------------------------------------
 S.tracedSource = {}   -- ["/cmd"] = addon folder, or false for game code
+S.tracedFunction = {} -- ["/cmd"] = the function that was seen being registered
 
 local function FolderFromPath(path)
     return path and path:match("[Aa]dd[Oo]ns/([^/]+)/")
@@ -78,7 +82,9 @@ do
     if mt.__newindex == nil and debug and debug.traceback then
         mt.__newindex = function(t, key, value)
             rawset(t, key, value)
-            if type(key) ~= "string" or S.tracedSource[key] ~= nil then return end
+            -- Runs for every new name (also one that was removed and added again),
+            -- so the latest registration is the one remembered.
+            if type(key) ~= "string" or value == nil then return end
             local ok, trace = pcall(debug.traceback)
             if not ok or type(trace) ~= "string" then return end
             -- The deepest addon in the call stack is the one that started it;
@@ -95,6 +101,7 @@ do
                 end
             end
             S.tracedSource[key] = owner or library or false
+            S.tracedFunction[key] = value
         end
     end
 end
@@ -111,10 +118,6 @@ end
 
 local function StripColors(text)
     return (text or ""):gsub("|[cC]%x%x%x%x%x%x", ""):gsub("|[rR]", "")
-end
-
-local function Squash(text)
-    return (zo_strlower(text or ""):gsub("[^%w]", ""))
 end
 
 -- folder -> readable title, for every installed addon.
@@ -143,23 +146,6 @@ function S.IsLibrary(folder)
     return S.addonIsLibrary[folder] == true or folder:find("^[Ll]ib") ~= nil
 end
 
-local function GuessOwnerByName(command)
-    local word = Squash(command)
-    if #word < 2 then return nil end
-    local prefixMatch
-    for folder, title in pairs(S.GetAddonTitles()) do
-        local f, t = Squash(folder), Squash(title)
-        if word == f or word == t then return folder end
-        -- /aui -> AdvancedUI's short name, or /auibuffs -> starts with "aui"
-        local startsEither = (#word >= 3 and (f:sub(1, #word) == word or t:sub(1, #word) == word))
-            or (#f >= 3 and word:sub(1, #f) == f)
-        if startsEither then
-            prefixMatch = prefixMatch or folder
-        end
-    end
-    return prefixMatch
-end
-
 -- The game's own commands: every game text that is a single "/word" (the
 -- game's slash commands and chat channel switches live in its text table),
 -- so this works in every client language. Going through _G instead is not
@@ -181,8 +167,8 @@ function S.GetGameCommands()
     return set
 end
 
--- owner folder (or nil) and how it was found: "self", "file", "load", "name",
--- "game", "alias" or "unknown".
+-- Probable owner folder (or nil) and how it was found: "self", "file", "load",
+-- "game", "alias" or "unknown". Never guessed from the command's name.
 function S.GetCommandOwner(name)
     if S.registeredAliases[name] then return nil, "alias" end
     if name == "/codex" or (name == "/cmds" and S.ownsCmds) then return ADDON_NAME, "self" end
@@ -192,18 +178,16 @@ function S.GetCommandOwner(name)
     if fromFile then return fromFile, "file" end
 
     local traced = S.tracedSource[name]
-    if traced and traced:find("^[Ll]ib") then
-        -- Only a library was seen registering it; the command's name may still
-        -- point to the real addon (/auibuffs -> AUI).
-        local guess = GuessOwnerByName(name)
-        if guess and not guess:find("^[Ll]ib") then return guess, "name" end
+    -- Replaced since it was seen (someone put another function under this name):
+    -- whoever did that is unknown, so don't name anyone.
+    if traced ~= nil and rawget(SLASH_COMMANDS, name) ~= S.tracedFunction[name] then
+        return nil, "unknown"
     end
-    if traced then return traced, "load" end
     if traced == false then return nil, "game" end
+    -- Seen registered by a real addon: that addon (probably). Seen only from a
+    -- library: unknown, since libraries often register commands for other addons.
+    if traced and not S.IsLibrary(traced) then return traced, "load" end
     if S.GetGameCommands()[zo_strlower(name)] then return nil, "game" end
-
-    local guess = GuessOwnerByName(name)
-    if guess then return guess, "name" end
     return nil, "unknown"
 end
 
@@ -513,7 +497,6 @@ function S.GetCommands()
                 owner = owner,
                 ownerTitle = owner and (titles[owner] or owner) or nil,
                 ownerMethod = method,
-                isLibrary = owner ~= nil and S.IsLibrary(owner),
             }
         end
     end

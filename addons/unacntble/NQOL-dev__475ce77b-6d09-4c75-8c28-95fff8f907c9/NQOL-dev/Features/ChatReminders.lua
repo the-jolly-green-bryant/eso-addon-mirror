@@ -31,6 +31,7 @@ local defaults = {
             enabled = false,
             showInGame = true,
             showInSettings = true,
+            wrapText = false,
             messages = {},
             horizontalPosition = 50,
             verticalPosition = 35,
@@ -88,6 +89,7 @@ local function GetSettings()
     NQOL.Settings.Boolean(settings, defaultSettings, "enabled")
     NQOL.Settings.Boolean(settings, defaultSettings, "showInGame")
     NQOL.Settings.Boolean(settings, defaultSettings, "showInSettings")
+    NQOL.Settings.Boolean(settings, defaultSettings, "wrapText")
     NQOL.Settings.EnsureTable(settings, "messages")
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "horizontalPosition", 0, 100)
     NQOL.Settings.ClampedNumber(settings, defaultSettings, "verticalPosition", 0, 100)
@@ -221,9 +223,6 @@ local function EnsureHud()
         local label = WINDOW_MANAGER:CreateControl(nil, hudControl, CT_LABEL)
         label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
         label:SetVerticalAlignment(TEXT_ALIGN_TOP)
-        if label.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then
-            label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-        end
         hudLabels[index] = label
     end
 end
@@ -278,10 +277,10 @@ local function RefreshHud()
     local titleHeight = GetTitleHeight()
     local messagesTop = HUD_PADDING + titleHeight + TITLE_GAP + DIVIDER_HEIGHT + DIVIDER_GAP
     local width = Clamp(settings.width, HUD_WIDTH_MIN, HUD_WIDTH_MAX)
-    local height = messagesTop + (#messages * lineHeight) + ((#messages - 1) * ROW_GAP) + HUD_PADDING
+    local contentWidth = width - (HUD_PADDING * 2)
+    local nextRowTop = messagesTop
     local font = GetFont()
 
-    hudControl:SetDimensions(width, height)
     hudBackground:SetCenterColor(0, 0, 0, settings.backgroundOpacity / 100)
     ApplyBorder()
     hudTitle:SetFont(GetTitleFont())
@@ -299,15 +298,27 @@ local function RefreshHud()
         local message = messages[index]
         label:SetHidden(message == nil)
         if message then
+            label:ClearAnchors()
             label:SetFont(font)
+            label:SetWrapMode(settings.wrapText and TEXT_WRAP_MODE_TRUNCATE or TEXT_WRAP_MODE_ELLIPSIS)
+            label:SetMaxLineCount(settings.wrapText and 0 or 1)
+            -- Constrain the text layout itself, not just the label's clipping rectangle.
+            -- Reset explicit dimensions so wrapped labels can derive their full height.
+            label:SetDimensions(0, 0)
+            label:SetDimensionConstraints(contentWidth, 0, contentWidth, settings.wrapText and 0 or lineHeight)
             label:SetText(message)
             label:SetColor(settings.textColor[1], settings.textColor[2], settings.textColor[3], settings.textColor[4])
-            label:SetDimensions(width - (HUD_PADDING * 2), lineHeight)
-            label:ClearAnchors()
-            label:SetAnchor(TOPLEFT, hudControl, TOPLEFT, HUD_PADDING, messagesTop + ((index - 1) * (lineHeight + ROW_GAP)))
+            local rowHeight = settings.wrapText and math.max(lineHeight, math.ceil(label:GetTextHeight())) or lineHeight
+            if not settings.wrapText then
+                label:SetHeight(rowHeight)
+            end
+            label:SetAnchor(TOPLEFT, hudControl, TOPLEFT, HUD_PADDING, nextRowTop)
+            nextRowTop = nextRowTop + rowHeight + ROW_GAP
         end
     end
 
+    local height = nextRowTop - (#messages > 0 and ROW_GAP or 0) + HUD_PADDING
+    hudControl:SetDimensions(width, height)
     ApplyPosition(width, height)
     hudControl:SetHidden(false)
 end
@@ -622,6 +633,9 @@ function ChatReminders.GetShowInGame() return GetSettings().showInGame end
 function ChatReminders.SetShowInGame(value) GetSettings().showInGame = value == true; RefreshSceneCallback(); RefreshHud() end
 function ChatReminders.GetShowInSettings() return GetSettings().showInSettings end
 function ChatReminders.SetShowInSettings(value) GetSettings().showInSettings = value == true; RefreshSceneCallback(); RefreshHud() end
+function ChatReminders.GetWrapText() return GetSettings().wrapText end
+function ChatReminders.SetWrapText(value) GetSettings().wrapText = value == true; RefreshHud() end
+function ChatReminders.GetWrapTextDefault() return defaults.chat.reminders.wrapText end
 function ChatReminders.GetHorizontalPosition() return GetSettings().horizontalPosition end
 function ChatReminders.SetHorizontalPosition(value) GetSettings().horizontalPosition = Clamp(value, 0, 100); RefreshHud() end
 function ChatReminders.GetVerticalPosition() return GetSettings().verticalPosition end
@@ -668,6 +682,8 @@ function ChatReminders.GetVerticalPositionLabel() return NQOL.L("features.chat_r
 function ChatReminders.GetVerticalPositionTooltip() return NQOL.L("features.chat_reminders.vertical_position_tooltip") end
 function ChatReminders.GetWidthLabel() return NQOL.L("features.chat_reminders.width_label") end
 function ChatReminders.GetWidthTooltip() return NQOL.L("features.chat_reminders.width_tooltip") end
+function ChatReminders.GetWrapTextLabel() return NQOL.L("features.chat_reminders.wrap_text_label") end
+function ChatReminders.GetWrapTextTooltip() return NQOL.L("features.chat_reminders.wrap_text_tooltip") end
 function ChatReminders.GetFontLabel() return NQOL.L("features.chat_reminders.font_label") end
 function ChatReminders.GetFontTooltip() return NQOL.L("features.chat_reminders.font_tooltip") end
 function ChatReminders.GetFontSizeLabel() return NQOL.L("features.chat_reminders.font_size_label") end

@@ -1,12 +1,12 @@
 TruePvPRatio = {
     name = "TruePvPRatio",
-    version = "2.7",
+    version = "2.9",
     savedVars = nil,
     uiCreated = false,
     wasInPremadeGroup = false,
 }
 
--- Textes de l'interface
+-- Textes de l'interface (en anglais)
 ZO_CreateStringId("SI_BINDING_NAME_TRUE_PVP_RATIO_TOGGLE", "Toggle True PvP Ratio")
 local L_GLOBAL_RATIO = "GLOBAL ACCOUNT RATIO: "
 local L_TITLE = "TRUE PVP RATIO"
@@ -18,13 +18,13 @@ local ALLIANCE_COLORS = {
     [ALLIANCE_EBONHEART_PACT] = "a62828", -- Rouge
 }
 
--- Couleurs et Suffixes des Classes
+-- Couleurs et suffixes des classes
 local CLASS_STYLES = {
-    [1]   = { text = "DK",    color = "9c0000" }, -- Rouge sang léger foncé
-    [2]   = { text = "SORC",  color = "5d38a6" }, -- Mauve foncé
-    [3]   = { text = "NB",    color = "404040" }, -- Gris foncé
+    [1]   = { text = "DK",    color = "9c0000" }, -- Rouge sang
+    [2]   = { text = "SORC",  color = "5d38a6" }, -- Mauve fonce
+    [3]   = { text = "NB",    color = "404040" }, -- Gris fonce
     [4]   = { text = "WARD",  color = "00c997" }, -- Turquoise
-    [5]   = { text = "NECRO", color = "9cffe8" }, -- Turquoise pâle
+    [5]   = { text = "NECRO", color = "9cffe8" }, -- Turquoise pale
     [6]   = { text = "TEMP",  color = "ffdc40" }, -- Jaune vif
     [117] = { text = "ARC",   color = "33FF00" }, -- Vert flash
 }
@@ -74,7 +74,7 @@ local function UpdatePremadeGroupStatus()
     end
 end
 
--- CORRECTION DU BUG DES DUELS : On renvoie "OTHER" au lieu de "CYR" si on n'est pas en zone PvP.
+-- Detection de la zone PvP actuelle
 local function GetCurrentPvPZone()
     if IsActiveWorldBattleground() then
         return "BG"
@@ -98,20 +98,17 @@ local function AddKill(zone, enemyAlliance)
 
     sv.global.kills = sv.global.kills + 1
     
-    -- On ajoute aux compteurs d'Alliances UNIQUEMENT en monde ouvert pour éviter le bug des BG
     if zone == "CYR" or zone == "IC" then
         if sv.global.alliances[enemyAlliance] then
             sv.global.alliances[enemyAlliance].kills = sv.global.alliances[enemyAlliance].kills + 1
         end
     end
 
-    -- Stats Globales Personnage + Streak
     charData.kills = charData.kills + 1
     charData.currentKillStreak = (charData.currentKillStreak or 0) + 1
     if charData.currentKillStreak > (charData.maxKillStreak or 0) then charData.maxKillStreak = charData.currentKillStreak end
     if charData.currentKillStreak > (sv.global.maxKillStreak or 0) then sv.global.maxKillStreak = charData.currentKillStreak end
 
-    -- Stats par modes (Plus de streak ici)
     if zone == "CYR" then
         charData.cyrodiil.kills = charData.cyrodiil.kills + 1
     elseif zone == "IC" then
@@ -133,18 +130,15 @@ local function AddDeath(zone, enemyAlliance)
 
     sv.global.deaths = sv.global.deaths + 1
     
-    -- Alliances
     if zone == "CYR" or zone == "IC" then
         if sv.global.alliances[enemyAlliance] then
             sv.global.alliances[enemyAlliance].deaths = sv.global.alliances[enemyAlliance].deaths + 1
         end
     end
 
-    -- Stats Globales Personnage + Réinitialisation Streak
     charData.deaths = charData.deaths + 1
     charData.currentKillStreak = 0
 
-    -- Stats par modes
     if zone == "CYR" then
         charData.cyrodiil.deaths = charData.cyrodiil.deaths + 1
     elseif zone == "IC" then
@@ -160,8 +154,6 @@ end
 
 local function OnPvPKillFeedDeath(eventCode, killLocation, killerDisplayName, killerCharName, killerAlliance, killerRank, victimDisplayName, victimCharName, victimAlliance, victimRank)
     local zone = GetCurrentPvPZone()
-    
-    -- Si la zone est "OTHER" (ex: Un duel en ville), on ignore complètement l'événement !
     if zone == "OTHER" then return end
 
     local myAccount = GetUnitDisplayName("player")
@@ -205,20 +197,20 @@ function TruePvPRatio:BuildUI()
     bg:SetCenterColor(0, 0, 0, 0.95)
     bg:SetEdgeColor(0, 0, 0, 0)
 
-    -- Titre Principal
+    -- Titre principal
     local title = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Title", tlw, CT_LABEL)
     title:SetFont("ZoFontGamepad42")
     title:SetAnchor(TOP, tlw, TOP, 0, 40)
     title:SetText(L_TITLE)
     title:SetColor(1, 1, 1, 1)
 
-    -- Stats Globales (Haut Gauche)
+    -- Statistiques globales (Haut gauche)
     self.globalLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Global", tlw, CT_LABEL)
     self.globalLabel:SetFont("ZoFontGamepad34")
     self.globalLabel:SetAnchor(TOPLEFT, tlw, TOPLEFT, 40, 90)
-    self.globalLabel:SetColor(1, 0.8, 0, 1) -- #FFCC00 (Or)
+    self.globalLabel:SetColor(1, 0.8, 0, 1)
 
-    -- Tableau des Alliances (Haut Droite)
+    -- Tableau des alliances (Haut droite)
     local rightPanelX = -60
     local startY = 40
     
@@ -230,26 +222,26 @@ function TruePvPRatio:BuildUI()
     
     self.adLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_AD", tlw, CT_LABEL)
     self.adLabel:SetFont("ZoFontGamepad27")
-    self.adLabel:SetAnchor(TOPRIGHT, allianceTitle, BOTTOMRIGHT, 0, 15)
+    self.adLabel:SetAnchor(TOPRIGHT, allianceTitle, BOTTOMRIGHT, 0, 10)
     self.adLabel:SetColor(0.83, 0.67, 0.08, 1) 
     
     self.dcLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_DC", tlw, CT_LABEL)
     self.dcLabel:SetFont("ZoFontGamepad27")
-    self.dcLabel:SetAnchor(TOPRIGHT, self.adLabel, BOTTOMRIGHT, 0, 10)
+    self.dcLabel:SetAnchor(TOPRIGHT, self.adLabel, BOTTOMRIGHT, 0, 8)
     self.dcLabel:SetColor(0.07, 0.36, 0.66, 1) 
     
     self.epLabel = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_EP", tlw, CT_LABEL)
     self.epLabel:SetFont("ZoFontGamepad27")
-    self.epLabel:SetAnchor(TOPRIGHT, self.dcLabel, BOTTOMRIGHT, 0, 10)
+    self.epLabel:SetAnchor(TOPRIGHT, self.dcLabel, BOTTOMRIGHT, 0, 8)
     self.epLabel:SetColor(0.65, 0.16, 0.16, 1) 
 
-    -- En-têtes du Tableau
+    -- En-tetes du tableau (Releves a Y = 235)
     local function CreateHeader(name, text, offsetX, width, align)
         local lbl = WINDOW_MANAGER:CreateControl(name, tlw, CT_LABEL)
-        lbl:SetFont("ZoFontGamepad27")
+        lbl:SetFont("ZoFontGamepad22")
         lbl:SetColor(0.5, 0.5, 0.5, 1)
-        lbl:SetAnchor(BOTTOMLEFT, tlw, TOPLEFT, offsetX, 310)
-        lbl:SetDimensions(width, 60)
+        lbl:SetAnchor(BOTTOMLEFT, tlw, TOPLEFT, offsetX, 235)
+        lbl:SetDimensions(width, 35)
         lbl:SetHorizontalAlignment(align)
         lbl:SetVerticalAlignment(TEXT_ALIGN_BOTTOM)
         lbl:SetText(text)
@@ -263,54 +255,23 @@ function TruePvPRatio:BuildUI()
     CreateHeader("TruePvPRatio_H5", "BG (Solo)", 940, 220, TEXT_ALIGN_CENTER)
     CreateHeader("TruePvPRatio_H6", "BG (Grp)", 1160, 220, TEXT_ALIGN_CENTER)
 
-    -- ZONE DE DEFILEMENT (SCROLL)
-    self.scrollContainer = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_Scroll", tlw, CT_SCROLL)
-    self.scrollContainer:SetAnchor(TOPLEFT, tlw, TOPLEFT, 0, 330)
-    self.scrollContainer:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, 0, -20)
-    self.scrollContainer:SetMouseEnabled(true)
-    
-    self.scrollChild = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_ScrollChild", self.scrollContainer, CT_CONTROL)
-    self.scrollChild:SetAnchor(TOPLEFT)
-    self.scrollChild:SetWidth(GuiRoot:GetWidth())
-
-    tlw:SetHandler("OnUpdate", function()
-        if not tlw:IsHidden() and IsInGamepadPreferredMode() then
-            local y = DIRECTIONAL_INPUT:GetY(ZO_DI_RIGHT_STICK)
-            if y ~= 0 then
-                local delta = GetFrameDeltaSeconds()
-                local currentScroll = self.scrollContainer:GetVerticalScroll()
-                local speed = 1200 * delta
-                local newScroll = currentScroll - (y * speed)
-                
-                local maxScroll = math.max(0, self.scrollChild:GetHeight() - self.scrollContainer:GetHeight())
-                if newScroll < 0 then newScroll = 0 end
-                if newScroll > maxScroll then newScroll = maxScroll end
-                
-                self.scrollContainer:SetVerticalScroll(newScroll)
-            end
-        end
-    end)
-
-    self.scrollContainer:SetHandler("OnMouseWheel", function(_, delta)
-        local currentScroll = self.scrollContainer:GetVerticalScroll()
-        local newScroll = currentScroll - (delta * 60)
-        local maxScroll = math.max(0, self.scrollChild:GetHeight() - self.scrollContainer:GetHeight())
-        if newScroll < 0 then newScroll = 0 end
-        if newScroll > maxScroll then newScroll = maxScroll end
-        self.scrollContainer:SetVerticalScroll(newScroll)
-    end)
+    -- Conteneur de la liste des personnages (Y = 245)
+    self.tableContainer = WINDOW_MANAGER:CreateControl("TruePvPRatio_UI_TableContainer", tlw, CT_CONTROL)
+    self.tableContainer:SetAnchor(TOPLEFT, tlw, TOPLEFT, 0, 245)
+    self.tableContainer:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, 0, -20)
 
     self.charRows = {}
 
+    -- Scene Gamepad standard securisee
     self.scene = ZO_Scene:New("truePvPRatioGamepad", SCENE_MANAGER)
     self.scene:AddFragment(ZO_FadeSceneFragment:New(tlw))
-    
+
     local keybindStripDescriptor = {
         alignment = KEYBIND_STRIP_ALIGN_LEFT,
         {
             name = GetString(SI_DIALOG_CLOSE),
             keybind = "UI_SHORTCUT_NEGATIVE", 
-            callback = function() SCENE_MANAGER:Hide("truePvPRatioGamepad") end,
+            callback = function() TruePvPRatio:ToggleUI() end,
         },
     }
 
@@ -344,15 +305,19 @@ function TruePvPRatio:UpdateUI()
         table.insert(sortedChars, {name = name, data = data, ratio = GetRatio(data.kills, data.deaths)})
     end
 
+    -- Tri des personnages : Veterans (>= 2000 kills) en premier, puis par meilleur ratio
     table.sort(sortedChars, function(a, b) 
         local isAVeteran = (a.data.kills >= 2000)
         local isBVeteran = (b.data.kills >= 2000)
-        
         if isAVeteran ~= isBVeteran then
             return isAVeteran
         end
         return a.ratio > b.ratio
     end)
+
+    -- Hauteur calculee pour faire tenir exactement 15 personnages sans depasser de l'ecran
+    local rowHeight = 52
+    local fontName = "ZoFontGamepad20"
 
     for _, row in ipairs(self.charRows) do
         row.name:SetHidden(true)
@@ -363,29 +328,27 @@ function TruePvPRatio:UpdateUI()
         row.bgGrp:SetHidden(true)
     end
 
-    local numDisplayed = 0
-
     for i, charInfo in ipairs(sortedChars) do
-        if i > 20 then break end 
-        numDisplayed = numDisplayed + 1
+        -- Strict maximum de 15 personnages a l'ecran
+        if i > 15 then break end
 
         local row = self.charRows[i]
-        local yOffset = (i - 1) * 75
+        local yOffset = (i - 1) * rowHeight
 
         if not row then
             row = {}
-            row.name = WINDOW_MANAGER:CreateControl("TruePvPRatio_Row_"..i.."_Name", self.scrollChild, CT_LABEL)
-            row.name:SetFont("ZoFontGamepad27")
-            row.name:SetAnchor(TOPLEFT, self.scrollChild, TOPLEFT, 40, yOffset + 5)
-            row.name:SetDimensions(240, 75)
+            row.name = WINDOW_MANAGER:CreateControl("TruePvPRatio_Row_"..i.."_Name", self.tableContainer, CT_LABEL)
+            row.name:SetAnchor(TOPLEFT, self.tableContainer, TOPLEFT, 40, yOffset)
+            row.name:SetDimensions(240, rowHeight)
+            row.name:SetFont(fontName)
             row.name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
             row.name:SetVerticalAlignment(TEXT_ALIGN_CENTER)
             
             local function CreateStatCell(idx, x)
-                local lbl = WINDOW_MANAGER:CreateControl("TruePvPRatio_Row_"..i.."_C"..idx, self.scrollChild, CT_LABEL)
-                lbl:SetFont("ZoFontGamepad27")
-                lbl:SetAnchor(TOPLEFT, self.scrollChild, TOPLEFT, x, yOffset)
-                lbl:SetDimensions(220, 75)
+                local lbl = WINDOW_MANAGER:CreateControl("TruePvPRatio_Row_"..i.."_C"..idx, self.tableContainer, CT_LABEL)
+                lbl:SetAnchor(TOPLEFT, self.tableContainer, TOPLEFT, x, yOffset)
+                lbl:SetDimensions(220, rowHeight)
+                lbl:SetFont(fontName)
                 lbl:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
                 lbl:SetVerticalAlignment(TEXT_ALIGN_CENTER)
                 return lbl
@@ -415,21 +378,21 @@ function TruePvPRatio:UpdateUI()
 
         row.name:SetText(classPrefix .. "|c" .. nameColor .. charInfo.name .. "|r")
 
-        -- Fonction pour la case "Global" avec les couleurs dorées et la streak
-        local function FormatGlobalCell(k, deaths, streak)
-            return string.format("|cFFCC00K %d / D %d|r\n|cFFCC00Ratio %s | Streak %d|r", k, deaths, FormatRatio(k, deaths), streak or 0)
-        end
+        -- Case globale (sur 2 lignes comme a l'origine)
+        row.global:SetText(string.format("|cFFCC00K %d / D %d|r\n|cFFCC00Ratio %s | Streak %d|r", d.kills, d.deaths, FormatRatio(d.kills, d.deaths), d.maxKillStreak or 0))
 
-        -- Fonction pour les modes spécifiques (Blanc et Gris, sans streak)
-        local function FormatModeCell(k, deaths)
+        -- Fonction pour les modes specifiques avec tiret discret si vide
+        local function FormatModeWithDash(k, deaths)
+            if k == 0 and deaths == 0 then
+                return "|c555555—|r"
+            end
             return string.format("|cFFFFFFK %d / D %d|r\n|cAAAAAARatio %s|r", k, deaths, FormatRatio(k, deaths))
         end
 
-        row.global:SetText(FormatGlobalCell(d.kills, d.deaths, d.maxKillStreak))
-        row.cyr:SetText(FormatModeCell(d.cyrodiil.kills, d.cyrodiil.deaths))
-        row.ic:SetText(FormatModeCell(d.ic.kills, d.ic.deaths))
-        row.bgSolo:SetText(FormatModeCell(d.bgSolo.kills, d.bgSolo.deaths))
-        row.bgGrp:SetText(FormatModeCell(d.bgGroup.kills, d.bgGroup.deaths))
+        row.cyr:SetText(FormatModeWithDash(d.cyrodiil.kills, d.cyrodiil.deaths))
+        row.ic:SetText(FormatModeWithDash(d.ic.kills, d.ic.deaths))
+        row.bgSolo:SetText(FormatModeWithDash(d.bgSolo.kills, d.bgSolo.deaths))
+        row.bgGrp:SetText(FormatModeWithDash(d.bgGroup.kills, d.bgGroup.deaths))
 
         row.name:SetHidden(false)
         row.global:SetHidden(false)
@@ -438,8 +401,6 @@ function TruePvPRatio:UpdateUI()
         row.bgSolo:SetHidden(false)
         row.bgGrp:SetHidden(false)
     end
-
-    self.scrollChild:SetHeight(numDisplayed * 75)
 end
 
 function TruePvPRatio:ToggleUI()
@@ -493,7 +454,6 @@ function TruePvPRatio:Initialize()
         self.savedVars.global.maxKillStreak = 0
     end
 
-    -- Initialisation des tableaux si manquants (Les streaks spécifiques ne sont plus utilisées mais on initialise pour éviter les erreurs)
     for cName, cData in pairs(self.savedVars.characters) do
         cData.maxKillStreak = cData.maxKillStreak or 0
         cData.currentKillStreak = cData.currentKillStreak or 0

@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/its_wifey/Nowhere-Vault-Secret-Seeker__4875",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "its_wifey",
+  "canonical_id": "esoui:4875",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4875",
+  "deleted": false,
+  "directories": [
+    "NowhereVaultSecretSeeker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4875/",
+  "fingerprint": "75c1b58cade64ca0dab07d96253d534783a807d54bd154b85f0c54d446b804d5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw17556.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17557.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17558.png",
+    "https://cdn-eso.mmoui.com/preview/pvw17559.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4875",
+  "source_url": "https://www.esoui.com/downloads/info4875-NowhereVaultSecretSeeker.html",
+  "stats": {
+    "downloads": 0,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Nowhere Vault: Secret Seeker",
+  "updated_at": 1790404112000,
+  "version": "1.0"
+}

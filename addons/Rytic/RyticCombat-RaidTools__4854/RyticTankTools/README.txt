@@ -1,60 +1,44 @@
-RyticTankTools 2.0.1
+Rytic Combat & Raid Tools 3.0.2-test
 
-2.0.1 maintenance:
-- Restores/reasserts the shipped curved RSS health, stamina, and magicka textures during HUD refresh.
-- Adds /rssrepair to refresh the curved RSS textures without deleting SavedVariables.
-- Keeps Regular / Male / Female Resource HUD themes.
-- Updates public package title/version metadata and required dependencies.
+AI-assisted development and review. This candidate has passed offline Lua checks,
+but has NOT been validated in ESO or reviewed by Super Grok. Do not publish it as
+a stable or fully compliant release. See the separate review report for open issues.
 
-RYTICTANKTOOLS
-Version 2.0.0
-Author: Rytic
+CHANGES FROM THE SUPPLIED 3.0.0 ZIP
+- Action-bar root visibility is owned by a SimpleSceneFragment in HUD/HUDUI.
+  Enabled/dead state is a fragment conditional. Removed competing native-bar
+  visibility hooks, manual root alpha changes, and stale death-latch authority.
+- Action-bar movement and mouse capture follow the unlock setting.
+- Leader assistant revocations are respected and included in outgoing authority.
+  Everyone still defaults to assistant before the leader publishes restrictions.
+- Group-frame shutdown passes the required event IDs when unregistering listeners.
+- PULL! stays visible for 1.2 seconds; an old delayed clear cannot erase a new pull.
+- Removed the unused alternate RaidLead source from the package.
+- Added an explicit LibGroupBroadcast minimum version (installed AddOnVersion 95).
 
-RyticTankTools is an Elder Scrolls Online tanking and group-support addon
-focused on useful in-combat information and post-fight analysis.
+REQUIRED LIBRARIES (install separately)
+LibAddonMenu-2.0 >= 43; LibCombat >= 89; LibGroupBroadcast >= 95.
+Optional: LibGroupCombatStats for shared DPS.
+Recipients need the compatible add-on and transport to receive Rytic messages.
+A leader without the add-on cannot publish Rytic authority restrictions.
 
-VERSION 2.0 - HEALER / SUPPORT SET TRACKING UPDATE
-Version 2.0 expands the Set HUD beyond tank sets with healer and support-set
-tracking. Initial support includes:
-- Pillager's Profit
-- Way of Martial Knowledge
-- Roaring Opportunist
-- Jorvuld's Guidance
-- Symphony of Blades
-- Ozezan the Inferno
+INSTALL / TEST
+Back up your current RyticTankTools folder and RyticTankSavedVariables.lua first.
+With ESO closed, replace the add-on folder using this ZIP. Do not run two copies.
+Keep existing SavedVariables. Test menu transitions, death/rez, bar swaps,
+transformations, locked/unlocked mode, and leader REMOVE/ASSIST with two clients.
+Roll back by restoring the backed-up folder. If needed, restore the SavedVariables
+backup while ESO is closed. No files in your installed add-on were changed here.
 
-Existing tank/support set tracking remains available, including Frozen Watcher,
-Pearlescent Ward, Lucent Echoes, Puncturing Remedy, Roar of Alkosh,
-Stonehulk Dominion, Claw of Yolnahkriin, Turning Tide, Crimson Oath's Rive,
-Drake's Rush, Rush of Agony, Nazaray, Nunatak, Archdruid Devyric,
-Encratis's Behemoth, Magma Incarnate, Lady Thorn, Tremorscale, and Void Bash.
+CREDITS (carried forward from the supplied README)
+Hyperioxes - Hyper Tanking Tools: referenced for shield/resource tracking.
+Hoft & secretrob - Bandits User Interface: referenced for group frames and
+attribute-visualizer behavior. Verify source/texture licenses before publication.
+No affiliation with these authors is implied.
 
-OTHER FEATURES
-- Curved Health, Stamina, and Magicka Resource HUD
-- Damage-shield tracking and visualization
-- Custom Action Bar with duration and alert tracking
-- Tank combat statistics and defensive analytics
-- Death recap
-- Raid-lead Ready/Pull utilities
-- Movable/scalable HUD components
-- HUD elements hide appropriately when ESO menus open
-- LibAddonMenu configuration
-
-REQUIRED DEPENDENCIES
-- LibAddonMenu-2.0
-- LibCombat
-
-AI-ASSISTED DEVELOPMENT
-RyticTankTools was developed with AI-assisted coding and research.
-Features are reviewed and tested in-game during development.
-
-CREDITS & ACKNOWLEDGEMENTS
-Hyperioxes - Hyper Tanking Tools:
-Referenced during development and troubleshooting of damage-shield/resource
-tracking behavior.
-
-Hoft & secretrob - Bandits User Interface:
-Referenced while researching ESO group-frame and attribute-visualizer behavior.
-
-RyticTankTools is independently developed. No affiliation with these addon
-authors is implied.
+ZOS DISCLOSURE
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc.
+or its affiliates. The Elder ScrollsÂ® and related logos are registered trademarks
+or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+All rights reserved.
+https://account.elderscrollsonline.com/add-on-terms

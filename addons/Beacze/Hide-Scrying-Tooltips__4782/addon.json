@@ -22,11 +22,11 @@
     "HideScryingTooltips"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4782/",
-  "fingerprint": "f1ee89247569f440be27d8b5ca766171c3ab22c866b64b8b22b495b7398fec74",
+  "fingerprint": "3c128866a061b1c8a82c303210a6d4e4185257a7497b90ec193f41a8326e1825",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17047.png",
     "https://cdn-eso.mmoui.com/preview/pvw17048.png",
-    "https://cdn-eso.mmoui.com/preview/pvw17049.png"
+    "https://cdn-eso.mmoui.com/preview/pvw17560.png"
   ],
   "platform": "pc",
   "published": true,
@@ -34,11 +34,11 @@
   "source_id": "4782",
   "source_url": "https://www.esoui.com/downloads/info4782-HideScryingTooltips.html",
   "stats": {
-    "downloads": 24,
+    "downloads": 130,
     "favorites": 0,
-    "monthly_downloads": 10
+    "monthly_downloads": 59
   },
   "title": "Hide Scrying Tooltips",
-  "updated_at": 1787148270000,
-  "version": "1.0.0"
+  "updated_at": 1790341204000,
+  "version": "1.0.1"
 }

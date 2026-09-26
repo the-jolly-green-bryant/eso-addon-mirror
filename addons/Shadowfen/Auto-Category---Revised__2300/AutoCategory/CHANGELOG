@@ -1,3 +1,8 @@
+[COLOR="DeepSkyBlue"] 4.6.16 (156)[/COLOR]:
+[LIST]
+[*] Fixed the problems with empty Tags dropdowns in the Settings window. Reported by Cambio.
+[/LIST]
+
 [COLOR="DeepSkyBlue"] 4.6.15 (155)[/COLOR]:
 [LIST]
 [*] Fixed bag priority sort errors for the Display Order List.

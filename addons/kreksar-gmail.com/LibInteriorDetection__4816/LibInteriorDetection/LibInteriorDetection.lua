@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- LibInteriorDetection
--- Version: 1.1.0
+-- Version: 1.3.0
 --
 -- A library that reports whether the player is currently indoors, by
 -- combining a per-zone "interior" default with live door-transition and
@@ -13,6 +13,9 @@
 --     GetZoneNameById(zoneId)
 --     GetUnitRawWorldPosition("player")           -> zoneId, x, y, z
 --     EVENT_PLAYER_ACTIVATED / EVENT_PLAYER_DEACTIVATED
+--     EVENT_BEGIN_LOCKPICK / EVENT_LOCKPICK_SUCCESS / EVENT_LOCKPICK_FAILED /
+--       EVENT_LOCKPICK_BROKE - confirmed in the ESOUI client source
+--       (ingame/lockpick/lockpick.lua, 12.0.8, Aug 2026)
 --     INTERACTIVE_WHEEL_MANAGER.StartInteraction  -> hooked as a generic
 --                                                     interaction trigger
 --     zo_callLater(fn, delayMs)
@@ -51,15 +54,41 @@
 --   Every entry's table default can be overridden per-zone via the
 --   settings menu - use that rather than editing the table directly.
 --
--- METHODOLOGY - LIVE DOOR-TOGGLE:
+-- METHODOLOGY - LIVE DOOR-TOGGLE (DOOR WATCH, 1.3.0):
 --   Ordinary building interiors get no zone/map change and no event of
---   any kind on entry. INTERACTIVE_WHEEL_MANAGER.StartInteraction is
---   hooked as a generic "an interaction just happened" trigger; a
---   configurable delay later, a same-zone raw-position delta over
---   threshold is treated as a door crossing. A door is symmetric (used
---   once to enter, once to exit), so the flag TOGGLES - but only when
---   the zone's default is exterior (an interior-default zone has no
---   "outside" to toggle back into short of leaving the zone).
+--   any kind on entry. INTERACTIVE_WHEEL_MANAGER.StartInteraction (the
+--   interact key's handler, confirmed in the ESOUI client's
+--   bindings.xml) is hooked as a generic "an interaction just happened"
+--   trigger. Each interaction starts - or extends - a DOOR WATCH that
+--   samples position every POLL_INTERVAL_MS until the watch window
+--   (settings slider) has passed since the LAST interaction, and toggles
+--   on each single sudden JUMP (> threshold) between two consecutive
+--   samples. A door moves the player in one step whenever it lands, so
+--   slow doors (e.g. Daggerfall Cathedral, >3s) and fast ones are both
+--   caught, and running/riding never produces a jump. This replaced
+--   (1.3.0) a single position comparison at a fixed delay, which missed
+--   slow doors and let sprinting read as a door.
+--   Counting rules:
+--   - Every interaction (or lockpick success) adds one CREDIT; a counted
+--     jump spends one. A jump with no credit left is ignored (logged),
+--     since every real crossing needs an interaction.
+--   - A jump within DOOR_JUMP_COOLDOWN_MS of the last counted one is
+--     ignored (logged), in case a landing ever settles in two steps.
+--     UNVERIFIED whether that ever happens; the cooldown is a guess.
+--   - Each crossing is its own jump, so several in one window (cook fire
+--     then out; in and straight back out; double presses) count right.
+--   A door is symmetric (used once to enter, once to exit), so the flag
+--   TOGGLES - but only when the zone's default is exterior (an
+--   interior-default zone has no "outside" to toggle back into short of
+--   leaving the zone).
+--   LOCKPICKED DOORS: after a successful pick ESO moves the player
+--   through the door with no further press (confirmed via the trace), so
+--   EVENT_LOCKPICK_SUCCESS starts/extends the watch like an interaction.
+--   A chest never moves the player, so a chest pick can't toggle.
+--   Only the interact-key wheel type (ZO_INTERACTIVE_WHEEL_TYPE_FISHING -
+--   the type the interact key passes, per bindings.xml) counts; the
+--   quickslot and target-marker wheel keys also call StartInteraction
+--   and are ignored (1.3.0).
 --   KNOWN LIMITATION: assumes symmetric in/out door pairs. Nested
 --   interiors (e.g. a basement beneath a tavern) desync the flag.
 --
@@ -72,8 +101,12 @@
 --   time), and the world map's own open/close lifecycle as a fallback
 --   for cases where the specific internal function isn't known (e.g. a
 --   player house's exterior-door sub-option fires none of the four).
---   The check POLLS position once per second for up to
---   TELEPORT_POLL_MAX_ATTEMPTS seconds rather than using a fixed delay:
+--   The check POLLS position every POLL_INTERVAL_MS for about
+--   15 seconds rather than using a fixed delay, and (1.2.3) looks for a
+--   single sudden JUMP between two consecutive samples rather than total
+--   distance from the starting point - running away after closing the
+--   map (confirmed in-game: 27.5m in ~3s) was reading as a teleport.
+--   A fixed delay would not work either:
 --   travel initiated while standing at a wayshrine is instant, but
 --   travel initiated remotely from the map (to either a wayshrine or a
 --   house) is gated behind an 8-second "Recall" ability cast - a fixed
@@ -98,7 +131,7 @@
 --   elsewhere in this file for ZONE_INTERIOR lookups) - those are two
 --   different numbering schemes.
 --
--- SETTINGS MENU (LibAddonMenu-2.0): door-check delay (3-13s, default 3),
+-- SETTINGS MENU (LibAddonMenu-2.0): door watch window (5-20s, default 10),
 -- door-transition distance threshold (1000-8000 raw units, default
 -- 2000), and per-zone interior/exterior overrides (dropdown built from
 -- this library's own ZONE_INTERIOR table, not ESO's zone enumeration,
@@ -116,11 +149,28 @@
 --   restore-on-login logic gets it wrong; the next real zone change, door
 --   interaction, or map teleport overrides it normally, same as if the
 --   command had never been run.
+--   /lid debug trace on|off (1.2.0) logs every change to the live flag
+--   (which mechanism made it, timestamp, measured delta) plus every
+--   interaction, door-check outcome, travel trigger and player
+--   (de)activation, to diagnose unexpected flips from real data. Every
+--   write to isInterior goes through SetIsInterior() so nothing can
+--   change the flag without appearing in the trace. Persisted
+--   (account-wide) so activation at login is traced too - whether chat
+--   output that early in the load actually displays is NOT verified.
+--
+-- SAME-ZONE ACTIVATION DURING A DOOR CROSSING (1.2.0):
+--   If EVENT_PLAYER_ACTIVATED fires in the SAME raw zone (not a login)
+--   while a door check is pending or has just toggled, the zone-default
+--   reset is SKIPPED and the door check alone decides. Both mechanisms
+--   would otherwise react to the same crossing (reset, then toggle),
+--   which is right on the way in and wrong on the way out. UNVERIFIED
+--   whether ESO actually fires the event for any ordinary door - this
+--   guards against it; the trace will show whether it ever happens.
 -------------------------------------------------------------------------------
 
 local LIB_NAME  = "LibInteriorDetection"
 local ADDON_ID  = "LibInteriorDetection"  -- LAM panel name / slash command namespace
-local LIB_VERSION = 29
+local LIB_VERSION = 37
 
 -- Cached once rather than calling GetEventManager() repeatedly throughout
 -- the file - same singleton either way, avoids the repeated lookup.
@@ -149,27 +199,37 @@ local DOOR_DELTA_THRESHOLD_MIN = 1000
 local DOOR_DELTA_THRESHOLD_MAX = 8000
 local DOOR_DELTA_THRESHOLD_STEP = 100
 
--- Delay: now a settings-menu slider (see ACCOUNT_DEFAULTS below).
--- Range: 3-13 seconds, default 3. Raised from the original 1-5s/default-1
--- range after the author found delays below ~3s caused detection to stop
--- working entirely on their system. The exact mechanism behind that
--- lower bound (e.g. ESO's own door-open animation/position-settling time
--- vs. how soon the position read actually reflects the new location)
--- has not been independently diagnosed here - this range reflects the
--- author's empirical finding, not a confirmed root cause.
-local DOOR_CHECK_DELAY_SECONDS_DEFAULT = 3
-local DOOR_CHECK_DELAY_SECONDS_MIN = 3
-local DOOR_CHECK_DELAY_SECONDS_MAX = 13
+-- 1.3.0: the fixed door-check delay (3-13s, last default 5) is replaced by
+-- a watch window: how long after the LAST interaction the door watch
+-- keeps sampling. New saved key (doorWatchSeconds); the old
+-- doorCheckDelaySeconds / doorDelayMigrated126 values are simply no
+-- longer read. 10s default is a judgment call covering the slowest door
+-- seen so far (>3s) with margin; not a measured limit - the trace logs
+-- each door's actual time-to-land so this can be tuned from data.
+local DOOR_WATCH_SECONDS_DEFAULT = 10
+local DOOR_WATCH_SECONDS_MIN = 5
+local DOOR_WATCH_SECONDS_MAX = 20
+
+-- Shared sampling interval for every jump check (door watch and teleport
+-- poll). Short enough that running/riding covers far less than the
+-- threshold per sample (~2m per 250ms at an observed sprint).
+local POLL_INTERVAL_MS = 250
+
+local DOOR_WATCH_MAX_CREDITS = 4      -- cap so a burst of presses can't bank many
+local DOOR_JUMP_COOLDOWN_MS = 1500    -- see "Counting rules" in the header (guess)
+local RECENT_TOGGLE_MS = 3000         -- "just toggled" window for OnPlayerActivated
 
 -- Account-wide saved variables: preferences and zone overrides that
 -- should be the same across every character.
 local ACCOUNT_DEFAULTS = {
-    doorCheckDelaySeconds = DOOR_CHECK_DELAY_SECONDS_DEFAULT,
+    doorWatchSeconds = DOOR_WATCH_SECONDS_DEFAULT,
     doorDeltaThreshold = DOOR_DELTA_THRESHOLD_DEFAULT,
     zoneOverrides = {},   -- [tostring(zoneId)] = true (interior) | false (exterior)
     hudShown = false,     -- debug HUD visibility; persisted but deliberately
                            -- NOT exposed in the settings menu - toggle via
                            -- /lid debug hud on|off only, per explicit request
+    traceEnabled = false, -- /lid debug trace on|off (1.2.0); same persistence
+                           -- and no-settings-menu treatment as hudShown
 }
 
 -- Character-specific saved variables: last known position/state, used
@@ -1268,18 +1328,21 @@ lib.state = {
     zoneId = nil,
     zoneDefaultInterior = nil,
     isInterior = nil,       -- the live, combined flag
-    -- Two INDEPENDENT pending flags (0.7.1) - previously a single shared
-    -- checkPending was used for both the door check and the fast-travel
-    -- check, which let one silently block the other: if FastTravelToNode
-    -- fired for any reason while a door interaction happened moments
-    -- later, the door check would see checkPending already true and
-    -- return immediately with no error - producing "entering a door
-    -- does nothing, exiting later works fine" once the earlier check
-    -- had time to clear. Separate flags mean neither mechanism can ever
-    -- suppress the other, regardless of what actually triggers either.
-    doorCheckPending = false,
+    -- 1.3.0 door watch: nil when idle, else { token, deadlineMs, credits,
+    -- prevZone, prevX, prevY, prevZ, startMs, lastTriggerMs,
+    -- lastCountedMs, crossings }. Stale timers are dropped by token.
+    doorWatch = nil,
+    doorWatchToken = 0,
+    -- Teleport poll (independent of the door watch - see 0.7.1 note in the
+    -- CHANGELOG for why the two never share one pending flag).
     fastTravelCheckPending = false,
+    teleportPollToken = 0,
+    teleportPollSource = nil,
     mapOpenPosition = nil,  -- set by OnWorldMapOpened(), consumed by OnWorldMapClosed()
+    lastDoorToggleMs = nil, -- GetGameTimeMilliseconds() of the last door toggle
+    rawZoneId = nil,        -- raw zoneId at the last EVENT_PLAYER_ACTIVATED
+    lastReticleText = nil,  -- trace-only: what the reticle offered at interact time
+    lockpickText = nil,     -- trace-only: reticle text when the pick began
 }
 
 --- Returns the player's current live indoor state.
@@ -1304,10 +1367,9 @@ function lib.GetCurrentZoneInterior()
     return isInterior, zoneId, isKnown
 end
 
---- Returns the currently configured door-check delay in milliseconds.
-local function GetDoorCheckDelayMs()
-    local seconds = (lib.savedVars and lib.savedVars.doorCheckDelaySeconds)
-        or DOOR_CHECK_DELAY_SECONDS_DEFAULT
+--- Returns the configured door watch window in milliseconds (1.3.0).
+local function GetDoorWatchMs()
+    local seconds = (lib.savedVars and lib.savedVars.doorWatchSeconds) or DOOR_WATCH_SECONDS_DEFAULT
     return seconds * 1000
 end
 
@@ -1333,6 +1395,32 @@ local function DescribeIsInterior(isInterior)
         return "unknown"
     end
     return isInterior and "Interior" or "Exterior"
+end
+
+local function IsTraceEnabled()
+    return lib.savedVars and lib.savedVars.traceEnabled or false
+end
+
+-- Trace output for /lid debug trace. Callers must pass tostring() for any
+-- boolean/nil argument - ESO's Lua 5.1-based string.format does not
+-- accept booleans for %s. pcall-guarded so a bad format string can never
+-- break the detection code that calls this.
+local function Trace(fmt, ...)
+    if not IsTraceEnabled() then
+        return
+    end
+    local ok, msg = pcall(string.format, fmt, ...)
+    CHAT_ROUTER:AddSystemMessage(string.format("[LID trace %d] %s",
+        GetGameTimeMilliseconds(), ok and msg or ("(format error) " .. tostring(fmt))))
+end
+
+local function MaxAxisDelta(ax, ay, az, bx, by, bz)
+    local biggest = zo_abs(bx - ax)
+    local dy = zo_abs(by - ay)
+    local dz = zo_abs(bz - az)
+    if dy > biggest then biggest = dy end
+    if dz > biggest then biggest = dz end
+    return biggest
 end
 
 -------------------------------------------------------------------------------
@@ -1401,6 +1489,17 @@ local function SetHudShown(shown)
     CHAT_ROUTER:AddSystemMessage(string.format("[LibInteriorDetection] HUD %s.", shown and "shown" or "hidden"))
 end
 
+-- The ONLY place the live flag is written (1.2.0). Centralized so every
+-- change - including one that sets the same value it already had - shows
+-- up in /lid debug trace with the mechanism responsible.
+local function SetIsInterior(value, source, detail)
+    local old = lib.state.isInterior
+    lib.state.isInterior = value
+    UpdateHud()
+    Trace("%s: %s -> %s%s", source, DescribeIsInterior(old), DescribeIsInterior(value),
+        detail and (" | " .. detail) or "")
+end
+
 -------------------------------------------------------------------------------
 -- Zone-change handling - always wins, resets the live flag unless this is
 -- a genuine resume (real login, or a same-position reload) into the same
@@ -1422,22 +1521,83 @@ end
 -- player far enough to fail this tight tolerance, a reload does not.
 local RELOAD_POSITION_MATCH_TOLERANCE = 50
 
+-- Ends the door watch; any timer still scheduled is dropped by token.
+local function StopDoorWatch(reason)
+    local w = lib.state.doorWatch
+    if w then
+        Trace("Door watch #%d stopped (%s)", w.token, reason)
+    end
+    lib.state.doorWatch = nil
+    lib.state.doorWatchToken = lib.state.doorWatchToken + 1
+end
+
+-- Ends the teleport poll if one is running, optionally only for one
+-- source (e.g. only the world-map-close fallback).
+local function StopTeleportPoll(reason, onlySource)
+    if not lib.state.fastTravelCheckPending then
+        return
+    end
+    if onlySource and lib.state.teleportPollSource ~= onlySource then
+        return
+    end
+    Trace("Teleport poll (%s) stopped (%s)", tostring(lib.state.teleportPollSource), reason)
+    lib.state.fastTravelCheckPending = false
+    lib.state.teleportPollSource = nil
+    lib.state.teleportPollToken = lib.state.teleportPollToken + 1
+end
+
 local function OnPlayerActivated(eventCode, initial)
     local zoneId = LibZone:GetCurrentZoneIds()
     if not zoneId then
+        Trace("Activated: initial=%s but LibZone returned no zoneId - ignored", tostring(initial))
         return
     end
 
     local zoneDefaultInterior = lib.IsZoneInterior(zoneId)
     local curZone, curX, curY, curZ = GetUnitRawWorldPosition("player")
+    local prevRawZone = lib.state.rawZoneId
 
     lib.state.zoneId = zoneId
     lib.state.zoneDefaultInterior = zoneDefaultInterior
+    lib.state.rawZoneId = curZone
+
+    local now = GetGameTimeMilliseconds()
+    local sinceToggleMs = lib.state.lastDoorToggleMs and (now - lib.state.lastDoorToggleMs) or nil
+
+    Trace("Activated: initial=%s rawZone %s -> %s, libZone=%s (default %s), doorWatch=%s, msSinceDoorToggle=%s",
+        tostring(initial), tostring(prevRawZone), tostring(curZone), tostring(zoneId),
+        DescribeIsInterior(zoneDefaultInterior), tostring(lib.state.doorWatch ~= nil), tostring(sinceToggleMs))
+
+    -- 1.2.0: same-raw-zone activation during a door crossing. If this
+    -- event was caused by the door itself, the door check (pending, or
+    -- just finished and toggled) already accounts for the crossing -
+    -- resetting here as well would count it twice. Only applies when the
+    -- zone default is exterior: an interior-default zone pins the flag
+    -- to interior regardless, so it takes the normal reset below.
+    -- Checked BEFORE the restore logic below: a pending door check can
+    -- never survive a genuine /reloadui (all Lua state is wiped, which
+    -- also leaves prevRawZone nil so sameRawZone is false), so a
+    -- non-initial same-zone activation WITH a pending check is never a
+    -- reload - letting the reload-restore branch catch it would cancel
+    -- the door check and restore the pre-door state.
+    -- (1.3.0: with the door watch, "pending" means the watch is still
+    -- sampling, so the old gap - a fixed-delay check firing before the
+    -- move and finishing without toggling - no longer exists.)
+    local sameRawZone = prevRawZone ~= nil and curZone ~= nil and curZone == prevRawZone
+    if not initial and sameRawZone and zoneDefaultInterior == false then
+        local recentToggle = sinceToggleMs ~= nil and sinceToggleMs <= RECENT_TOGGLE_MS
+        if lib.state.doorWatch or recentToggle then
+            Trace("Activated: same raw zone during a door crossing - zone-default reset SKIPPED, door watch owns it (watching=%s, recentToggle=%s); state stays %s",
+                tostring(lib.state.doorWatch ~= nil), tostring(recentToggle), DescribeIsInterior(lib.state.isInterior))
+            UpdateHud()
+            return
+        end
+    end
 
     -- Restore the saved flag if the saved raw zoneId matches AND EITHER:
-    --   (a) initial is true - a genuine login/reload, where position may
-    --       have drifted unreliably (proven in testing) but the saved
-    --       flag itself is still trustworthy, or
+    --   (a) initial is true - a genuine login, where position may have
+    --       drifted unreliably (proven in testing) but the saved flag
+    --       itself is still trustworthy, or
     --   (b) the current raw position is a near-exact match to the saved
     --       one - proving nothing moved (a /reloadui, which reports
     --       initial=false despite being a legitimate resume - confirmed
@@ -1465,12 +1625,13 @@ local function OnPlayerActivated(eventCode, initial)
     end
 
     if shouldRestore then
-        lib.state.isInterior = lib.charSavedVars.lastIsInterior
-    else
-        lib.state.isInterior = zoneDefaultInterior
+        StopDoorWatch("activation restore")
+        SetIsInterior(lib.charSavedVars.lastIsInterior, "Activated (restore saved state)")
+        return
     end
 
-    UpdateHud()
+    StopDoorWatch("activation reset")
+    SetIsInterior(zoneDefaultInterior, "Activated (zone default)")
 end
 
 local function OnPlayerDeactivated()
@@ -1485,6 +1646,7 @@ local function OnPlayerDeactivated()
 
     lib.charSavedVars.lastPosition = { zoneId = zoneId, x = x, y = y, z = z }
     lib.charSavedVars.lastIsInterior = lib.state.isInterior
+    Trace("Deactivated: saved rawZone=%s state=%s", tostring(zoneId), DescribeIsInterior(lib.state.isInterior))
 end
 
 -------------------------------------------------------------------------------
@@ -1494,44 +1656,81 @@ local function GetRawPosition()
     return GetUnitRawWorldPosition("player")
 end
 
-local function FinishDoorCheck(startZone, startX, startY, startZ)
-    lib.state.doorCheckPending = false
+local function DoorWatchTick(token)
+    local w = lib.state.doorWatch
+    if not w or w.token ~= token then
+        return -- stopped or replaced
+    end
 
-    local endZone, endX, endY, endZ = GetRawPosition()
-    if not startZone or not endZone then
+    local now = GetGameTimeMilliseconds()
+    local curZone, curX, curY, curZ = GetRawPosition()
+    if not curZone then
+        lib.state.doorWatch = nil
+        Trace("Door watch #%d: no position available - ended", token)
         return
     end
 
-    if startZone ~= endZone then
-        -- A real zone change happened during the delay window.
-        -- OnPlayerActivated already handled (or will shortly handle)
-        -- resetting the live flag.
+    if curZone ~= w.prevZone then
+        -- A real zone change - OnPlayerActivated handles it.
+        lib.state.doorWatch = nil
+        Trace("Door watch #%d: raw zone changed %s -> %s - ended (zone load handles it)",
+            token, tostring(w.prevZone), tostring(curZone))
         return
     end
 
-    local dx = zo_abs(endX - startX)
-    local dy = zo_abs(endY - startY)
-    local dz = zo_abs(endZ - startZ)
-    local biggestDelta = dx
-    if dy > biggestDelta then biggestDelta = dy end
-    if dz > biggestDelta then biggestDelta = dz end
+    local step = MaxAxisDelta(w.prevX, w.prevY, w.prevZ, curX, curY, curZ)
+    w.prevX, w.prevY, w.prevZ = curX, curY, curZ
+    local threshold = GetDoorDeltaThreshold()
 
-    if biggestDelta <= GetDoorDeltaThreshold() then
-        return -- not a door transition
+    if step > threshold then
+        local sinceTrigger = now - w.lastTriggerMs
+        if lib.state.fastTravelCheckPending then
+            -- A teleport poll is watching the same move; teleports win.
+            lib.state.doorWatch = nil
+            Trace("Door watch #%d: jump %.0f at +%dms, but a teleport poll (%s) is running - door watch stands down",
+                token, step, sinceTrigger, tostring(lib.state.teleportPollSource))
+            return
+        elseif w.credits <= 0 then
+            Trace("Door watch #%d: jump %.0f at +%dms IGNORED - no interaction left to account for it", token, step, sinceTrigger)
+        elseif w.lastCountedMs and (now - w.lastCountedMs) < DOOR_JUMP_COOLDOWN_MS then
+            Trace("Door watch #%d: jump %.0f IGNORED - %dms after the last counted jump (cooldown %dms)",
+                token, step, now - w.lastCountedMs, DOOR_JUMP_COOLDOWN_MS)
+        else
+            w.credits = w.credits - 1
+            w.crossings = w.crossings + 1
+            w.lastCountedMs = now
+            if lib.state.zoneDefaultInterior == false then
+                lib.state.lastDoorToggleMs = now
+                SetIsInterior(not lib.state.isInterior, "Door",
+                    string.format("watch #%d jump %.0f > %.0f, landed %dms after the last interaction", token, step, threshold, sinceTrigger))
+            else
+                Trace("Door watch #%d: jump %.0f, but zone default is Interior - no toggle", token, step)
+            end
+        end
     end
 
-    -- A door transition was detected. Only toggle if the current zone's
-    -- default is exterior - an interior-default zone has no "outside" to
-    -- toggle back into short of actually leaving the zone.
-    if lib.state.zoneDefaultInterior == false then
-        lib.state.isInterior = not lib.state.isInterior
-        UpdateHud()
+    if now >= w.deadlineMs then
+        lib.state.doorWatch = nil
+        Trace("Door watch #%d ended after %dms - %d crossing(s)", token, now - w.startMs, w.crossings)
+        return
     end
+
+    zo_callLater(function()
+        DoorWatchTick(token)
+    end, POLL_INTERVAL_MS)
 end
 
-local function OnPlayerInteract()
-    if lib.state.doorCheckPending then
-        return -- a check is already running; ignore overlapping interactions
+-- Shared by the interaction hook and the lockpick-success handler.
+local function StartOrExtendDoorWatch(label)
+    local now = GetGameTimeMilliseconds()
+    local w = lib.state.doorWatch
+
+    if w then
+        w.deadlineMs = now + GetDoorWatchMs()
+        w.lastTriggerMs = now
+        w.credits = math.min(w.credits + 1, DOOR_WATCH_MAX_CREDITS)
+        Trace("Door watch #%d extended (credits %d): %s", w.token, w.credits, label)
+        return
     end
 
     local zoneId, x, y, z = GetRawPosition()
@@ -1539,11 +1738,81 @@ local function OnPlayerInteract()
         return
     end
 
-    lib.state.doorCheckPending = true
+    lib.state.doorWatchToken = lib.state.doorWatchToken + 1
+    local token = lib.state.doorWatchToken
+    lib.state.doorWatch = {
+        token = token, deadlineMs = now + GetDoorWatchMs(), credits = 1,
+        prevZone = zoneId, prevX = x, prevY = y, prevZ = z,
+        startMs = now, lastTriggerMs = now, lastCountedMs = nil, crossings = 0,
+    }
+    Trace("Door watch #%d started (%dms window): %s", token, GetDoorWatchMs(), label)
 
     zo_callLater(function()
-        FinishDoorCheck(zoneId, x, y, z)
-    end, GetDoorCheckDelayMs())
+        DoorWatchTick(token)
+    end, POLL_INTERVAL_MS)
+end
+
+-- Trace-only (1.2.0): records what the reticle currently offers, so each
+-- traced interaction says what was interacted with. Same
+-- ZO_PreHook(RETICLE, "TryHandlingInteraction") pattern Frostfall already
+-- uses for its rest detection; never blocks anything (always returns
+-- false), and does no work at all unless the trace is on. Has no effect
+-- on detection - the door check still fires for every interaction.
+local function HookReticleText()
+    if not RETICLE or type(RETICLE.TryHandlingInteraction) ~= "function" then
+        return
+    end
+    -- 1.2.5: ZO_PreHook passes the method's self (RETICLE) first -
+    -- confirmed in the ESOUI client source (zo_hook.lua). Before this
+    -- fix, `interactionPossible` was actually RETICLE and always truthy.
+    ZO_PreHook(RETICLE, "TryHandlingInteraction", function(self, interactionPossible)
+        if not IsTraceEnabled() then
+            return false
+        end
+        if interactionPossible then
+            local action, interactableName = GetGameCameraInteractableActionInfo()
+            lib.state.lastReticleText = string.format("'%s' / '%s'", tostring(action), tostring(interactableName))
+        else
+            lib.state.lastReticleText = nil
+        end
+        return false
+    end)
+end
+
+local function OnPlayerInteract()
+    -- An interaction means any following jump is a door's, not a
+    -- world-map teleport's: the map-close fallback poll ends here so the
+    -- two can't both act on one move. (Hooked-travel polls are left alone
+    -- - those follow a confirmed travel call.)
+    StopTeleportPoll("interaction", "worldMap close")
+    StartOrExtendDoorWatch(lib.state.lastReticleText or "(no reticle text)")
+end
+
+-------------------------------------------------------------------------------
+-- Lockpicked doors - see LOCKPICKED DOORS in the header.
+-------------------------------------------------------------------------------
+local function OnLockpickBegin()
+    lib.state.lockpickText = lib.state.lastReticleText
+    Trace("Lockpick BEGIN: %s", lib.state.lockpickText or "(no reticle text)")
+end
+
+local function OnLockpickSuccess()
+    local target = lib.state.lockpickText or "(no reticle text)"
+    lib.state.lockpickText = nil
+    if lib.state.fastTravelCheckPending then
+        Trace("Lockpick SUCCESS: %s - teleport poll running, not watching", target)
+        return
+    end
+    StartOrExtendDoorWatch("lockpick success on " .. target)
+end
+
+local function OnLockpickEnded(label)
+    return function()
+        Trace("Lockpick %s", label)
+        if label == "FAILED" then
+            lib.state.lockpickText = nil
+        end
+    end
 end
 
 local function HookInteraction()
@@ -1555,9 +1824,19 @@ local function HookInteraction()
     end
 
     local originalStartInteraction = INTERACTIVE_WHEEL_MANAGER.StartInteraction
-    INTERACTIVE_WHEEL_MANAGER.StartInteraction = function(self, ...)
-        local result = originalStartInteraction(self, ...)
-        OnPlayerInteract()
+    INTERACTIVE_WHEEL_MANAGER.StartInteraction = function(self, interactiveWheelType, ...)
+        local result = originalStartInteraction(self, interactiveWheelType, ...)
+        -- 1.3.0: only the interact key counts. Per the ESOUI client's
+        -- bindings.xml, the interact key passes
+        -- ZO_INTERACTIVE_WHEEL_TYPE_FISHING; the quickslot and
+        -- target-marker wheel keys pass other types and aren't
+        -- interactions. If the constant ever disappears, count everything
+        -- (the pre-1.3.0 behavior) rather than nothing.
+        if ZO_INTERACTIVE_WHEEL_TYPE_FISHING == nil or interactiveWheelType == ZO_INTERACTIVE_WHEEL_TYPE_FISHING then
+            OnPlayerInteract()
+        else
+            Trace("StartInteraction for wheel type %s ignored (not the interact key)", tostring(interactiveWheelType))
+        end
         return result
     end
 end
@@ -1594,9 +1873,22 @@ end
 -- not yet reported as broken. Both trigger sources now use the same
 -- bounded poll instead of either one relying on a fixed delay guess.
 --
--- The poll checks position once per second for up to
--- TELEPORT_POLL_MAX_ATTEMPTS seconds, stopping as soon as either a real
--- change is detected or the window expires. This is NOT the continuous
+-- The poll checks position every POLL_INTERVAL_MS for up to
+-- ~15 seconds, stopping as soon as either a real change is detected or
+-- the window expires.
+--
+-- STEP-JUMP DETECTION (1.2.3): each sample is compared with the PREVIOUS
+-- sample, not the trigger-time position. Previously the whole-window
+-- distance was used, so ordinary movement after closing the map
+-- (confirmed in-game: 2750 units in ~3s of running) reset the flag to
+-- the zone default - harmless outdoors, wrong inside a large interior
+-- sub-cell. A teleport lands between two samples as one jump; running
+-- covers ~2m per 250ms step at the observed speed, 10x under the 20m
+-- threshold. UNVERIFIED: ESO's top mounted speed - a mount would need
+-- ~80 m/s to cross the threshold in one step, so this is assumed safe.
+-- The FIRST step compares against the trigger-time position (map open /
+-- hook call), so a jump that happened before polling began is still
+-- caught - the player can't walk while the map is open. This is NOT the continuous
 -- position poll rejected earlier in this project's design discussion -
 -- that would have run constantly during normal play; this only runs for
 -- a few seconds after a genuinely rare trigger (an interaction, a
@@ -1613,49 +1905,63 @@ end
 -- jump is detected, since a fast-travel destination is essentially
 -- always the zone's ordinary outdoor arrival point.
 -------------------------------------------------------------------------------
-local TELEPORT_POLL_INTERVAL_MS = 1000
-local TELEPORT_POLL_MAX_ATTEMPTS = 15 -- ~15s total; comfortably covers Recall's documented 8s cast plus buffer
+-- 1.2.3: 250ms (was 1000ms) so a step is short enough that no ordinary
+-- movement approaches the threshold; attempts scaled to keep the same
+-- ~15s window (covers Recall's documented 8s cast plus buffer).
+local TELEPORT_POLL_MAX_ATTEMPTS = 60  -- x POLL_INTERVAL_MS = ~15s
 
-local function PollForTeleport(startZone, startX, startY, startZ, attemptsRemaining)
-    local endZone, endX, endY, endZ = GetRawPosition()
+local function PollForTeleport(token, source, prevZone, prevX, prevY, prevZ, attemptsRemaining)
+    if token ~= lib.state.teleportPollToken then
+        return -- stopped (already traced there)
+    end
+    local curZone, curX, curY, curZ = GetRawPosition()
 
-    if not startZone or not endZone then
+    if not prevZone or not curZone then
         lib.state.fastTravelCheckPending = false
         return
     end
 
-    if startZone ~= endZone then
+    if prevZone ~= curZone then
         -- A real zone change - OnPlayerActivated already handled it.
         lib.state.fastTravelCheckPending = false
+        Trace("Teleport poll (%s): raw zone changed %s -> %s - no action", source, tostring(prevZone), tostring(curZone))
         return
     end
 
-    local dx = zo_abs(endX - startX)
-    local dy = zo_abs(endY - startY)
-    local dz = zo_abs(endZ - startZ)
-    local biggestDelta = dx
-    if dy > biggestDelta then biggestDelta = dy end
-    if dz > biggestDelta then biggestDelta = dz end
+    -- Distance since the PREVIOUS sample only (see STEP-JUMP DETECTION).
+    local stepDelta = MaxAxisDelta(prevX, prevY, prevZ, curX, curY, curZ)
+    local threshold = GetDoorDeltaThreshold()
 
-    if biggestDelta > GetDoorDeltaThreshold() then
+    if stepDelta > threshold then
         lib.state.fastTravelCheckPending = false
-        lib.state.isInterior = lib.state.zoneDefaultInterior
-        UpdateHud()
+        lib.state.teleportPollSource = nil
+        -- The teleport owns this move: end any door watch so it can't
+        -- also count the same jump.
+        StopDoorWatch("teleport detected")
+        SetIsInterior(lib.state.zoneDefaultInterior, "Teleport poll (" .. source .. ")",
+            string.format("single-step jump %.0f > threshold %.0f, reset to zone default", stepDelta, threshold))
         return
     end
 
     if attemptsRemaining <= 0 then
         lib.state.fastTravelCheckPending = false
-        return -- gave up - no resulting position change within the window
+        Trace("Teleport poll (%s): no jump within window - no action", source)
+        return -- gave up - no teleport-sized jump within the window
     end
 
     zo_callLater(function()
-        PollForTeleport(startZone, startX, startY, startZ, attemptsRemaining - 1)
-    end, TELEPORT_POLL_INTERVAL_MS)
+        PollForTeleport(token, source, curZone, curX, curY, curZ, attemptsRemaining - 1)
+    end, POLL_INTERVAL_MS)
 end
 
-local function OnFastTravelInitiated()
+local function OnFastTravelInitiated(source)
+    source = source or "travel hook"
+    -- 1.3.0: a confirmed travel call owns whatever move follows - end any
+    -- door watch (e.g. from the E press on the wayshrine itself) so it
+    -- can't also count the jump.
+    StopDoorWatch("travel: " .. source)
     if lib.state.fastTravelCheckPending then
+        Trace("Travel trigger %s IGNORED (teleport poll already pending)", source)
         return -- a check is already running; ignore overlapping triggers
     end
 
@@ -1665,8 +1971,11 @@ local function OnFastTravelInitiated()
     end
 
     lib.state.fastTravelCheckPending = true
+    lib.state.teleportPollSource = source
+    lib.state.teleportPollToken = lib.state.teleportPollToken + 1
+    Trace("Travel trigger %s -> teleport poll started", source)
 
-    PollForTeleport(zoneId, x, y, z, TELEPORT_POLL_MAX_ATTEMPTS)
+    PollForTeleport(lib.state.teleportPollToken, source, zoneId, x, y, z, TELEPORT_POLL_MAX_ATTEMPTS)
 end
 
 -------------------------------------------------------------------------------
@@ -1701,6 +2010,7 @@ end
 
 local function OnWorldMapClosed()
     if lib.state.fastTravelCheckPending then
+        Trace("Travel trigger worldMap close IGNORED (teleport poll already pending)")
         return -- another check already in flight; see design note above
     end
 
@@ -1710,8 +2020,11 @@ local function OnWorldMapClosed()
     end
 
     lib.state.fastTravelCheckPending = true
+    lib.state.teleportPollSource = "worldMap close"
+    lib.state.teleportPollToken = lib.state.teleportPollToken + 1
+    Trace("Travel trigger worldMap close -> teleport poll started")
 
-    PollForTeleport(saved.zoneId, saved.x, saved.y, saved.z, TELEPORT_POLL_MAX_ATTEMPTS)
+    PollForTeleport(lib.state.teleportPollToken, "worldMap close", saved.zoneId, saved.x, saved.y, saved.z, TELEPORT_POLL_MAX_ATTEMPTS)
 end
 
 local function HookWorldMapScene()
@@ -1757,7 +2070,7 @@ local function HookGlobalFunction(name, onCalled)
 
     _G[name] = function(...)
         local result = original(...)
-        onCalled()
+        onCalled(name)
         return result
     end
 end
@@ -1809,14 +2122,14 @@ local function SlashAmIOutside()
     CHAT_ROUTER:AddSystemMessage(tostring(isOutside))
     CHAT_ROUTER:AddSystemMessage(
         string.format(
-            "[LibInteriorDetection] isOutside=%s (i.e. %s) | zone %s (%d), zoneDefault=%s, threshold=%.0f, delay=%ds",
+            "[LibInteriorDetection] isOutside=%s (i.e. %s) | zone %s (%d), zoneDefault=%s, threshold=%.0f, doorWatch=%ds",
             tostring(isOutside),
             DescribeIsInterior(isInterior),
             zoneName,
             lib.state.zoneId,
             DescribeIsInterior(lib.state.zoneDefaultInterior),
             GetDoorDeltaThreshold(),
-            (lib.savedVars and lib.savedVars.doorCheckDelaySeconds) or DOOR_CHECK_DELAY_SECONDS_DEFAULT
+            (lib.savedVars and lib.savedVars.doorWatchSeconds) or DOOR_WATCH_SECONDS_DEFAULT
         )
     )
 end
@@ -1889,8 +2202,7 @@ local function SlashLid(argString)
     -- override this the normal way, exactly as if this command had never
     -- been run.
     if args[1] == "debug" and args[2] == "flip" then
-        lib.state.isInterior = not lib.state.isInterior
-        UpdateHud()
+        SetIsInterior(not lib.state.isInterior, "/lid debug flip")
         CHAT_ROUTER:AddSystemMessage(
             string.format("[LibInteriorDetection] Flipped to: %s (this session only - not saved)",
                 DescribeIsInterior(lib.state.isInterior))
@@ -1898,7 +2210,21 @@ local function SlashLid(argString)
         return
     end
 
-    CHAT_ROUTER:AddSystemMessage("[LibInteriorDetection] Usage: /lid debug hud on|off | /lid debug saved | /lid debug flip")
+    -- /lid debug trace on|off (1.2.0) - see SetIsInterior/Trace.
+    if args[1] == "debug" and args[2] == "trace" and (args[3] == "on" or args[3] == "off") then
+        if lib.savedVars then
+            lib.savedVars.traceEnabled = (args[3] == "on")
+        end
+        if args[3] == "off" then
+            lib.state.lastReticleText = nil
+        end
+        CHAT_ROUTER:AddSystemMessage(string.format("[LibInteriorDetection] Trace %s. Current state: %s (zone default %s)",
+            args[3] == "on" and "ON" or "OFF",
+            DescribeIsInterior(lib.state.isInterior), DescribeIsInterior(lib.state.zoneDefaultInterior)))
+        return
+    end
+
+    CHAT_ROUTER:AddSystemMessage("[LibInteriorDetection] Usage: /lid debug hud on|off | /lid debug saved | /lid debug flip | /lid debug trace on|off")
 end
 
 -------------------------------------------------------------------------------
@@ -1970,30 +2296,30 @@ local function BuildSettingsMenu()
         },
         {
             type = "slider",
-            name = "Door Check Delay (seconds)",
-            tooltip = "How long after interacting with something (a door, a chest, etc.) the " ..
-                      "library waits before comparing positions to detect a door transition. " ..
-                      "Shorter delays react faster but with less certainty the transition has " ..
-                      "fully resolved.",
-            min = DOOR_CHECK_DELAY_SECONDS_MIN,
-            max = DOOR_CHECK_DELAY_SECONDS_MAX,
+            name = "Door Watch Window (seconds)",
+            tooltip = "How long after your last interaction (a door, a chest, etc.) the " ..
+                      "library keeps watching for the sudden position jump a door makes. " ..
+                      "A door is counted the moment it lands, so this only needs to be longer " ..
+                      "than your slowest door - it does not delay detection.",
+            min = DOOR_WATCH_SECONDS_MIN,
+            max = DOOR_WATCH_SECONDS_MAX,
             step = 1,
             getFunc = function()
-                return (lib.savedVars and lib.savedVars.doorCheckDelaySeconds) or DOOR_CHECK_DELAY_SECONDS_DEFAULT
+                return (lib.savedVars and lib.savedVars.doorWatchSeconds) or DOOR_WATCH_SECONDS_DEFAULT
             end,
             setFunc = function(value)
                 if lib.savedVars then
-                    lib.savedVars.doorCheckDelaySeconds = value
+                    lib.savedVars.doorWatchSeconds = value
                 end
             end,
-            default = DOOR_CHECK_DELAY_SECONDS_DEFAULT,
+            default = DOOR_WATCH_SECONDS_DEFAULT,
         },
         {
             type = "slider",
             name = "Door Transition Distance Threshold",
-            tooltip = "How far the player's raw position must move (in raw world units - " ..
-                      "centimeters) after an interaction for it to be treated as a door " ..
-                      "transition. Lower values catch smaller moves but risk false positives; " ..
+            tooltip = "How far the player's raw position must jump between two samples 0.25s apart (raw world units - " ..
+                      "centimeters) to count as a door transition or teleport. Running " ..
+                      "and riding never come close per sample. Lower values catch smaller moves but risk false positives; " ..
                       "higher values are more conservative.",
             min = DOOR_DELTA_THRESHOLD_MIN,
             max = DOOR_DELTA_THRESHOLD_MAX,
@@ -2156,6 +2482,7 @@ local function Initialize()
 
     CreateHud()
     HookInteraction()
+    HookReticleText()
     HookFastTravel()
     HookWorldMapScene()
 
@@ -2169,6 +2496,10 @@ local function Initialize()
     -- has a problem.
     EM:RegisterForEvent(LIB_NAME, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
     EM:RegisterForEvent(LIB_NAME, EVENT_PLAYER_DEACTIVATED, OnPlayerDeactivated)
+    EM:RegisterForEvent(LIB_NAME .. "_LockpickBegin", EVENT_BEGIN_LOCKPICK, OnLockpickBegin)
+    EM:RegisterForEvent(LIB_NAME .. "_LockpickSuccess", EVENT_LOCKPICK_SUCCESS, OnLockpickSuccess)
+    EM:RegisterForEvent(LIB_NAME .. "_LockpickFailed", EVENT_LOCKPICK_FAILED, OnLockpickEnded("FAILED"))
+    EM:RegisterForEvent(LIB_NAME .. "_LockpickBroke", EVENT_LOCKPICK_BROKE, OnLockpickEnded("BROKE (pick broke, minigame may continue)"))
 
     SLASH_COMMANDS["/amioutside"] = SlashAmIOutside
     SLASH_COMMANDS["/lid"] = SlashLid

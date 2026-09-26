@@ -4,6 +4,317 @@ Full version history for LibInteriorDetection (renamed from LibIndoorDetection a
 
 ---
 
+## What's New in 1.3.0
+
+**Door detection rewritten: a "door watch" that looks for the sudden jump
+a door makes, instead of comparing two positions at a fixed delay.**
+
+- **Why:** the fixed-delay check (1.2.6 and earlier) missed slow doors -
+  traced in-game at Daggerfall Cathedral, where the player had moved
+  only 16 units when the 3s check fired - and let sprinting or riding
+  after any interaction add up to the 20m threshold. 1.2.6's 5s default
+  was a stopgap.
+- **How it works now:** each interaction starts (or extends) a watch
+  that samples position every 250ms until the watch window has passed
+  since the LAST interaction, and toggles on each single jump over the
+  threshold between two consecutive samples. A slow door is counted
+  whenever it lands; running never produces a jump. The trace reports
+  how long each door took to land (`landed Nms after the last
+  interaction`), so real door timings can now be measured.
+- **Counting rules:** every interaction or lockpick success adds one
+  credit, each counted jump spends one, and a jump with no credit left
+  is ignored and logged. A jump within 1.5s of a counted one is also
+  ignored and logged, in case a landing ever settles in two steps
+  (**unverified** - the 1.5s cooldown is a guess). Several crossings in
+  one window each count once: cook fire then out, in and straight back
+  out, double presses.
+- **Replaces 1.2.1's start-position/extension/cap rules and 1.2.4's
+  separate lockpick poll.** A lockpick success now simply adds a credit
+  to the same watch.
+- **Coordination with teleports:** a hooked travel call
+  (`FastTravelToNode` etc.) ends any door watch - e.g. the one started by
+  pressing E on the wayshrine - so only the teleport reset acts; an
+  interaction ends a running world-map-close poll, so a door taken after
+  closing the map counts as a door; if the door watch sees a jump while
+  a teleport poll is running, it stands down; a teleport reset ends the
+  door watch. So one move is never counted by both.
+- **Only the interact key counts.** Per the ESOUI client's
+  `bindings.xml`, the interact key calls `StartInteraction` with
+  `ZO_INTERACTIVE_WHEEL_TYPE_FISHING`; the quickslot and target-marker
+  wheel keys call it with other types and used to start door checks
+  too. They're now ignored (logged in the trace). If that constant ever
+  disappears, every call counts again (the old behavior).
+- **Settings:** "Door Check Delay" (3-13s) is replaced by "Door Watch
+  Window" (5-20s, default 10; new saved key `doorWatchSeconds`). The
+  window doesn't delay detection - it only needs to outlast the slowest
+  door. 10s is a judgment call, not measured. The old
+  `doorCheckDelaySeconds` / `doorDelayMigrated126` saved values are no
+  longer read, and 1.2.6's one-time migration is removed. The distance
+  threshold slider is unchanged and now means "per 0.25s sample".
+- **Unchanged:** zone-change handling, logout/reload persistence, the
+  teleport poll's behavior (it now shares the 250ms interval constant
+  and can be stopped by token), and the same-zone-activation rule
+  (1.2.0), which now keys off "watch still running" instead of "check
+  pending" - removing the gap where a fixed-delay check had already run
+  without toggling.
+- Offline-tested with stubbed ESO functions, 16 scenarios: slow
+  (4.5s) and fast doors, cook fire then double-press exit, in and
+  straight out, sprinting after an interaction, a two-step landing with
+  one press and with two presses (cooldown), a second jump with no
+  credit, a 13s lockpick with the automatic move, a chest pick plus
+  sprint, the quickslot key, a wayshrine E press plus
+  `FastTravelToNode`, a door after closing the map, sprinting after
+  closing the map, same-zone activations in both directions, and a real
+  zone change mid-watch. **Not yet tested in-game.**
+
+---
+
+## What's New in 1.2.6
+
+- **Stopgap for slow doors: door-check delay default raised 3s -> 5s.**
+  Traced in-game: entering Daggerfall Cathedral, the 3s check measured
+  only 16 units of movement - the door's transition hadn't moved the
+  player yet, so the entry was missed and leaving later flipped the flag
+  from Exterior to Interior. (The safebox lockpick in the same trace was
+  handled correctly.)
+- **One-time migration for existing installs.** `ZO_SavedVars` copies
+  defaults into the saved table (confirmed in the ESOUI source,
+  `zo_savedvars.lua`), so everyone already has `3` stored and would
+  never see the new default. On first load of 1.2.6, a stored `3` is
+  raised to `5` with a chat notice; any other value is left alone. It
+  runs once per account, so choosing 3 again afterward is respected.
+  Slider range is unchanged (3-13).
+- **Trade-off:** a longer window gives sprinting or riding more time to
+  add up to the 20m threshold after an interaction. This version is a
+  stopgap; 1.3.0 is planned to replace the fixed delay with the same
+  sudden-jump polling the teleport and lockpick checks use.
+- **Unverified:** whether 5s is long enough for every door - the
+  cathedral's actual transition time wasn't measured.
+- Syntax-checked; **not yet tested in-game.**
+
+---
+
+## What's New in 1.2.5
+
+- **Fixed the trace's reticle hook reading the wrong argument.**
+  `ZO_PreHook` passes the hooked method's `self` (`RETICLE`) first -
+  confirmed in the ESOUI client source (`libraries/utility/zo_hook.lua`,
+  12.0.8). The hook's `interactionPossible` was actually `RETICLE`, so
+  it was always true and the "nothing targeted" branch never ran. It now
+  takes `(self, interactionPossible)`, so the trace shows
+  `(no reticle text)` when nothing was targeted instead of `'nil' /
+  'nil'`. Trace-only - detection is unaffected. Same fix applied to
+  Frostfall v3.4.33.
+- Also verified this session (no code change): LID's `StartInteraction`
+  wrapper passes the game's return value through unchanged, and its
+  handler completes before returning - so it cannot swallow an interact
+  press. The occasional need to press E twice when leaving right after
+  a lockpicked entry was reproduced with LID and Frostfall disabled,
+  i.e. it's game behavior.
+
+---
+
+## What's New in 1.2.4
+
+- **Fixed: lockpicked doors were still missed on some doors.** In-game
+  trace (Gane House): a single E press on a locked door produced ONE
+  `StartInteraction` call, so 1.2.2's door-vs-chest test (2+ calls =
+  door) classified it as a chest and ignored the success. Entry wasn't
+  counted, and the exit then flipped the flag the wrong way. The earlier
+  2-call observation (Landreau House) was real but not consistent, so
+  the call-count classification is **removed**.
+- **Confirmed via the same trace:** ESO moves the player through the door
+  automatically after a successful pick - the next interaction after the
+  success was the exit door from inside, with no press in between.
+- **New approach - no classification at all:** after any lockpick
+  success, a short poll (every 250ms, ~5s) toggles the flag on a single
+  sudden JUMP between consecutive samples, the same idea as the 1.2.3
+  teleport poll. A door transition is one jump (4657 units in the
+  reported log); a chest never moves the player, and running covers
+  ~2m per sample, so a chest pick can't toggle anything. Language-
+  independent.
+- **Overlap handling:**
+  - A door check still pending at success (from the E press that opened
+    the minigame, on a pick faster than the delay) is settled first at
+    the pre-pick position, so it can't also see the jump.
+  - An interaction during the poll hands the crossing to the door check
+    (whose start position is taken before any jump) and ends the poll.
+  - A running teleport poll makes the lockpick poll stand down.
+  - A same-zone `EVENT_PLAYER_ACTIVATED` during the poll skips the
+    zone-default reset (same rule as 1.2.0's door-check case).
+  - Real zone changes / login restores cancel the poll.
+- **Unverified:** the ~5s window is a judgment call; the actual time
+  from success to arrival hasn't been measured (the trace will show it).
+- Trace: `Lockpick SUCCESS ... watching for a door jump`, then either
+  `Lockpicked door: ... single-step jump` or `no jump within window`.
+- Offline-tested with stubbed ESO functions: a replay of the reported
+  Gane House sequence (single call, 13s pick, automatic entry, double
+  press on exit), a quick pick with the double-call pattern, a chest
+  pick followed by a sprint (no toggle), an E press after success but
+  before the move (counted once), and a same-zone activation during the
+  poll. **Not yet tested in-game.**
+
+---
+
+## What's New in 1.2.3
+
+- **Fixed: moving quickly after closing the world map read as a
+  teleport.** Confirmed in-game with the trace: open and close the map,
+  run away immediately, and the map-close poll reported a 2750-unit
+  delta after ~3s and reset the flag to the zone default. Harmless
+  outdoors (the reset matches), but inside a large interior sub-cell of
+  an exterior zone it would flip the flag to Exterior. Cause: the poll
+  measured total distance from where the map was OPENED, so any
+  movement adding up to 20m within the 15s window qualified.
+- **The teleport poll now looks for a single sudden jump between two
+  consecutive samples**, not total distance from the start. A teleport
+  lands between two samples in one step; running does not.
+- **Poll interval 1000ms -> 250ms** (attempts 15 -> 60, same ~15s
+  window) so each step is short: the observed running speed covers ~2m
+  per step, 10x under the 20m threshold.
+  **Unverified:** ESO's top mounted speed. A mount would need ~80 m/s to
+  cross the threshold in one step, so this is assumed safe.
+- The first step still compares against the trigger-time position (map
+  open / travel hook call), so a jump that happens before polling
+  starts is still caught.
+- Applies to all teleport triggers (the four hooked travel functions and
+  the map-close fallback). The door check is unchanged - it still
+  compares start and end positions (see 1.2.1).
+- Offline-tested with stubbed ESO functions: the reported
+  map-close-then-run case (no reset), a 20 m/s mounted run (no reset),
+  a same-zone map teleport after an 8s Recall, an instant
+  `FastTravelToNode`, and a jump while the map is still open (all
+  reset). **Not yet tested in-game.**
+
+---
+
+## What's New in 1.2.2
+
+- **Fixed: entering through a lockpicked door was never counted.**
+  Reported in-game: pick a door lock, enter, leave immediately - the flag
+  ended up Indoors while outside. The E press that opens the lockpick
+  minigame starts a door check, but it fires mid-minigame and sees no
+  movement; the actual crossing after a successful pick involves no
+  further interaction, so nothing checked it. The flag stayed Exterior
+  inside, and the exit door then flipped it the wrong way.
+- **`EVENT_LOCKPICK_SUCCESS` now starts (or extends) a door check - for
+  doors only.** Confirmed in the ESOUI client source
+  (`ingame/lockpick/lockpick.lua`, 12.0.8) along with
+  `EVENT_BEGIN_LOCKPICK`, `EVENT_LOCKPICK_FAILED` and
+  `EVENT_LOCKPICK_BROKE`.
+- **Doors vs. chests, language-independently:** the author observed, with
+  a single E press each, that a locked door produces TWO
+  `StartInteraction` calls ~1s apart and a locked chest produces ONE
+  (both show action `'Unlock'`, so the action text can't distinguish
+  them, and the target name is localized). A pick counts as a door when
+  2+ calls fall in a window around `EVENT_BEGIN_LOCKPICK` (3s before, up
+  to 2s after, never past the success itself).
+  **Observed on one door and one chest only.** A door that produces a
+  single call would be skipped (same behavior as before this version);
+  the trace reports the call count and target for every pick, so that
+  would show up. An unrelated interaction just before picking a chest
+  could make the chest count as a door - harmless (the check sees no
+  movement) unless the player also moves 20m+ in the window.
+- **Not verified:** whether a successful pick moves the player through
+  the door automatically. The check is correct either way - if a second
+  E press is needed, it extends the same check.
+- Trace now also logs lockpick begin/success/failed/broke.
+- Offline-tested with stubbed ESO functions: slow and quick door picks,
+  leaving immediately afterward, a chest pick followed by a sprint (no
+  check started), and the 1.2.1 cook-fire case. **Not yet tested
+  in-game.**
+
+---
+
+## What's New in 1.2.1
+
+- **Fixed: a door used shortly after any other interaction was never
+  counted.** Found by the author in-game: enter a building, use a cook
+  fire, leave very quickly - the flag stayed Interior. Cause: the cook
+  fire started a door check, and `OnPlayerInteract` silently IGNORED the
+  exit door because that check was still pending. If the exit transition
+  hadn't finished by the time the cook-fire check fired, it saw no
+  movement and nothing was toggled - leaving the flag inverted, so every
+  later door "flipped" it the wrong way. This is the likely cause of the
+  original unexpected-flipping reports.
+- **New behavior:** an interaction during a pending check now restarts
+  the timer but keeps the check's ORIGINAL starting position, so the
+  check compares "before the first interaction" with "after the last one
+  settled". Comparing positions gets the crossing count right no matter
+  how many crossings happen in between (in-then-out quickly correctly
+  produces no toggle).
+- **Extension is capped at one door-check delay** after the first
+  interaction (longest window ~2x the delay). Past the cap, the pending
+  check is evaluated immediately and a fresh one starts from the current
+  position - still correct, since a crossing in progress just lands in
+  the fresh check. A first draft used a 12s cap; offline testing showed
+  that let a run of looting interactions stretch the window long enough
+  for ordinary walking to read as a door, so it was tightened before
+  release.
+- Trace (`/lid debug trace on`) now reports `EXTENDS door check`,
+  `finishing door check #N early`, and which check each result started
+  from, instead of `Interaction IGNORED`.
+- Offline-tested with stubbed ESO functions: the cook-fire case, the
+  same with a third press after the cap, in-and-out within one window,
+  a looting run while walking (no false door), plus the 1.2.0
+  same-zone-activation and zone-change-cancel cases. **Not yet tested
+  in-game.**
+- Unchanged: door-check false positives from sprinting/riding 20m+
+  within a single window. The cap keeps windows short but doesn't
+  eliminate this.
+
+---
+
+## What's New in 1.2.0
+
+Prompted by reports of the indoor/outdoor flag flipping unexpectedly
+(watched on the LID debug HUD, so not a consumer-side display lag).
+
+- **New `/lid debug trace on|off`.** Logs every change to the live flag
+  with the mechanism responsible, a `GetGameTimeMilliseconds()`
+  timestamp and the measured delta, plus every interaction (with the
+  reticle's action/name text), every door-check outcome including "not a
+  door" and "ignored because a check was pending", every travel trigger,
+  and every `EVENT_PLAYER_ACTIVATED`/`DEACTIVATED` (with `initial`, raw
+  zoneId before/after, and whether a door check was pending).
+  Persisted account-wide like the HUD toggle so login activations are
+  traced too - **unverified** whether chat output that early in loading
+  actually displays.
+- **All writes to `isInterior` now go through one `SetIsInterior()`
+  function**, so no mechanism can change the flag without appearing in
+  the trace. No behavior change by itself.
+- **Fix: a same-zone `EVENT_PLAYER_ACTIVATED` during a door crossing no
+  longer counts the crossing twice.** Previously, if the event fired in
+  the same raw zone while a door check was pending, `OnPlayerActivated`
+  reset to the zone default and then the door check toggled on top of
+  it - right going in, wrong coming out. Now, when the activation is not
+  a login, the raw zone is unchanged, the zone default is exterior, and
+  a door check is pending (or toggled within the door-check delay), the
+  reset is skipped and the door check alone decides. This is checked
+  before the reload-restore branch, since a pending door check can never
+  survive a real `/reloadui`.
+  **Unverified:** whether ESO ever fires the event for an ordinary door
+  at all. This guards against the suspected cause; the trace will show
+  whether it actually happens.
+- **Fix: a real zone change (or login restore) now cancels any door check
+  still in flight** via a per-check token, instead of relying only on
+  the check noticing the raw zoneId changed.
+- Offline-tested with stubbed ESO functions (door crossings in both
+  directions with a same-zone activation mid-crossing, with the
+  deactivation save happening both before and after the position
+  change; a plain door with no activation; a real zone change during a
+  pending check). Not yet tested in-game.
+- **Known remaining gaps, deliberately not addressed in this version:**
+  if the door check already finished WITHOUT toggling before a
+  same-zone activation arrives, the normal restore/reset still applies;
+  a non-door interaction followed by a same-zone activation (e.g. a
+  same-zone wayshrine trip, if that fires the event) is still
+  mishandled, as it was before. Door-check false positives from
+  movement and ignored overlapping interactions ("option 4") are
+  unchanged.
+
+---
+
 ## What's New in 1.1.0
 
 - **Reinstated `/lid debug saved`**, removed in 1.0.0's cleanup on the

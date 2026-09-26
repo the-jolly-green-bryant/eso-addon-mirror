@@ -442,23 +442,26 @@ local function present_span(series, upto)
     return first
 end
 
+local SCR = { xs = {}, ys = {}, px = {}, py = {}, sx = {}, sy = {} }
+
 local function scaled(series, upto, smooth)
-    local xs, ys = {}, {}
-    local n = 0
+    local xs, ys = SCR.xs, SCR.ys
     local first = present_span(series, upto)
     if not first then return xs, ys, 0 end
-    local px, py = {}, {}
+    local px, py = SCR.px, SCR.py
+    local m = 0
     for i = first, upto do
         local x, y = series.x[i] or 0, series.y[i] or 0
-        if x > 0 or y > 0 then px[#px + 1], py[#py + 1] = x, y end
+        if x > 0 or y > 0 then m = m + 1; px[m], py[m] = x, y end
     end
-    if smooth and #px >= 3 then
-        local sx, sy = BGMeter.Match.geo_spline(px, py, #px, 3)
-        for i = 1, #sx do xs[i], ys[i] = mx(sx[i]), mx(sy[i]) end
-        n = #sx
+    local n = 0
+    if smooth and m >= 3 then
+        local sx, sy, sn = BGMeter.Match.geo_spline(px, py, m, 3, SCR.sx, SCR.sy)
+        for i = 1, sn do xs[i], ys[i] = mx(sx[i]), mx(sy[i]) end
+        n = sn
     else
-        for i = 1, #px do xs[i], ys[i] = mx(px[i]), mx(py[i]) end
-        n = #px
+        for i = 1, m do xs[i], ys[i] = mx(px[i]), mx(py[i]) end
+        n = m
     end
     return xs, ys, n
 end
@@ -682,7 +685,7 @@ function M.render()
     end
     if state.m ~= m then state.t = nil end
     state.m = m
-    state.geo = m and BGMeter.Match.geo(m) or nil
+    state.geo = m and BGMeter.Match.geo_cached(m) or nil
     apply_tiles(m or {})
     if not state.geo then
         state.heatKey = nil
@@ -768,10 +771,15 @@ function M.set_heat_mode(mode)
     M.render()
 end
 
+local function raise()
+    if c and c.win and c.win.BringWindowToTop then c.win:BringWindowToTop() end
+end
+
 function M.open()
     build()
     if not W.win or W.win:IsHidden() then return end
     c.win:SetHidden(false)
+    raise()
     sv_win().open = true
     state.t = nil
     M.render()
@@ -794,6 +802,7 @@ function M.is_open() return built and not c.win:IsHidden() end
 
 function M.on_report_render()
     if not built or c.win:IsHidden() then return end
+    raise()
     M.render()
 end
 
@@ -1015,7 +1024,7 @@ end
 
 function M.mini_update(m, parent, x, y, avail)
     mini_build(parent)
-    local geo = m and BGMeter.Match.geo(m) or nil
+    local geo = m and BGMeter.Match.geo_cached(m) or nil
     local outer = math.min(avail or 0, L.haul_w - 32)
     local side = outer - 2 * MINI_INSET
     if not geo or not m.map or side < MINI_MIN then

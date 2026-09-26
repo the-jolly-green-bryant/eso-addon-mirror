@@ -538,8 +538,120 @@ function SEC.clear_chart(b)
     b.occ:SetHidden(true)
     b.mom:SetHidden(true)
     b.kills:SetHidden(true)
+    b.bal:SetHidden(true)
     b.bloodiest:SetHidden(true)
     W.chart_state = nil
+end
+
+local balance_color = U.balance_color
+
+local function soft(c)
+    local t = K.COLOR.text
+    return { c[1] * 0.55 + t[1] * 0.45, c[2] * 0.55 + t[2] * 0.45, c[3] * 0.55 + t[3] * 0.45 }
+end
+
+local function tint_glyph(icon, color, hidden)
+    icon:SetHidden(hidden)
+    if hidden then return end
+    local c = soft(color)
+    icon:SetColor(c[1], c[2], c[3], 1)
+end
+
+local function base_color(pct)
+    if pct <= 0.10 then return K.COLOR.text_dim end
+    if pct <= 0.25 then return K.COLOR.gold end
+    return K.COLOR.accent
+end
+
+local function stop_color(st)
+    if st.n == 0 then return K.COLOR.text_dim end
+    if st.n * 2 < st.of then return K.COLOR.gold end
+    return K.COLOR.accent
+end
+
+local function exp_paint(blk, icon, mineE, otherE, key, avgKey, room)
+    local mv = mineE and mineE[key] or 0
+    local ov = otherE and otherE[key] or 0
+    local top = math.max(mv, ov)
+    if top <= 0 or not room then
+        for _, c in ipairs(blk.all) do c:SetHidden(true) end
+        return nil
+    end
+    for _, c in ipairs(blk.all) do c:SetHidden(false) end
+    if icon then blk.icon:SetTexture(icon) else blk.icon:SetHidden(true) end
+    local mc = mineE and S.team_color(mineE.team) or K.COLOR.text_dim
+    local oc = otherE and S.team_color(otherE.team) or K.COLOR.text_dim
+    blk.fillM:SetWidth(math.floor(44 * mv / top + 0.5))
+    blk.fillO:SetWidth(math.floor(44 * ov / top + 0.5))
+    P.set_rect_color(blk.fillM, { mc[1], mc[2], mc[3], 0.8 })
+    P.set_rect_color(blk.fillO, { oc[1], oc[2], oc[3], 0.8 })
+    local function txt(e, v)
+        if not e then return "" end
+        local cov = (e.seen < e.n) and string.format("  %d/%d", e.seen, e.n) or ""
+        return F.commas(v) .. cov
+    end
+    blk.valM:SetText(txt(mineE, mv))
+    blk.valO:SetText(txt(otherE, ov))
+    local cov = (otherE and otherE.seen < otherE.n) and string.format(" (%d/%d)", otherE.seen, otherE.n) or ""
+    return string.format("|c%s%s|r vs |c%s%s|r%s", hexc(mc), F.commas(mv), hexc(oc), F.commas(ov), cov)
+end
+
+function SEC.balance(b, bal, sur, bal_h, bal_off, ex)
+    b.bal:ClearAnchors()
+    b.bal:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, -bal_off)
+    b.bal:SetAnchor(BOTTOMRIGHT, b.container, BOTTOMRIGHT, 0, -bal_off)
+    b.bal:SetHeight(bal_h)
+    b.bal:SetHidden(false)
+    local bc = balance_color(bal.score)
+    b.balScore:SetText(tostring(bal.score))
+    S.color(b.balScore, bc)
+    tint_glyph(b.balIcon, bc, false)
+    local decided = bal.leaderChanged and ("decided at " .. F.duration(bal.decidedMs)) or "lead never changed"
+    local mx = math.floor(b.balScaleW * bal.score / 100 + 0.5)
+    b.balMarkX = mx
+    b.balMark:ClearAnchors()
+    b.balMark:SetAnchor(CENTER, b.balScale, LEFT, mx, 0)
+    b.balMark:SetHidden(false)
+    local base = sur and sur.base
+    tint_glyph(b.balBaseIcon, base and base_color(base.pct) or K.COLOR.text_dim, base == nil)
+    b.balBase:SetHidden(base == nil)
+    if base then b.balBase:SetText(string.format("%d%%", math.floor(base.pct * 100 + 0.5))) end
+    local st = sur and sur.stopped
+    local hasStop = st ~= nil and st.of > 0
+    tint_glyph(b.balStopIcon, hasStop and stop_color(st) or K.COLOR.text_dim, not hasStop)
+    b.balStop:SetHidden(not hasStop)
+    if hasStop then b.balStop:SetText(string.format("%d of %d", st.n, st.of)) end
+    local A = BGMeter.zenimax.api
+    local vetIcon = U.TX.vet.n
+    local avaIcon = ex and ex.mine and ex.mine.avaAvg and A.get_ava_rank_icon and A.get_ava_rank_icon(math.max(1, math.floor(ex.mine.avaAvg + 0.5))) or nil
+    local free = (b.bal:GetWidth() or 0) - b.balLeftW - 8
+    local roomOne = free >= b.balAva.width + 6
+    local roomTwo = free >= 2 * b.balAva.width + 14
+    local vetLine = exp_paint(b.balVet, vetIcon, ex and ex.mine, ex and ex.other, "vet", "vetAvg", roomTwo)
+    local avaLine = exp_paint(b.balAva, avaIcon, ex and ex.mine, ex and ex.other, "ava", "avaAvg", roomOne)
+    local dim = hexc(K.COLOR.text_dim)
+    local lines = {
+        string.format("|c%sBALANCE %d|r", hexc(bc), bal.score),
+        string.format("kill ratio |c%s%.2f|r  ·  contested |c%s%d%%|r  ·  margin |c%s%d%%|r",
+            hexc(K.COLOR.gold), bal.killRatio, hexc(K.COLOR.gold), math.floor(bal.contested * 100 + 0.5), hexc(K.COLOR.gold), math.floor(bal.margin * 100 + 0.5)),
+        bal.leaderChanged and string.format("decided |c%s%s|r%s", hexc(K.COLOR.gold), F.duration(bal.decidedMs),
+            bal.leanTeam and string.format("  ·  |c%s%s|r ahead", hexc(S.team_color(bal.leanTeam)), team_name(bal.leanTeam)) or "")
+            or string.format("|c%slead never changed|r%s", dim,
+            bal.leanTeam and string.format("  ·  |c%s%s|r ahead", hexc(S.team_color(bal.leanTeam)), team_name(bal.leanTeam)) or ""),
+    }
+    local team = {}
+    if base then
+        team[#team + 1] = string.format("at base |c%s%d%%|r |c%s(you %d%%)|r", hexc(base_color(base.pct)), math.floor(base.pct * 100 + 0.5), dim, math.floor(base.mine * 100 + 0.5))
+    end
+    if hasStop then
+        team[#team + 1] = string.format("stopped |c%s%d of %d|r", hexc(stop_color(st)), st.n, st.of)
+    end
+    if #team > 0 then lines[#lines + 1] = table.concat(team, "  ·  ") end
+    local exp = {}
+    if vetLine then exp[#exp + 1] = "veterancy " .. vetLine end
+    if avaLine then exp[#exp + 1] = "rank " .. avaLine end
+    if #exp > 0 then lines[#lines + 1] = table.concat(exp, "  ·  ") end
+    W.tips[b.bal] = table.concat(lines, "\n")
 end
 
 function W.repaint_chart()
@@ -582,6 +694,9 @@ local function derive(m, tl, tspan, gt)
     dc.kp = Match.kill_pressure(m.killfeed, tspan)
     dc.rounds = Match.round_marks(tl)
     dc.mine = Match.local_name(m)
+    dc.bal = Match.balance(m)
+    dc.sur = dc.bal and Match.surrender(m, Match.geo_cached(m)) or nil
+    dc.exp = dc.bal and Match.experience(m) or nil
     return dc
 end
 
@@ -624,11 +739,13 @@ function SEC.timeline(m)
 
     local race_h = (dc.race and Prefs.get("show_race")) and L.race_h or 0
     local kills_h = (dc.kp and Prefs.get("show_kills")) and L.kills_h or 0
+    local bal_h = (dc.bal and Prefs.get("show_balance")) and L.balance_h or 0
     local rows_h = 24 + #m.battle * L.row_h
     local cont_h = b.container:GetHeight()
     local function fits(extra) return cont_h - rows_h >= L.chart_h + extra + 8 end
-    if kills_h > 0 and not fits(race_h + mom_h + ribbon_h + occ_h + kills_h) then kills_h = 0 end
-    if race_h > 0 and not fits(race_h + mom_h + ribbon_h + occ_h) then race_h = 0 end
+    if kills_h > 0 and not fits(race_h + mom_h + ribbon_h + occ_h + kills_h + bal_h) then kills_h = 0 end
+    if race_h > 0 and not fits(race_h + mom_h + ribbon_h + occ_h + bal_h) then race_h = 0 end
+    if bal_h > 0 and not fits(mom_h + ribbon_h + occ_h + bal_h) then bal_h = 0 end
     if lanes and mom_h > 0 and not fits(mom_h + ribbon_h + occ_h) then
         mom_h, tdm_line = 0, false
     end
@@ -649,7 +766,9 @@ function SEC.timeline(m)
     local mom_off = rib_off + ((ribbon_h > 0) and (ribbon_h + 2) or 0)
     local kills_off = mom_off + ((mom_h > 0) and (mom_h + 2) or 0)
     local race_off = kills_off + ((kills_h > 0) and (kills_h + 2) or 0)
-    local chart_off = race_off + ((race_h > 0) and (race_h + 2) or 0)
+    local bal_off = race_off + ((race_h > 0) and (race_h + 2) or 0)
+    local chart_off = bal_off + ((bal_h > 0) and (bal_h + 2) or 0)
+    if bal_h > 0 then SEC.balance(b, dc.bal, dc.sur, bal_h, bal_off, dc.exp) end
     b.chart:SetHidden(false)
     b.chart:ClearAnchors()
     b.chart:SetAnchor(BOTTOMLEFT, b.container, BOTTOMLEFT, 0, -chart_off)

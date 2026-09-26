@@ -28,6 +28,129 @@ local TauntTable = {}
 local Bars = {}   -- unitId → barControl
 
 ------------------------------------------------------------
+-- 全バー更新（フォント変更時）
+------------------------------------------------------------
+local function RefreshAllBars()
+    local fontSize = MyTauntTimer.saved.fontSize
+    local barHeight = AutoBarHeight(fontSize)
+
+    for unitId, bar in pairs(Bars) do
+        bar:SetDimensions(300, barHeight)
+        bar.label:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", fontSize))
+    end
+end
+
+------------------------------------------------------------
+-- Settings Menu
+------------------------------------------------------------
+local function CreateSettingsMenu()
+    local settings = LibHarvensAddonSettings:AddAddon("MyTauntTimer", {
+        allowDefaults = true,
+        allowRefresh = true,
+        defaultsFunction = function()
+            MyTauntTimer.saved.posX = 1000
+            MyTauntTimer.saved.posY = 250
+            MyTauntTimer.saved.flashThreshold = 5
+            MyTauntTimer.saved.flashOnOtherTaunt = true
+            MyTauntTimer.saved.fontSize = 18
+            MyTauntTimer.saved.flashRankThreshold = 3
+            RefreshAllBars()
+        end,
+    })
+
+    ------------------------------------------------------------
+    -- General
+    ------------------------------------------------------------
+    settings:AddSettings({
+        {
+            type = LibHarvensAddonSettings.ST_SECTION,
+            label = "一般",
+        },
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "フォントサイズ",
+            min = 10, max = 40, step = 1,
+            default = 18,
+            getFunction = function() return MyTauntTimer.saved.fontSize end,
+            setFunction = function(value)
+                MyTauntTimer.saved.fontSize = value
+                MyTauntTimer.lastPreviewChange = GetFrameTimeSeconds()
+                RefreshAllBars()
+                MyTauntTimer.StartPreview()
+            end,
+        },
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "画面の明滅 (秒)",
+            min = 1, max = 15, step = 1,
+            default = 5,
+            getFunction = function() return MyTauntTimer.saved.flashThreshold end,
+            setFunction = function(value)
+                MyTauntTimer.saved.flashThreshold = value
+            end,
+        },
+        {
+            type = LibHarvensAddonSettings.ST_CHECKBOX,
+            label = "他のプレイヤーのタウントの明滅",
+            default = true,
+            getFunction = function() return MyTauntTimer.saved.flashOnOtherTaunt end,
+            setFunction = function(value)
+                MyTauntTimer.saved.flashOnOtherTaunt = value
+            end,
+        },
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "明滅するランクの閾値",
+            min = 1, max = 4, step = 1,
+            default = 3,
+            getFunction = function() return MyTauntTimer.saved.flashRankThreshold end,
+            setFunction = function(value)
+                MyTauntTimer.saved.flashRankThreshold = value
+            end,
+        },
+    })
+
+    ------------------------------------------------------------
+    -- Position
+    ------------------------------------------------------------
+    settings:AddSettings({
+        {
+            type = LibHarvensAddonSettings.ST_SECTION,
+            label = "位置調整",
+        },
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "横軸",
+            min = 0, max = GuiRoot:GetWidth(), step = 10,
+            default = 1000,
+            getFunction = function() return MyTauntTimer.saved.posX end,
+            setFunction = function(value)
+                MyTauntTimer.saved.posX = value
+                MyTauntTimer.lastPreviewChange = GetFrameTimeSeconds()
+                MyTauntTimer.ui:ClearAnchors()
+                MyTauntTimer.ui:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, value, MyTauntTimer.saved.posY)
+                MyTauntTimer.StartPreview()
+            end,
+        },
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "縦軸",
+            min = 0, max = GuiRoot:GetHeight(), step = 10,
+            default = 250,
+            getFunction = function() return MyTauntTimer.saved.posY end,
+            setFunction = function(value)
+                MyTauntTimer.saved.posY = value
+                MyTauntTimer.lastPreviewChange = GetFrameTimeSeconds()
+                MyTauntTimer.ui:ClearAnchors()
+                MyTauntTimer.ui:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MyTauntTimer.saved.posX, value)
+                MyTauntTimer.StartPreview()
+            end,
+        },
+    })
+
+end
+
+------------------------------------------------------------
 -- Utility
 ------------------------------------------------------------
 local function CleanName(name)
@@ -58,6 +181,11 @@ local function CreateUI()
     MyTauntTimer.ui = ui
 
     ------------------------------------------------------------
+    -- Preview Mode 初期化
+    ------------------------------------------------------------
+    MyTauntTimer.previewActive = false
+
+    ------------------------------------------------------------
     -- 画面全体フラッシュ用オーバーレイ
     ------------------------------------------------------------
     local overlay = WINDOW_MANAGER:CreateTopLevelWindow("MyTauntTimer_FlashOverlay")
@@ -74,31 +202,87 @@ local function CreateUI()
 end
 
 ------------------------------------------------------------
+-- Preview Mode
+------------------------------------------------------------
+function MyTauntTimer.StartPreview()
+    MyTauntTimer.lastPreviewChange = GetFrameTimeSeconds()
+    MyTauntTimer.previewActive = true
+
+    -- 既存バーは非表示＋親解除のみ
+    for _, bar in pairs(Bars) do
+        bar:SetHidden(true)
+        bar:SetParent(nil)
+    end
+
+    Bars = {}
+    TauntTable = {}
+
+    -- ダミー生成（既存があれば再利用）
+    for i = 1, 3 do
+        local id = 900000 + i
+        CreateBar(id)
+        TauntTable[id] = {
+            name = "Dummy Target " .. i,
+            endTime = GetFrameTimeSeconds() + 99999,
+            rank = 3,
+            isSelf = true,
+        }
+    end
+end
+
+------------------------------------------------------------
+-- EndPreview
+------------------------------------------------------------
+function MyTauntTimer.EndPreview()
+    MyTauntTimer.previewActive = false
+
+    -- 非表示＋親解除のみ
+    for _, bar in pairs(Bars) do
+        bar:SetHidden(true)
+        bar:SetParent(nil)
+    end
+
+    Bars = {}
+    TauntTable = {}
+end
+
+------------------------------------------------------------
 -- UI: Create a bar
 ------------------------------------------------------------
-local function CreateBar(unitId)
+function CreateBar(unitId)
     local parent = MyTauntTimer.ui
     local fontSize = MyTauntTimer.saved.fontSize
     local barHeight = AutoBarHeight(fontSize)
 
-    local bar = WINDOW_MANAGER:CreateControl(nil, parent, CT_STATUSBAR)
-    bar:SetDimensions(300, barHeight)
-    bar:SetMinMax(0, 1)
-    bar:SetValue(1)
-    bar:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
+    local name = "MyTauntTimer_Bar_" .. unitId
 
-    bar.bg = WINDOW_MANAGER:CreateControl(nil, bar, CT_BACKDROP)
-    bar.bg:SetAnchorFill(bar)
-    bar.bg:SetCenterColor(0, 0, 0, 0.4)
-    bar.bg:SetEdgeColor(0, 0, 0, 0)
+    -- 既存コントロールがあれば再利用
+    local bar = GetControl(name)
+    if bar then
+        bar:SetParent(parent)
+        bar:SetHidden(false)
+    else
+        -- 初回のみ CreateControl
+        bar = WINDOW_MANAGER:CreateControl(name, parent, CT_STATUSBAR)
 
-    local label = WINDOW_MANAGER:CreateControl(nil, bar, CT_LABEL)
-    label:SetAnchor(CENTER, bar, CENTER, 0, 0)
-    label:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", fontSize))
-    label:SetColor(1, 1, 1, 1)
-    label:SetText("")
+        bar:SetDimensions(300, barHeight)
+        bar:SetMinMax(0, 1)
+        bar:SetValue(1)
 
-    bar.label = label
+        bar.bg = WINDOW_MANAGER:CreateControl(nil, bar, CT_BACKDROP)
+        bar.bg:SetAnchorFill(bar)
+        bar.bg:SetCenterColor(0, 0, 0, 0.4)
+        bar.bg:SetEdgeColor(0, 0, 0, 0)
+
+        local label = WINDOW_MANAGER:CreateControl(nil, bar, CT_LABEL)
+        label:SetAnchor(CENTER, bar, CENTER, 0, 0)
+        label:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", fontSize))
+        label:SetColor(1, 1, 1, 1)
+        label:SetText("")
+
+        bar.label = label
+    end
+
     Bars[unitId] = bar
 end
 
@@ -178,6 +362,13 @@ end
 ------------------------------------------------------------
 local function UpdateUI()
     local now = GetFrameTimeSeconds()
+
+    -- ★ 3秒間変更なしならプレビュー終了
+    if MyTauntTimer.previewActive and MyTauntTimer.lastPreviewChange then
+        if now - MyTauntTimer.lastPreviewChange >= 3 then
+            MyTauntTimer.EndPreview()
+        end
+    end
 
     local selfBoss = {}
     local selfOthers = {}
@@ -306,120 +497,6 @@ local function UpdateUI()
 end
 
 ------------------------------------------------------------
--- 全バー更新（フォント変更時）
-------------------------------------------------------------
-local function RefreshAllBars()
-    local fontSize = MyTauntTimer.saved.fontSize
-    local barHeight = AutoBarHeight(fontSize)
-
-    for unitId, bar in pairs(Bars) do
-        bar:SetDimensions(300, barHeight)
-        bar.label:SetFont(string.format("$(BOLD_FONT)|%d|soft-shadow-thick", fontSize))
-    end
-end
-
-------------------------------------------------------------
--- Slash Commands
-------------------------------------------------------------
-
-local function ShowSettings()
-    d("========================================")
-    d("        MyTauntTimer コマンド一覧       ")
-    d("========================================")
-    d("/mtt")
-    d("  現在の設定を表示")
-    d("/tauntpos X Y")
-    d("  UI の表示位置を変更")
-    d("/tauntflashother on/off")
-    d("  他人タウントでも明滅するか設定")
-    d("/tauntflashsec <秒数>")
-    d("  明滅開始秒数を設定")
-    d("/tauntfontsize <数値>")
-    d("  フォントサイズ変更（バー高さも自動調整）")
-    d("/tauntflashrank <1〜4>")
-    d("  ★ 明滅ランク閾値を変更（1〜4）")
-    d("----------------------------------------")
-    d("現在の設定:")
-    d("  位置: X=" .. MyTauntTimer.saved.posX .. "  Y=" .. MyTauntTimer.saved.posY)
-    d("  フォントサイズ: " .. MyTauntTimer.saved.fontSize)
-    d("  明滅開始秒数: " .. MyTauntTimer.saved.flashThreshold .. " 秒")
-    d("  他人タウント明滅: " .. (MyTauntTimer.saved.flashOnOtherTaunt and "ON" or "OFF"))
-    d("  明滅ランク閾値: rank " .. MyTauntTimer.saved.flashRankThreshold)
-    d("========================================")
-end
-
-local function Slash_mtt(arg)
-    ShowSettings()
-end
-
-local function Slash_tauntpos(arg)
-    local x, y = arg:match("^(%d+)%s+(%d+)$")
-    if x and y then
-        MyTauntTimer.saved.posX = tonumber(x)
-        MyTauntTimer.saved.posY = tonumber(y)
-        MyTauntTimer.ui:ClearAnchors()
-        MyTauntTimer.ui:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MyTauntTimer.saved.posX, MyTauntTimer.saved.posY)
-        d("位置を X=" .. x .. " Y=" .. y .. " に変更しました")
-    else
-        d("使用方法: /tauntpos X Y")
-    end
-end
-
-local function Slash_tauntflashother(arg)
-    if arg == "on" then
-        MyTauntTimer.saved.flashOnOtherTaunt = true
-        d("他人タウント明滅: ON")
-    elseif arg == "off" then
-        MyTauntTimer.saved.flashOnOtherTaunt = false
-        d("他人タウント明滅: OFF")
-    else
-        d("使用方法: /tauntflashother on/off")
-    end
-end
-
-local function Slash_tauntflashsec(arg)
-    local num = tonumber(arg)
-    if num then
-        MyTauntTimer.saved.flashThreshold = num
-        d("明滅開始秒数を " .. num .. " 秒に設定しました")
-    else
-        d("使用方法: /tauntflashsec <秒数>")
-    end
-end
-
-local function Slash_tauntfontsize(arg)
-    local num = tonumber(arg)
-    if num then
-        MyTauntTimer.saved.fontSize = num
-        RefreshAllBars()
-        d("フォントサイズを " .. num .. " に設定しました（バー高さ自動調整）")
-    else
-        d("使用方法: /tauntfontsize <数値>")
-    end
-end
-
-------------------------------------------------------------
--- ★ 新コマンド: 明滅ランク閾値
-------------------------------------------------------------
-local function Slash_tauntflashrank(arg)
-    local num = tonumber(arg)
-    if num and num >= 1 and num <= 4 then
-        MyTauntTimer.saved.flashRankThreshold = num
-        d("明滅ランク閾値を rank " .. num .. " に設定しました")
-    else
-        d("使用方法: /tauntflashrank <1〜4>")
-        d("例: /tauntflashrank 3  （ボス以上で明滅）")
-    end
-end
-
-SLASH_COMMANDS["/mtt"]             = Slash_mtt
-SLASH_COMMANDS["/tauntpos"]        = Slash_tauntpos
-SLASH_COMMANDS["/tauntflashother"] = Slash_tauntflashother
-SLASH_COMMANDS["/tauntflashsec"]   = Slash_tauntflashsec
-SLASH_COMMANDS["/tauntfontsize"]   = Slash_tauntfontsize
-SLASH_COMMANDS["/tauntflashrank"]  = Slash_tauntflashrank   -- ★ 追加
-
-------------------------------------------------------------
 -- Init
 ------------------------------------------------------------
 local function OnAddOnLoaded(event, addonName)
@@ -427,6 +504,7 @@ local function OnAddOnLoaded(event, addonName)
 
     InitSavedVars()
     CreateUI()
+    CreateSettingsMenu()
 
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_COMBAT_EVENT, OnCombatEvent)
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_EFFECT_CHANGED, OnEffectChanged)

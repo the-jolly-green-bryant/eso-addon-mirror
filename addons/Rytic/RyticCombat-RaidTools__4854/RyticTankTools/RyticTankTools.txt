@@ -1,13 +1,14 @@
 ## Title: Rytic Combat & Raid Tools
 ## Author: Rytic
-## Version: 3.0.0
+## Version: 3.0.2-test
 ## APIVersion: 101050 101051
-## Description: Combat and raid HUD, combat analytics, support-set/proc tracking, group frames, death recap, and raid utility tools. Developed with AI assistance and reviewed/tested in-game by the author.
+## Description: Combat and raid HUD, combat analytics, support-set/proc tracking, group frames, death recap, and raid utility tools. AI-assisted test candidate; requires in-game validation.
 ## SavedVariables: RyticTankSavedVariables
-## DependsOn: LibAddonMenu-2.0>=43 LibCombat>=89 LibGroupBroadcast
-## OptionalDependsOn: LibGroupCombatStats
+## DependsOn: LibAddonMenu-2.0>=43 LibCombat>=89 LibGroupBroadcast>=95
+## OptionalDependsOn: LibGroupCombatStats LibGroupUIReload>=91
 
 RyticTankTools.lua
+RyticTankTools_UI.lua
 RyticTankTools_Settings.lua
 RyticTankTools_Sets.lua
 RyticTankTools_Block.lua

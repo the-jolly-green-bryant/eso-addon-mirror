@@ -1,5 +1,6 @@
-2026.09.14
-- Minor tweak to reset and save bank memory functions and fix for handling empty slots. Save now also clears and saves without needing to reloadui.
+2026.09.25
+- /rdpvp no longer requires ON|OFF switch and can detect which is ideal.
+- Various contro panel confirmation dialog additions and simplifications.
 ** POSSIBLE FUTURE OPTIONS **
 - Auto com res?
 

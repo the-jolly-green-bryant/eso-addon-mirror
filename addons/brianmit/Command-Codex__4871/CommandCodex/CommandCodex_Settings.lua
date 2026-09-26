@@ -59,7 +59,7 @@ function S.InitSettings()
         name = "Command Codex",
         displayName = "Command Codex",
         author = "|c00C8FFbrianmit|r",   -- cyan
-        version = "1.0.0",
+        version = "1.0.1",
         registerForRefresh = true,
     }
     S.settingsPanel = LAM:RegisterAddonPanel(PANEL_NAME, panel)

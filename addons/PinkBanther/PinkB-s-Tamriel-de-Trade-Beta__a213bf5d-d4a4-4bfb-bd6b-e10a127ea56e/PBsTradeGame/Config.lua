@@ -1,8 +1,8 @@
 PBTrade = {}
 PBTrade.Config = {
     addonId = "PBsTradeGame", title = "PinkB's Tamriel Trade Game",
-    displayTitle = "タムリエル交易戦", version = "0.17.7", scene = "pbTradeGame",
-    playerId = "player", neutralId = "neutral", schemaVersion = 9,
+    displayTitle = "タムリエル交易戦", version = "0.18.9", scene = "pbTradeGame",
+    playerId = "player", neutralId = "neutral", schemaVersion = 10,
     savedVariables="PBsTradeGameSavedVariables",
     -- Seconds, not frames. A fixed simulation step keeps 30/60/120fps equivalent.
     battle = {
@@ -37,7 +37,8 @@ PBTrade.Config = {
     -- Tactic banner: seconds for the move, the opponent's reaction and the verdict.
     -- Two lines over the battle title; the negotiation keeps running underneath.
     tacticScene = {intro=.9, react=1.3, result=2.6, typeSpeed=34},
-    campaign = {startingCash = 6500, unlockOwnedStep = 2, chapterOneAssets=700000,
+    campaign = {startingCash = 6500, unlockOwnedStep = 2, chapterOneAssets=500000,
+        chapterTwoAlly = "regional_auridon",
         -- Entering chapter 5, this share of every property not already Molag Bal's defects to it
         -- at random (the player's holdings included). Runs once per save.
         molagTakeoverChapter = 5, molagTakeoverShare = .70, molagCompany = "molag",
@@ -46,7 +47,7 @@ PBTrade.Config = {
         molagHeadquartersAssetShares = {.008, .015, .030, .080},
         molagHeadquartersProfitYield = .065,
         molagTreasuryShare = .62,
-        molagFortificationVersion = 2,
+        molagFortificationVersion = 3,
         -- First launch asks for the player's company name; these are one-press alternatives.
         companyNameMaxChars = 16,
         companyNameCandidates = {"薄紅の羅針商会","暁鐘交易組合","銀帆の天秤商会","翠星交易社","黒檀と琥珀商会","蒼鷺の隊商組合"}},
@@ -63,8 +64,27 @@ PBTrade.Config = {
     -- Only `samples` random properties are examined per rival, so the cost stays tiny.
     rivals = {tradeChance = .45, samples = 6, priceFactor = .9, maxCashShare = .5,
         sellerShare = .6, biasWeight = 1.5, reportLines = 3,maxDealsPerPeriod=4},
-    counterattack = {baseChance = .20, aggressionWeight = .30, maxChance = .60,
-        minimumCash = 500, riskWeight = .4, headquartersWeight = .3},
+    counterattack = {baseChance = .20, aggressionWeight = .30, maxChance = .78,
+        minimumCash = 500, riskWeight = .4, headquartersWeight = .3, valueWeight=1.20,
+        -- Avoid a loss spiral when only a handful of holdings remain. Full pressure returns at
+        -- nine properties; this changes attack frequency, never the strength of an attack rolled.
+        portfolioChanceFloor=.35,portfolioChanceStep=.08,
+        -- Later chapters field richer, faster and more experienced acquisition teams.  These
+        -- multipliers apply only when the player is defending; ordinary acquisitions keep their
+        -- existing balance.  Tactic is an additive chance per enemy decision.
+        chapter={
+            [1]={chance=0,opening=.90,budget=.90,wait=1.05,acceleration=0,tactic=0,label="探りの買収"},
+            [2]={chance=.04,opening=1.10,budget=1.15,wait=.95,acceleration=.05,tactic=.03,label="組織的攻勢"},
+            [3]={chance=.08,opening=1.40,budget=1.75,wait=.80,acceleration=.16,tactic=.08,label="広域買収網"},
+            [4]={chance=.12,opening=1.65,budget=1.80,wait=.72,acceleration=.20,tactic=.14,label="教団総力戦"},
+            [5]={chance=.18,opening=2.10,budget=2.35,wait=.62,acceleration=.32,tactic=.22,label="異界資本侵攻"},
+        }},
+    enemyGroups={
+        chance={.03,.05,.07,.09,.12},maxUses={1,1,1,2,2},capShare={.05,.07,.09,.12,.16},
+        contributionShare=.18,bonusEffect=.45,riskFactor=.50,acceleration=.16,effectSeconds=8,
+        -- Use a group call as a counterstroke, not while the player is already being crushed.
+        maximumEnemyLeadShare=.05,
+    },
     -- Every ten settlements the board chooses a policy after learning the new market event.
     strategy = {interval = 10},
     -- Negotiation stances (Data.stances). From minChapter, rivals guard routine properties with
@@ -124,18 +144,18 @@ PBTrade.Config = {
     -- Headquarters are defended by the whole group: the negotiation is valued at hqValueShare (1 = all) of
     -- the company's total assets (cash + property values), and property reserves back its bids.
     takeover = {cashShare = .5, hqValueShare = 1.0},
-    -- Endless trade (after the ending): it opens with this share of the player's properties
-    -- breaking away (headquarters and chapter targets excepted), and ends only when every
-    -- buyable property (all regular ones plus visited real places) belongs to the player.
+    -- Post-campaign free trade. The true ending is tied to a final acquisition rather than
+    -- an unknowable number of live ESO locations; these fields remain save-compatible.
     endless = {independenceShare = .15, independenceRisk = 40},
     -- Real ESO places are priced by what they are, read from their names (first match wins).
     -- mult scales the average value of the regular properties at that moment (so prices follow
     -- the market as periods pass); yield is profit per value. Unmatched places get mult 1.
     -- `base` is only a fallback when no average can be taken. Bump `version` to re-price saves.
-    canonical = {version = 4, base = 9000, jitter = .15, defaultYield = .06,
+    canonical = {version = 5, base = 9000, jitter = .15, defaultYield = .06,
         -- Exact localized-name overrides are checked after punctuation/space normalization.
         -- They enter the market at this fixed value; later settlements and investment can grow it.
-        specialValues = { ["トールドライオク"]={value=1000000000000,yield=.06,label="特別物件",category="market"} },
+        -- Raw value is converted by Money below: 100,000,000,000,000 x 10,000 = 100京.
+        specialValues = { ["トールドライオク"]={value=100000000000000,yield=.06,label="最終物件",category="market",finalAcquisition=true} },
         houseRegions = {[1]="auridon",[2]="glenumbra"},
         tiers = {
         {label="銀行", mult=24, yield=.09, category="market", words={"銀行","両替","金庫","bank","vault","exchequer"}},

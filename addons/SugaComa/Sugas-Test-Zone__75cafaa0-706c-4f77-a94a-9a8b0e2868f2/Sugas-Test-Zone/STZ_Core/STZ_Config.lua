@@ -9,7 +9,7 @@ end
 
 STZ.Config = {
     addonName = "Sugas-Test-Zone",
-    version = "0.3.6- Trace Export Prototype",
+    version = "1.0",
     access = {
         -- Deployment values are the rules shipped to testers.
         -- Before distributing a guild-test build, place the approved numeric

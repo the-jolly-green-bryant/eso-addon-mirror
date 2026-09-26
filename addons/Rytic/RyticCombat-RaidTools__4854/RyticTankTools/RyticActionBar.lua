@@ -207,26 +207,23 @@ end
 -- Defensive buff warning.
 local MAJOR_RESOLVE_EFFECT_ID=61694
 
+local function isMajorResolveEffect(name,abilityId)
+    if tonumber(abilityId)==MAJOR_RESOLVE_EFFECT_ID then return true end
+    if not name then return false end
+    return zo_strformat("<<z:1>>",name):find("major resolve",1,true)~=nil
+end
+
 local function hasMajorResolve()
     local n=GetNumBuffs and GetNumBuffs("player") or 0
+    local currentTime=GetFrameTimeSeconds()
     for i=1,n do
-        local _,_,ending,_,_,_,_,_,_,_,abilityId=GetUnitBuffInfo("player",i)
-        if abilityId==MAJOR_RESOLVE_EFFECT_ID and (not ending or ending==0 or ending>GetFrameTimeSeconds()) then
+        local name,_,ending,_,_,_,_,_,_,_,abilityId=GetUnitBuffInfo("player",i)
+        if isMajorResolveEffect(name,abilityId)
+            and (not ending or ending==0 or ending>currentTime) then
             return true
         end
     end
     return false
-end
-
-local function majorResolveRemaining()
-    local now=GetFrameTimeSeconds()
-    for i=1,GetNumBuffs("player") do
-        local name,startTime,endTime,_,_,_,_,_,_,_,abilityId=GetUnitBuffInfo("player",i)
-        if abilityId==61694 or (name and zo_strformat("<<z:1>>",name):find("major resolve",1,true)) then
-            return math_max(0,(tonumber(endTime) or now)-now)
-        end
-    end
-    return 0
 end
 
 A.resolveSlots={}
@@ -287,15 +284,36 @@ local function abilityIsNightbladeShadow(abilityId)
     return false
 end
 
-local function learnResolveSlot(slot,bar,id) return end
+local function isNightbladePreferredResolveAbility(abilityId)
+    if not isNightblade() or not abilityId or abilityId==0 then return false end
+    local name=GetAbilityName and GetAbilityName(abilityId) or ""
+    name=name and zo_strformat("<<z:1>>",name) or ""
+    -- Blur is the base skill; Mirage and Phantasmal Escape are its morphs.
+    return name=="blur" or name=="mirage" or name=="phantasmal escape"
+end
+
+local function findSlottedNightbladePreferredResolve()
+    local bars={HOTBAR_CATEGORY_PRIMARY,HOTBAR_CATEGORY_BACKUP}
+    for _,bar in ipairs(bars) do
+        for slot=FIRST,LAST do
+            local id=slotId(slot,bar)
+            if isNightbladePreferredResolveAbility(id) then
+                return slot,bar,id
+            end
+        end
+    end
+    return nil,nil,nil
+end
 
 local function rememberResolveSource(slot,bar,id)
     if not slot or not bar or not id or id==0 then return end
+    -- Only the slot that most recently caused Major Resolve owns the warning.
+    -- Keeping older sources made multiple squares turn red after one buff expired.
+    A.resolveSlots={}
     A.resolveSlots[tostring(bar)..":"..tostring(slot)]=id
 end
 
 local function slotIsResolveSource(slot,bar,id)
-    if isNightblade() then return abilityIsNightbladeShadow(id) end
     local key=tostring(bar)..":"..tostring(slot)
     return A.resolveSlots[key]==id
 end
@@ -304,6 +322,69 @@ local function makeText(parent,font,anchor,rel,relpt,x,y)
     local l=WM:CreateControl(nil,parent,CT_LABEL)
     l:SetFont(font); l:SetAnchor(anchor,parent,relpt or anchor,x or 0,y or 0)
     return l
+end
+
+local function clearRyticSlotTooltip(control)
+    if control and control.activeTooltip then
+        ClearTooltip(control.activeTooltip)
+        control.activeTooltip=nil
+    end
+end
+
+local function showRyticSlotTooltip(control,slot,bar)
+    if not control or not slot or bar==nil then return end
+    clearRyticSlotTooltip(control)
+
+    -- This is the important difference from ZO_AbilitySlot_OnMouseEnter:
+    -- go straight to ACTION_BAR_ASSIGNMENT_MANAGER for the requested bar.
+    -- That avoids ZO_ActionBar_GetButton(), which only has a real native
+    -- ActionButton for the game's currently instantiated/native bar.
+    local manager=ACTION_BAR_ASSIGNMENT_MANAGER
+    if not manager or not manager.GetHotbar then return end
+
+    local hotbar=manager:GetHotbar(bar)
+    if not hotbar or not hotbar.GetSlotData then return end
+
+    local slotData=hotbar:GetSlotData(slot)
+    if not slotData then return end
+
+    local tooltip=slotData:GetKeyboardTooltipControl()
+    if not tooltip then return end
+
+    control.activeTooltip=tooltip
+    InitializeTooltip(tooltip,control,BOTTOM,0,-5,TOP)
+    slotData:SetKeyboardTooltip(tooltip)
+end
+
+local function attachRyticSkillHover(slotControl)
+    -- Use the actual visible Rytic skill control as the hit target.
+    -- This keeps the mouse box exactly on the icon instead of using a second overlay control.
+    slotControl:SetMouseEnabled(true)
+    slotControl:SetHandler("OnMouseEnter",function(self)
+        showRyticSlotTooltip(self,self.ryticSlot,self.ryticBar)
+    end)
+    slotControl:SetHandler("OnMouseExit",function(self)
+        clearRyticSlotTooltip(self)
+    end)
+end
+
+local function showRyticQuickslotTooltip(control)
+    if not control then return end
+    local activeIndex=GetCurrentQuickslot and GetCurrentQuickslot() or nil
+    if not activeIndex then return end
+
+    clearRyticSlotTooltip(control)
+
+    local link=GetSlotItemLink and GetSlotItemLink(activeIndex,HOTBAR_CATEGORY_QUICKSLOT_WHEEL) or ""
+    if link and link~="" then
+        control.activeTooltip=ItemTooltip
+        InitializeTooltip(ItemTooltip,control,BOTTOM,0,-5,TOP)
+        ItemTooltip:SetLink(link)
+        return
+    end
+
+    -- Fallback for non-item quickslots through the same exact hotbar slotData route.
+    showRyticSlotTooltip(control,activeIndex,HOTBAR_CATEGORY_QUICKSLOT_WHEEL)
 end
 
 local function makeSlot(parent,index)
@@ -354,6 +435,7 @@ local function makeSlot(parent,index)
     c.gcdReadyGlow:SetMouseEnabled(false)
     c.gcdReadyGlow:SetHidden(true)
     clearGCDSweep(c)
+    attachRyticSkillHover(c)
     return c
 end
 
@@ -605,6 +687,17 @@ function A.Create()
     if A.root then return end
     local sv=defaults()
     local root=WM:CreateTopLevelWindow("RyticActionBarRoot"); A.root=root
+    if ZO_ActionBar1 then
+        if root.SetDrawTier and ZO_ActionBar1.GetDrawTier then
+            root:SetDrawTier(ZO_ActionBar1:GetDrawTier())
+        end
+        if root.SetDrawLayer and ZO_ActionBar1.GetDrawLayer then
+            root:SetDrawLayer(ZO_ActionBar1:GetDrawLayer())
+        end
+        if root.SetDrawLevel and ZO_ActionBar1.GetDrawLevel then
+            root:SetDrawLevel((ZO_ActionBar1:GetDrawLevel() or 0)+1)
+        end
+    end
     -- ESOUI HUD fragment: automatically hide this HUD when menus open.
     local hudFragment=ZO_HUDFadeSceneFragment:New(root,nil,0)
     HUD_SCENE:AddFragment(hudFragment)
@@ -638,12 +731,14 @@ function A.Create()
     A.front={}; A.back={}
     for i=FIRST,LAST do
         local n=i-FIRST
-        local f=makeSlot(root,i); f:SetAnchor(TOPLEFT,root,TOPLEFT,n*54,0); A.front[i]=f
-        local b=makeSlot(root,i); b:SetAnchor(TOPLEFT,root,TOPLEFT,n*54,56); A.back[i]=b
+        local f=makeSlot(root,i); f.ryticSlot=i; f.ryticBar=HOTBAR_CATEGORY_PRIMARY; f:SetAnchor(TOPLEFT,root,TOPLEFT,n*54,0); A.front[i]=f
+        local b=makeSlot(root,i); b.ryticSlot=i; b.ryticBar=HOTBAR_CATEGORY_BACKUP; b:SetAnchor(TOPLEFT,root,TOPLEFT,n*54,56); A.back[i]=b
     end
 
     -- Ultimate: deliberately larger and separated from the five normal skills.
     A.ult=makeSlot(root,8)
+    A.ult.ryticSlot=8
+    A.ult.ryticBar=getDisplayHotbar()
     A.ult:SetDimensions(78,78)
     A.ult:SetAnchor(LEFT,A.front[LAST],RIGHT,18,28)
     A.ult.border:SetEdgeTexture("",1,1,4,0)
@@ -693,6 +788,8 @@ function A.Create()
     A.quick.potionReadyGlow2:SetHidden(true)
 
     A.quick:SetMouseEnabled(true)
+    A.quick:SetHandler("OnMouseEnter",function(self) showRyticQuickslotTooltip(self) end)
+    A.quick:SetHandler("OnMouseExit",function(self) clearRyticSlotTooltip(self) end)
     A.quick:SetHandler("OnMouseDown",function(_,button)
         if button==MOUSE_BUTTON_INDEX_LEFT and ZO_ActionBar_OnActionButtonDown then
             ZO_ActionBar_OnActionButtonDown(9)
@@ -714,6 +811,7 @@ local function updateButton(btn,slot,bar,isActive)
         btn.icon:SetTexture(""); btn.timer:SetText(""); btn.stack:SetText("")
         if btn.resolveGlow then btn.resolveGlow:SetHidden(true) end
         if btn.activeGlow then btn.activeGlow:SetHidden(true) end
+        if btn.border then btn.border:SetEdgeColor(0,0,0,0) end
         return
     end
     local icon=GetAbilityIcon(id)
@@ -735,10 +833,10 @@ local function updateButton(btn,slot,bar,isActive)
         remain=(GetActionSlotEffectTimeRemaining(slot,bar) or 0)/1000
     end
 
-    learnResolveSlot(slot,bar,id)
-
+    local isResolveSource=slotIsResolveSource(slot,bar,id)
+    local resolveActive=isResolveSource and hasMajorResolve()
+    local resolveMissing=isResolveSource and not resolveActive
     local r,g,b=1,1,1
-    local resolveMissing=slotIsResolveSource(slot,bar,id) and not hasMajorResolve()
     if resolveMissing then
         local p=alertPulse()
         r,g,b=1, .04 + (.28*p), .04 + (.28*p)
@@ -746,9 +844,11 @@ local function updateButton(btn,slot,bar,isActive)
             btn.resolveGlow:SetHidden(false)
             btn.resolveGlow:SetEdgeColor(1,.02,.02,.55 + (.45*p))
         end
-    elseif remain>0 then
-        r,g,b=.08,.55,1
-        if btn.resolveGlow then btn.resolveGlow:SetHidden(true) end
+    elseif resolveActive then
+        if btn.resolveGlow then
+            btn.resolveGlow:SetHidden(false)
+            btn.resolveGlow:SetEdgeColor(.08,.55,1,1)
+        end
     else
         if btn.resolveGlow then btn.resolveGlow:SetHidden(true) end
     end
@@ -776,6 +876,21 @@ local function updateButton(btn,slot,bar,isActive)
 end
 
 local setCustomBarVisible
+
+A.visibilityTellTale=A.visibilityTellTale or {reason="none",at=0,nativeHidden=false,playerDead=false,enabled=true}
+local function latchVisibilityReason(reason)
+    local t=A.visibilityTellTale
+    t.reason=tostring(reason or "unknown"); t.at=now()
+    t.nativeHidden=(ZO_ActionBar1 and ZO_ActionBar1:IsHidden()) and true or false
+    t.playerDead=actionBarPlayerDead() and true or false
+    t.enabled=defaults().enabled and true or false
+end
+local function printVisibilityTellTale()
+    local t=A.visibilityTellTale or {}
+    local age=(tonumber(t.at) or 0)>0 and math_max(0,now()-(tonumber(t.at) or 0)) or 0
+    d(string.format("|c49BFFFRyticActionBar tell-tale:|r reason=%s | age=%.1fs | enabled=%s | dead=%s | nativeHidden=%s",
+        tostring(t.reason or "none"),age,tostring(t.enabled),tostring(t.playerDead),tostring(t.nativeHidden)))
+end
 
 function A.Update()
     updateReadyPulse()
@@ -813,6 +928,8 @@ function A.Update()
                 shown:SetAnchor(TOPLEFT,A.root,TOPLEFT,n*54,0)
                 shown:SetHidden(false)
                 shown:SetAlpha(1)
+                shown.ryticSlot=i
+                shown.ryticBar=active
             end
             if hidden then
                 hidden:SetHidden(true)
@@ -839,12 +956,18 @@ function A.Update()
         -- Ensure the normal two weapon rows are restored after transformation.
         applyBarMode()
         for i=FIRST,LAST do
+            A.front[i].ryticSlot=i
+            A.front[i].ryticBar=frontCat
+            A.back[i].ryticSlot=i
+            A.back[i].ryticBar=backCat
             updateButton(A.front[i],i,frontCat,active==frontCat)
             updateButton(A.back[i],i,backCat,active==backCat)
         end
     end
 
     -- Ultimate follows the active weapon bar.
+    A.ult.ryticSlot=8
+    A.ult.ryticBar=active
     local ultId=slotId(8,active)
     if ultId~=0 then
         A.ult.icon:SetTexture(GetAbilityIcon(ultId) or "")
@@ -938,7 +1061,32 @@ local function hookNativeActionBarLifecycle()
     -- actual action-bar lifecycle used by ESO during death/rez and scene changes.
     ZO_PreHookHandler(ZO_ActionBar1,"OnEffectivelyHidden",function()
         if defaults().enabled then
-            setCustomBarVisible(false)
+            latchVisibilityReason("native ZO_ActionBar1 effectively hidden")
+            -- ESO may transiently hide its native bar during normal gameplay.
+            -- Reconcile on the next UI tick against the actual HUD/death state.
+            zo_callLater(function()
+                if not defaults().enabled or actionBarPlayerDead() then
+                    setCustomBarVisible(false)
+                    return
+                end
+                local hudShowing=true
+                if HUD_SCENE and HUD_SCENE.GetState then
+                    local state=HUD_SCENE:GetState()
+                    hudShowing=(state==SCENE_SHOWING or state==SCENE_SHOWN)
+                end
+                if not hudShowing and HUD_UI_SCENE and HUD_UI_SCENE.GetState then
+                    local state=HUD_UI_SCENE:GetState()
+                    hudShowing=(state==SCENE_SHOWING or state==SCENE_SHOWN)
+                end
+                if hudShowing then
+                    setCustomBarVisible(true)
+                    setNativeBarHidden(true)
+                    applyBarMode()
+                    A.Update()
+                else
+                    setCustomBarVisible(false)
+                end
+            end,0)
         end
     end)
 
@@ -1018,19 +1166,26 @@ local function registerRuntime()
     if EVENT_EFFECT_CHANGED then
         EM:RegisterForEvent("RyticActionBarResolveEffect",EVENT_EFFECT_CHANGED,
             function(_,changeType,_,effectName,_,_,_,_,_,_,_,_,_,_,_,abilityId)
-                local isResolve=(tonumber(abilityId)==MAJOR_RESOLVE_EFFECT_ID)
-                if not isResolve and effectName then
-                    isResolve=zo_strformat("<<z:1>>",effectName):find("major resolve",1,true)~=nil
-                end
-                if not isResolve then return end
+                if not isMajorResolveEffect(effectName,abilityId) then return end
 
                 -- Learn only from a gain/update immediately following our own
                 -- button press. No cooldown-duration guessing.
-                if not isNightblade()
-                    and changeType~=EFFECT_RESULT_FADED
+                local sourceAbilityId=tonumber(A.lastPressedAbilityId) or 0
+                local validSource=sourceAbilityId~=0
+                    and (not isNightblade() or abilityIsNightbladeShadow(sourceAbilityId))
+                if validSource and changeType~=EFFECT_RESULT_FADED
                     and A.lastPressedSlot and A.lastPressedAt
                     and (now()-A.lastPressedAt)<=0.75 then
-                    rememberResolveSource(A.lastPressedSlot,A.lastPressedBar,A.lastPressedAbilityId)
+                    if isNightblade() then
+                        local preferredSlot,preferredBar,preferredId=findSlottedNightbladePreferredResolve()
+                        if preferredId then
+                            rememberResolveSource(preferredSlot,preferredBar,preferredId)
+                        else
+                            rememberResolveSource(A.lastPressedSlot,A.lastPressedBar,A.lastPressedAbilityId)
+                        end
+                    else
+                        rememberResolveSource(A.lastPressedSlot,A.lastPressedBar,A.lastPressedAbilityId)
+                    end
                 end
             end)
         EM:AddFilterForEvent("RyticActionBarResolveEffect",EVENT_EFFECT_CHANGED,
@@ -1124,6 +1279,7 @@ function A.Initialize()
     A.Create()
     if A.playerDeadLatched then setCustomBarVisible(false) end
     SLASH_COMMANDS["/ryticbar"]=A.Toggle
+    SLASH_COMMANDS["/rabarwhy"]=printVisibilityTellTale
 
     -- A.Create establishes initial visibility. Runtime callbacks only exist
     -- while the custom bar is actually enabled.

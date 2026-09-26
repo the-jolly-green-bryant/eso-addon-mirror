@@ -79,7 +79,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Hide Completed Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Infinite_1st/Hide-Completed-Tome-Challenges__4811) | Infinite_1st | PC / Mac | 1.0 |
 | [Hide Group Frames](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/init3/Hide-Group-Frames__2159) | init3 | PC / Mac | 1.0 |
 | [Hide Performance Meter Background](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zinival/Hide-Performance-Meter-Background__1567) | Zinival | PC / Mac | 1.1 |
-| [Hide Scrying Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beacze/Hide-Scrying-Tooltips__4782) | Beacze | PC / Mac | 1.0.0 |
+| [Hide Scrying Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Beacze/Hide-Scrying-Tooltips__4782) | Beacze | PC / Mac | 1.0.1 |
 | [Hide Smugger Fee](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Hide-Smugger-Fee__3000) | kawamonkey | PC / Mac | 1.0 |
 | [Hide Some Things](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zinival/Hide-Some-Things__1574) | Zinival | PC / Mac | 1.2 |
 | [Hide Targetframe by JH](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/j.hhh/Hide-Targetframe-by-JH__b1bf0d35-ce24-4850-a553-507da6b0e5e5) | j.hhh | Console | — |

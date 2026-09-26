@@ -145,23 +145,11 @@ function Resources.CreateHUD()
 
     local hud = wm:CreateTopLevelWindow("RyticTankResourceHUD")
     Resources.window = hud
-    -- ESOUI HUD fragment: keep it attached permanently and let the fragment
-    -- callback tell RSS whether the game HUD is actually visible.  This mirrors
-    -- the proven Set HUD pattern instead of adding/removing fragments for OOC state.
-    local hudFragment = ZO_HUDFadeSceneFragment:New(hud, nil, 0)
-    HUD_SCENE:AddFragment(hudFragment)
-    HUD_UI_SCENE:AddFragment(hudFragment)
-    Resources.hudFragment = hudFragment
-    Resources.fragmentVisible = false
-    hudFragment:RegisterCallback("StateChange", function(oldState, newState)
-        local visible = (newState == SCENE_FRAGMENT_SHOWING or newState == SCENE_FRAGMENT_SHOWN)
-        Resources.fragmentVisible = visible
-        if not visible then
-            hud:SetHidden(true)
-        elseif Resources.Update then
-            Resources.Update()
-        end
-    end)
+    Resources.hudFragment=RyticTank.UI.Attach(hud,function()
+        local settings=RyticTank.saved.resources
+        return settings.enabled~=false and not IsUnitDead("player") and
+            (Resources.editMode or not settings.hideOutOfCombat or IsUnitInCombat("player"))
+    end,function() Resources.RefreshAll() end)
     hud:SetDimensions(620, 560)
     hud:ClearAnchors()
     hud:SetAnchor(
@@ -464,45 +452,7 @@ function Resources.ApplyScale()
 end
 
 local function UpdateVisibility()
-    local hud = Resources.window
-    if not hud then return false end
-
-    local s = RyticTank.saved.resources
-
-    -- Master OFF always wins.
-    if s.enabled == false then
-        hud:SetHidden(true)
-        return false
-    end
-
-    -- The ESO HUD fragment owns menu/scene visibility.  Never fight it by
-    -- re-showing RSS while the HUD scene itself is hidden.
-    if not Resources.fragmentVisible then
-        hud:SetHidden(true)
-        return false
-    end
-
-    -- Death always wins.  Keep the floral/resource HUD completely out of the
-    -- way while the player is dead (including Death Recap), then let the
-    -- normal visibility rules restore it after resurrection.
-    if IsUnitDead and IsUnitDead("player") then
-        hud:SetHidden(true)
-        return false
-    end
-
-    -- Edit mode is the sole intentional override for Hide Out of Combat.
-    if Resources.editMode then
-        hud:SetHidden(false)
-        return true
-    end
-
-    if s.hideOutOfCombat and not IsUnitInCombat("player") then
-        hud:SetHidden(true)
-        return false
-    end
-
-    hud:SetHidden(false)
-    return true
+    return Resources.window and RyticTank.UI.Refresh(Resources.window) or false
 end
 
 local function SetTrackedShield(value)
@@ -734,7 +684,7 @@ function Resources.Update()
     end
     if not enabled then return end
 
-    UpdateVisibility()
+    if not UpdateVisibility() then return end
     Resources.UpdatePotion()
     Resources.UpdateShield()
 
@@ -851,6 +801,7 @@ function Resources.SetEnabled(enabled)
     RyticTank.saved.resources.enabled = enabled
 
     if enabled then
+        Resources.shieldTracked=false
         RegisterResourceEvents()
         Resources.RefreshAll()
     else

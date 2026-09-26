@@ -130,8 +130,8 @@ function A:Rows()
         end
         local _,grant=M.RebuildTerms(self.state)
         rows[#rows+1]={label="再建融資を申請  +"..comma(grant).." ゴールド",command="rebuild",enabled=M.CanRebuild(self.state)}
-        if self.state.campaignComplete and not self.state.endless then
-            rows[#rows+1]={label="果てしない交易モードを始める",command="endless"}
+        if self.state.campaignComplete and not self.state.endless and not self.state.trueEnding then
+            rows[#rows+1]={label="最後の大買収を開始",command="endless"}
         end
         rows[#rows+1]={label="今期の交渉を見送る（内政・決算へ）",command="skip"}
         local Au=PBTrade.Audio or {}
@@ -339,8 +339,12 @@ function A:ShowChapterIntro()
                 .."\nコンツェルン防衛資金 "..M.FormatCompact(r.fortification.treasury)
         end
     end
+    local alliance=""
+    if chapter.id==2 and M.IsAllied(self.state,C.campaign.chapterTwoAlly) then
+        alliance="\n\n◆ フルブライト商会が盟約に応じ、自動的に同盟商会となりました。"
+    end
     self.modal={campaign=true,background=chapter.background,text=chapter.title.."\n"..chapter.subtitle.."\n\n"..chapter.description
-        ..takeover.."\n\n目標\n"..status.summary.."\n\n× / ○：交易地図へ"}
+        ..alliance..takeover.."\n\n目標\n"..status.summary.."\n\n× / ○：交易地図へ"}
     if r then
         local flash=r.count>0 and ("鎖の侵食  "..r.count.."件が離反") or "最終居城が経済要塞化"
         self:Flash("defection",flash,3.2); self:Save()
@@ -359,9 +363,9 @@ end
 function A:TitleStatus()
     local s=self.state
     if not s.companyName then return "商会はまだ興されていません" end
-    if s.endless then
-        local owned,total=M.EverythingStatus(s)
-        return (s.trueEnding and "真のエンディング到達" or "果てしない交易").."    全物件 "..owned.." / "..total.."    第"..M.CurrentPeriod(s).."期"
+    if s.campaignComplete then
+        local status=M.CampaignStatus(s)
+        return (s.trueEnding and "真のエンディング到達" or "最後の大買収").."    "..status.short.."    第"..M.CurrentPeriod(s).."期"
     end
     local chapter=D.campaigns[s.chapter]
     return (chapter and chapter.title or ("第"..s.chapter.."章")).."    第"..M.CurrentPeriod(s).."期    総資産 "..M.FormatCompact(M.Assets(s))
@@ -398,6 +402,9 @@ function A:PromptAcquisition(property)
     local ally=M.IsAllied(self.state,property.owner) and self.state.alliances[property.owner]
     local warning=ally and ("\n\n◆ 同盟商会 "..self.state.companies[property.owner].name.." の物件です。\n買収に成功すると信頼 -"..C.alliance.acquireTrust.."（現在 "..ally.trust.."）。0になると同盟は解消されます。") or ""
     local value,headquarters=M.NegotiationValue(self.state,property)
+    if property.finalAcquisition then
+        warning=warning.."\n\n◆ 真の最終物件です。買収成立で真のエンディングへ進みます。\nこの交渉は支配人へ委任できません。"
+    end
     if headquarters then
         local body=property.companyBody
         warning=warning.."\n\n◆ "..self.state.companies[property.owner].name..(body and "の商会本体です。" or "の中枢本社です。")
@@ -507,8 +514,11 @@ function A:BeginEndless()
     local report=M.StartEndless(self.state,self.random)
     if not report then return end
     self:Save(); self.screen="map"; self.tab=1; self.index=1
-    self.modal={campaign=true,background="chapter_5",text="果てしない交易\n\n戦は終わっても、帳簿に終わりはありません。\n戦後の混乱の中、自社物件のうち "..report.count.." 件が独立を宣言しました。\n\nタムリエルのすべての物件（訪れた実在地点を含む）を買収すると、真のエンディングを迎えます。\n\n現在：全物件 "..report.owned.." / "..report.total.."\n\n× / ○：交易地図へ"}
-    self:Flash("chapter","果てしない交易　開幕",3)
+    local target=report.target
+    local state=report.registered and "登録済み。グレナンブラの交易地図から交渉できます。"
+        or "未登録。ESO本編で現地へ行き、タイトル画面から物件登録してください。"
+    self.modal={campaign=true,background="chapter_5",text="最後の大買収\n\n戦は終わっても、帳簿には最後の一頁が残されています。\n\n目標：トール・ドライオク\n評価額："..(target and comma(target.marketValue) or "100京").." ゴールド\n"..state.."\n\nこの買収を成立させると、真のエンディングを迎えます。\n\n× / ○：交易地図へ"}
+    self:Flash("chapter","最後の大買収　開幕",3)
 end
 function A:BeginSession()
     if self.introShown then return end; self.introShown=true
@@ -611,7 +621,7 @@ function A:Act(action)
             reportText=reportText.."\n\n資金が尽きかけています。経営台帳から再建融資（+"..comma(grant).."）を申請できます"
         end
         if nextChapter and nextChapter.ending then
-            self.tab=1; self.modal={campaign=true,background="chapter_5",text="交易戦終結\n\nモラグ・バル コンツェルンの中枢契約は破棄され、異界へ延びた鎖は断たれました。\n"..M.CompanyName(self.state).."はタムリエル第一の交易組織として新しい帳簿を開きます。\n\n"..reportText.."\n\n×：果てしない交易モードへ　○：自由経営のまま（経営台帳からいつでも開始）",action="endlessOffer"}; self:Flash("ending","交易戦終結",4)
+            self.tab=1; self.modal={campaign=true,background="chapter_5",text="交易戦終結\n\nモラグ・バル コンツェルンの中枢契約は破棄され、異界へ延びた鎖は断たれました。\n"..M.CompanyName(self.state).."はタムリエル第一の交易組織として新しい帳簿を開きます。\n\n"..reportText.."\n\nしかし、最後の証文――トール・ドライオクが残されています。\n\n×：最後の大買収へ　○：自由経営のまま（経営台帳からいつでも開始）",action="endlessOffer"}; self:Flash("ending","交易戦終結",4)
         elseif season then
             self.strategySeason=season; self.pendingSettlementText=reportText; self.strategyChapterIntro=nextChapter and true or nil
             self.strategyReturnScreen=nextChapter and "map" or "properties"; self.screen="strategy"; self.index=1; self.modal=nil
@@ -724,8 +734,8 @@ function A:ManagementDetail(row)
     elseif row.command=="music" then
         return "BGM\n\nESOのUI音楽を画面ごとに切り替えます。\nタイトル・オープニング：エンディングの曲\n台帳・内政・ランキング：トリビュート（カード遊戯）の曲\n交渉：決闘の曲\n\n× でオン／オフを切り替えます。"
     elseif row.command=="endless" then
-        local owned,total=M.EverythingStatus(self.state)
-        return "果てしない交易モード\n\nすべての物件（通常の物件と、登録済みの実在地点）を買収するまで終わらない交易です。\n開始すると、自社物件の"..math.floor(C.endless.independenceShare*100).."%（本社・章の目標物件を除く）が独立して中立に戻ります。\nすべてを買収すると、真のエンディングを見られます。\n\n現在の所有：全物件 "..owned.." / "..total
+        local status=M.CampaignStatus(self.state)
+        return "最後の大買収\n\nグレナンブラの実在地点「トール・ドライオク」を現地で物件登録し、交易地図から買収してください。\n評価額は100京ゴールド。第5章クリア時点の商会資金と傘下物件を総動員する最終交渉です。\n成立すると真のエンディングを見られます。\n\n現在："..status.short
     elseif row.command=="assetRoot" then
         return "画像の読み込み先\n\n独自画像を読み込むフォルダの指定です。\n① アドオン相対：PBsTradeGame/assets/…（PBsTetrisと同じ標準の方式）\n② ESOの格納先：ESOが報告するアドオンの実フォルダ\n\n画像が表示されない場合に × で切り替えて、表示されるほうを選んでください。\n切り替えはこのプレイ中だけ有効で、次に起動すると①に戻ります。"
     elseif row.command=="skip" then
@@ -783,6 +793,13 @@ end
 function A:AfterBattle()
     local b=self.engine.battle
     if not b or not b.result then return end
+    local target=self.state.properties[b.targetId]
+    if b.mode~="defense" and b.result=="won" and target and target.finalAcquisition and M.CheckTrueEnding(self.state) then
+        -- The final deed closes the story immediately; no routine counterattack or settlement
+        -- is allowed to interrupt the true-ending payoff.
+        self:Save(); self:FlushSave(); self:ShowOpening("map","trueEnding"); self:Flash("ending","真のエンディング",4)
+        return
+    end
     if b.mode=="defense" or self.counterattackChecked then self:StartAdministration(); return end
     self:CounterattackCheck()
 end
@@ -808,7 +825,9 @@ function A:CounterattackCheck()
                 PBTrade.Audio.Play("counterattackWarning")
                 PBTrade.Audio.Play("counterattack")
             end
-            self.modal={pauseBattle=true,text="敵商会が買収を仕掛けました\n\n"..message.."\n攻撃元："..self.state.properties[attack.sourcePropertyId].name.."\n\n境目を左端まで押し返せば防衛成功。\n右端到達・期限切れ・撤退では物件を失います。\n防衛が終わると内政へ進みます。\n\n×：防衛戦へ"}
+            self.modal={pauseBattle=true,text="敵商会が買収を仕掛けました\n\n"..message.."\n攻撃元："..self.state.properties[attack.sourcePropertyId].name
+                .."\n攻勢："..(attack.threat or "買収攻勢").."\n敵の動員可能資金："..M.FormatMoney(attack.funding or 0)
+                .."\n\n境目を左端まで押し返せば防衛成功。\n右端到達・期限切れ・撤退では物件を失います。\n防衛が終わると内政へ進みます。\n\n×：防衛戦へ"}
             return
         end
         self.counterattackNotice="買収攻撃を開始できませんでした："..why
@@ -907,6 +926,7 @@ function A:Detail(p)
         .."\n\n所有："..company.name..(M.IsAllied(self.state,p.owner) and ("（同盟・信頼 "..self.state.alliances[p.owner].trust.."）") or "")
         .."\n経営："..(p.profileName or "個別設計")..(p.valueTier and ("（種類："..p.valueTier.."）") or (p.canonical and "（種類：一般・市場相場）" or ""))
         ..(p.canonical and "\n物件登録："..(M.IsPropertyVisited(self.state,p) and "登録済み・どこからでも買収可能" or "未登録・買収不可") or "")
+        ..(p.finalAcquisition and "\n最終条件：第5章クリア後に手動買収。成立で真のエンディング" or "")
         .."\n評価額："..comma(p.marketValue).."\n予想収益："..comma(p.expectedProfit).." / 期（参考）"
         .."\n調達用手元資金："..comma(p.reserve).."\n独立負担："..risk.." "..p.independenceRisk.." / 128"
         .."\n要求時の負担増：+"..p.independenceIncrease.."\n交渉の推進力："..p.gaugeAcceleration

@@ -484,6 +484,7 @@ local function on_addon_loaded()
     BGMeter.Faces.backfill()
     BGMeter.Faces.backfill_kills()
     BGMeter.Ledger.backfill()
+    BGMeter.Ledger.backfill_balance()
     do
         local data = BGMeter.zenimax.savedvars.get()
         for _, m in ipairs((data and data.matches) or {}) do pcall(BGMeter.Match.pack_timeline, m) end

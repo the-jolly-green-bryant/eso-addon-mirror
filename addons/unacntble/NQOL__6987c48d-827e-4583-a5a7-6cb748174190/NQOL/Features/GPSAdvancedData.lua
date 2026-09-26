@@ -222,6 +222,18 @@ local function IsWritDeliveryReady(questIndex)
         and IsJournalQuestStepEnding(questIndex, QUEST_MAIN_STEP) == true
 end
 
+-- Shared read-only journal interpretation. Keep E4 encoding and state values
+-- unchanged; on-demand diagnostics also need the cached type after advancement.
+function AdvancedData.GetWritQuestInfo(questIndex)
+    local questId = type(GetJournalQuestId) == "function"
+        and GetJournalQuestId(questIndex) or questIndex
+    local craftingType = FindQuestCraftingType(questIndex) or questCraftingTypes[questId]
+    if craftingType then
+        questCraftingTypes[questId] = craftingType
+    end
+    return craftingType, IsWritDeliveryReady(questIndex), GetQuestConditionCount(questIndex)
+end
+
 local function RefreshWritStates()
     for craftingType = 1, 7 do
         writStates[craftingType] = 0
@@ -236,14 +248,9 @@ local function RefreshWritStates()
     local maximum = tonumber(MAX_JOURNAL_QUESTS) or MAX_JOURNAL_QUESTS_FALLBACK
     for questIndex = 1, maximum do
         if IsValidQuestIndex(questIndex) and IsDailyCraftingQuest(questIndex) then
-            local questId = type(GetJournalQuestId) == "function"
-                and GetJournalQuestId(questIndex)
-                or questIndex
-            local craftingType = FindQuestCraftingType(questIndex)
-                or questCraftingTypes[questId]
+            local craftingType, deliveryReady = AdvancedData.GetWritQuestInfo(questIndex)
             if craftingType then
-                questCraftingTypes[questId] = craftingType
-                writStates[craftingType] = IsWritDeliveryReady(questIndex) and 2 or 1
+                writStates[craftingType] = deliveryReady and 2 or 1
             else
                 hasUnknownWrit = true
             end

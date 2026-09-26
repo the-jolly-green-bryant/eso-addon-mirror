@@ -393,6 +393,35 @@ local function refresh_session()
     st.c:SetHidden(false)
 end
 
+local function refresh_balance()
+    local st = stats.balance
+    local Ledger = BGMeter.Ledger
+    if not (st and Ledger and Ledger.recent_balance) then return end
+    local recent, rn = Ledger.recent_balance(20)
+    if not recent then
+        st.c:SetHidden(true)
+        return
+    end
+    st.c:SetHidden(false)
+    if st.icon then
+        st.icon:SetTexture(BGMeter.Icons.BALANCE)
+        st.icon:SetColor(K.COLOR.text[1], K.COLOR.text[2], K.COLOR.text[3], 1)
+    end
+    local score = math.floor(recent + 0.5)
+    set_text(st.label, string.format("balance %d", score))
+    S.color(st.label, U.balance_color(score))
+    local all = Ledger.balance()
+    local lines = {
+        string.format("Match balance, your last %d %s: %d / 100", rn, (rn == 1) and "match" or "matches", score),
+    }
+    if all.n > 0 then
+        lines[#lines + 1] = string.format("all time %d over %d matches%s%s", math.floor(all.avg + 0.5), all.n,
+            all.wavg and string.format("  ·  wins %d", math.floor(all.wavg + 0.5)) or "",
+            all.lavg and string.format("  ·  losses %d", math.floor(all.lavg + 0.5)) or "")
+    end
+    st.tip = table.concat(lines, "\n")
+end
+
 function Panel.refresh()
     if not stats then return end
     refresh_ava()
@@ -400,6 +429,7 @@ function Panel.refresh()
     refresh_standing()
     refresh_currencies()
     refresh_session()
+    refresh_balance()
 end
 
 local function make_stat(pw, rowi, right, withIcon, withBar, link)
@@ -482,6 +512,7 @@ function Panel.build(pw, opts)
         ap      = make_stat(pw, 1, true, true),
         telvar  = make_stat(pw, 2, true, true),
         session = make_stat(pw, 3, true, false),
+        balance = make_stat(pw, 4, true, true),
     }
     for _, key in ipairs({ "ap", "telvar" }) do
         local lbl = stats[key].label

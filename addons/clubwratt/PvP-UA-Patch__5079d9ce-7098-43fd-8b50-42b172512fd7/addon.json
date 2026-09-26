@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/clubwratt/PvP-UA-Patch__5079d9ce-7098-43fd-8b50-42b172512fd7",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "clubwratt",
+  "canonical_id": "bethesda:5079d9ce-7098-43fd-8b50-42b172512fd7",
+  "content_id": "5079d9ce-7098-43fd-8b50-42b172512fd7",
+  "deleted": false,
+  "fingerprint": "66d520181821861f78ce378b804dc15d32d2973913cd266273855b9ffff6d58c",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "5079d9ce-7098-43fd-8b50-42b172512fd7",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/5079d9ce-7098-43fd-8b50-42b172512fd7",
+  "title": "PvP UA (Patch)"
+}

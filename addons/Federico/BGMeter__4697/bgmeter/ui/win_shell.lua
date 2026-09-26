@@ -59,6 +59,7 @@ local SETTINGS_SECTIONS = {
         { kind = "toggle", key = "show_standing",  label = "Standing / session panel" },
         { kind = "toggle", key = "show_awards",    label = "MVP / column leaders" },
         { kind = "toggle", key = "show_timeline",  label = "Match timeline chart" },
+        { kind = "toggle", key = "show_balance",   label = "Match balance strip" },
         { kind = "toggle", key = "show_race",      label = "Damage race strip" },
         { kind = "toggle", key = "show_kills",     label = "Kill pressure strip" },
         { kind = "toggle", key = "show_faces",     label = "Familiar faces" },
@@ -230,6 +231,7 @@ local function build()
     W.cur_h = (sv and sv.window and sv.window.h and sv.window.h > 0) and sv.window.h or L.window_h
 
     local win = BGMeter.zenimax.ui.wm:CreateTopLevelWindow("BGMeterWindow")
+    win:SetDrawTier(DT_HIGH)
     win:SetDimensions(W.cur_w, W.cur_h)
     win:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
     win:SetMouseEnabled(true)

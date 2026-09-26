@@ -140,7 +140,13 @@ function Group.IsAccountAssistant(account)
     if key=="" then return false end
 
     if IsUnitGrouped and IsUnitGrouped("player") then
-        if Group.IsLocalLeader() then return true end
+        -- Everyone starts as assist, but the leader's explicit revocation wins.
+        if Group.IsLocalLeader() then
+            if key==normalize(getAccountName("player")) then return true end
+            local overrides=Group.sessionAssistantOverrides
+            if overrides and overrides[key]~=nil then return overrides[key] end
+            return true
+        end
         if Group.sessionAssistantsInitialized then
             return Group.sessionAssistants and Group.sessionAssistants[key] == true
         end
@@ -171,6 +177,7 @@ function Group.SetAssistant(account,enabled)
     Group.sessionAssistantOverrides=Group.sessionAssistantOverrides or {}
     Group.sessionAssistantOverrides[key]=enabled and true or false
     defaults().assistants[key]=enabled and true or false
+    if RyticTank.GroupSync and RyticTank.GroupSync.SaveAuthority then RyticTank.GroupSync.SaveAuthority() end
     return true
 end
 
@@ -956,21 +963,12 @@ local function setNativeGroupFramesHidden(hidden)
 end
 
 local function setupHudFragment()
-    if Group.fragment or not Group.root or not SCENE_MANAGER or not HUD_SCENE or not HUD_UI_SCENE then return false end
-    local fragment
-    if ZO_HUDFadeSceneFragment then fragment=ZO_HUDFadeSceneFragment:New(Group.root,nil,0)
-    elseif ZO_SimpleSceneFragment then fragment=ZO_SimpleSceneFragment:New(Group.root) end
-    if not fragment then return false end
-    Group.fragment=fragment
-    fragment:RegisterCallback("StateChange",function(_,newState)
-        if newState==SCENE_FRAGMENT_SHOWN then
-            Group.Refresh()
-        elseif newState==SCENE_FRAGMENT_HIDDEN and Group.root then
-            Group.root:SetHidden(true)
-        end
-    end)
-    HUD_SCENE:AddFragment(fragment)
-    HUD_UI_SCENE:AddFragment(fragment)
+    if not Group.root then return false end
+    if not Group.fragment then
+        Group.fragment=RyticTank.UI.Attach(Group.root,function()
+            return defaults().enabled and IsUnitGrouped("player")
+        end,function() Group.Refresh() end)
+    end
     return true
 end
 
@@ -1197,12 +1195,7 @@ function Group.Refresh()
     setupHudFragment()
     local active=s.enabled and IsUnitGrouped("player")
     setNativeGroupFramesHidden(active)
-    if not active then Group.root:SetHidden(true); return end
-    if Group.fragment and Group.fragment.GetState and Group.fragment:GetState()~=SCENE_FRAGMENT_SHOWN then
-        Group.root:SetHidden(true)
-        return
-    end
-    Group.root:SetHidden(false)
+    if not RyticTank.UI.Refresh(Group.root) then return end
     if Group.headers then
         if Group.headers[1] then Group.headers[1]:SetText(Group.GetTeamName(1)) end
         if Group.headers[2] then Group.headers[2]:SetText(Group.GetTeamName(2)) end
@@ -1302,7 +1295,7 @@ function Group.SetEnabled(enabled)
     else
         if Group.UnregisterRuntime then Group.UnregisterRuntime() end
         setNativeGroupFramesHidden(false)
-        if Group.root then Group.root:SetHidden(true) end
+        if Group.root then RyticTank.UI.Refresh(Group.root) end
         if Group.dragHandle then Group.dragHandle:SetHidden(true) end
     end
 end
@@ -1400,11 +1393,21 @@ function Group.UnregisterRuntime()
     if not Group.runtimeRegistered then return end
     Group.runtimeRegistered=false
     EM:UnregisterForUpdate(UPDATE_NAME)
-    local names={"RyticGroupFramesJoined","RyticGroupFramesLeft","RyticGroupFramesUpdated","RyticGroupFramesReadyState","RyticGroupFramesActivated","RyticGroupFramesRoleChanged","RyticGroupFramesDeathCount"}
-    for _,name in ipairs(names) do EM:UnregisterForEvent(name) end
-    EM:UnregisterForEvent(SHIELD_EVENT_PREFIX.."Added")
-    EM:UnregisterForEvent(SHIELD_EVENT_PREFIX.."Updated")
-    EM:UnregisterForEvent(SHIELD_EVENT_PREFIX.."Removed")
+    local events={
+        {"RyticGroupFramesJoined",EVENT_GROUP_MEMBER_JOINED},
+        {"RyticGroupFramesLeft",EVENT_GROUP_MEMBER_LEFT},
+        {"RyticGroupFramesUpdated",EVENT_GROUP_UPDATE},
+        {"RyticGroupFramesReadyState",EVENT_GROUP_MEMBER_READY_STATE_CHANGED},
+        {"RyticGroupFramesActivated",EVENT_PLAYER_ACTIVATED},
+        {"RyticGroupFramesRoleChanged",EVENT_GROUP_MEMBER_ROLE_CHANGED},
+        {"RyticGroupFramesDeathCount",EVENT_UNIT_DEATH_STATE_CHANGED},
+        {SHIELD_EVENT_PREFIX.."Added",EVENT_UNIT_ATTRIBUTE_VISUAL_ADDED},
+        {SHIELD_EVENT_PREFIX.."Updated",EVENT_UNIT_ATTRIBUTE_VISUAL_UPDATED},
+        {SHIELD_EVENT_PREFIX.."Removed",EVENT_UNIT_ATTRIBUTE_VISUAL_REMOVED},
+    }
+    for _,event in ipairs(events) do
+        if event[2] then EM:UnregisterForEvent(event[1],event[2]) end
+    end
 end
 
 local function resetAssistantSessionIfUngrouped()
@@ -1459,7 +1462,7 @@ function Group.Initialize()
         Group.Refresh()
     else
         setNativeGroupFramesHidden(false)
-        if Group.root then Group.root:SetHidden(true) end
+        if Group.root then RyticTank.UI.Refresh(Group.root) end
     end
 end
 

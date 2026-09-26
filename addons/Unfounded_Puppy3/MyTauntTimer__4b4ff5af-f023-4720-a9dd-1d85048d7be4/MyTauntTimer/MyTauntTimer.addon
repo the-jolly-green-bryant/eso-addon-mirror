@@ -1,14 +1,9 @@
 ## Title: MyTauntTimer
-## APIVersion: 101049
-## Version: 2.4
+## APIVersion: 101050
+## Version: 3.0
 ## Author: Unfounded Puppy3
-## Description: 
-##  /mtt 設定表示 
-##  /tauntpos X Y 位置変更 
-##  /tauntflashother on/off 他人タウント明滅 
-##  /tauntflashsec 秒数設定 
-##  /tauntfontsize フォント変更（バー高さ自動調整）
-##  /tauntflashrank ランク閾値設定（1〜4）
+## Description: タウント残り時間バーを表示し、設定メニューで位置・フォント・明滅条件を調整できるアドオン
 ## SavedVariables: MyTauntTimer_Saved
+## DependsOn: LibHarvensAddonSettings
 
 MyTauntTimer.lua

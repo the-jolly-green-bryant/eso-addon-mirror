@@ -84,9 +84,7 @@ local emptyValueTbl = {}        -- for CVT select() to select first
 local function CatSet_DisplayRule(rule)
 	AC_UI.CatSet_SelectTag_LAM:refresh()
 
-	AC_UI.CatSet_SelectRule_LAM:refresh()
 	AC_UI.CatSet.setRule(rule)		-- sets tag and name
-	AC_UI.CatSet_SelectRule_LAM:updateControl()
 
 	currentRule = rule
 	AC_UI.checkCurrentRule()
@@ -656,7 +654,7 @@ function AC_UI.AddCat_SelectTag_LAM:setValue(value)
 
 	AddCat_SelectTag_LAM:updateControl()
 	AddCat_SelectRule_LAM:clearIndex()
-	AddCat_SelectRule_LAM:assign(AddCat_SelectRule_LAM.filterRules(getCurrentBagId(),value))
+	AddCat_SelectRule_LAM:assignNE(AddCat_SelectRule_LAM.filterRules(getCurrentBagId(),value))
 	AddCat_SelectRule_LAM:refresh()
 	AddCat_SelectRule_LAM:updateControl()
 end
@@ -726,7 +724,7 @@ function AC_UI.AddCat_SelectRule_LAM:refresh()
 		local latag = AddCat_SelectTag_LAM:getValue()
 		local dataCurrentRules_AddCategory = AddCat_SelectRule_LAM.filterRules(currentBag, latag)
 		if dataCurrentRules_AddCategory then
-			AddCat_SelectRule_LAM:assign(dataCurrentRules_AddCategory)
+			AddCat_SelectRule_LAM:assignNE(dataCurrentRules_AddCategory)
 			AddCat_SelectRule_LAM:select()
 		end
 	end
@@ -773,8 +771,8 @@ function AddCat_EditRule_LAM:execute()
 
 	AC_UI.checkCurrentRule()
 	AC_UI.RefreshDropdownData()
-	AC_UI.CatSet_SelectRule_LAM:refresh()
 	AC_UI.CatSet_SelectRule_LAM:setValue(rule.name)
+	AC_UI.CatSet_SelectRule_LAM:refresh()
 
 	AC_UI.ToggleSubmenu("AC_SUBMENU_BAG_SETTING", false)
 	AC_UI.ToggleSubmenu("AC_SUBMENU_CATEGORY_SETTING", true)
@@ -1134,7 +1132,7 @@ function AC_UI.BagSet.Init()
 
     -- initialize tables
 	BagSet_SelectBag_LAM:assign(AutoCategory.cache.bags_cvt)
-	AC_UI.AddCat_SelectTag_LAM:assign( { choices=AutoCategory.RulesW.tags } )
+	AC_UI.AddCat_SelectTag_LAM:assignNE(AutoCategory.RulesW.tags) --( { choices=AutoCategory.RulesW.tags } )
 
 	BagSet_SelectBag_LAM:select(emptyValueTbl)
 

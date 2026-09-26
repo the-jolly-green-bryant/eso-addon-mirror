@@ -81,11 +81,8 @@ local function adv(id)
     if type(GetAdvancedStatValue)~="function" then return 0 end
     local ok,a,b,c=pcall(GetAdvancedStatValue,id)
     if not ok then return 0 end
-    -- Prefer later numeric returns because some API revisions include identifiers first.
-    if type(c)=="number" then return c end
-    if type(b)=="number" then return b end
-    if type(a)=="number" then return a end
-    return 0
+    if id==ADVANCED_STAT_DISPLAY_TYPE_BLOCK_MITIGATION then return tonumber(c) or 0 end
+    return tonumber(b) or 0
 end
 local function isBlocking()
     return type(IsBlockActive)=="function" and IsBlockActive() or false
@@ -138,24 +135,45 @@ local function rangeText(f,key)
     return "LOW "..fmt(r.low).."   HIGH "..fmt(r.high)
 end
 
+local function closeBuffSlot(f,slot,t)
+    local st=S.effectSlots[slot]
+    if not st then return end
+    S.effectSlots[slot]=nil
+    local b=f.buffs[st.id]
+    if not b then return end
+    b.activeCount=math.max(0,(b.activeCount or 1)-1)
+    if b.activeCount==0 and b.liveStarted then
+        b.seconds=(b.seconds or 0)+math.max(0,t-b.liveStarted)
+        b.liveStarted=nil
+    end
+end
+
+local function openBuffSlot(f,slot,id,label,icon,t)
+    local st=S.effectSlots[slot]
+    if st and st.id==id then return end
+    if st then closeBuffSlot(f,slot,t) end
+    local b=f.buffs[id]
+    if not b then b={name=name(label),seconds=0,count=0,icon=icon,activeCount=0}; f.buffs[id]=b end
+    b.activeCount=(b.activeCount or 0)+1
+    if b.activeCount==1 then b.liveStarted=t; b.count=b.count+1 end
+    S.effectSlots[slot]={active=true,id=id}
+end
+
 local function SnapshotPlayerBuffs(f)
-    if not f or type(GetNumBuffs)~="function" or type(GetUnitBuffInfo)~="function" then return end
-    local n=tonumber(GetNumBuffs("player")) or 0
+    if not f then return end
     local now=sec()
-    for i=1,n do
-        local buffName,beginTime,endTime,buffSlot,stackCount,iconFilename,buffType,effectType,
-              abilityType,statusEffectType,abilityId=GetUnitBuffInfo("player",i)
-        if abilityId and abilityId~=0 and buffName and buffName~=""
-           and (not BUFF_EFFECT_TYPE_DEBUFF or effectType~=BUFF_EFFECT_TYPE_DEBUFF) then
-            local b=f.buffs[abilityId]
-            if not b then b={name=name(buffName),seconds=0,count=1,icon=iconFilename}; f.buffs[abilityId]=b end
-            S.effectSlots["snapshot:"..tostring(abilityId)..":"..tostring(i)]={active=true,id=abilityId,started=now}
+    for i=1,GetNumBuffs("player") do
+        local label,_,_,slot,_,icon,_,effectType,_,_,id=GetUnitBuffInfo("player",i)
+        if slot and id and id~=0 and effectType~=BUFF_EFFECT_TYPE_DEBUFF then
+            openBuffSlot(f,slot,id,label,icon,now)
         end
     end
 end
 
 function S.StartFight()
     S.current=fightNew()
+    S.units={}
+    S.tickFailed=false
     S.effectSlots={}
 S.viewFight=nil
 S.viewSavedIndex=nil
@@ -171,18 +189,14 @@ local function closeBlock(f)
 end
 
 local function closeEffects(f)
-    local t=sec()
-    for slot,state in pairs(S.effectSlots) do
-        if state.active then
-            local b=f.buffs[state.id]
-            if b then b.seconds=b.seconds+math.max(0,t-state.started) end
-        end
+    local now=sec()
+    for _,b in pairs(f.buffs) do
+        if b.liveStarted then b.seconds=(b.seconds or 0)+math.max(0,now-b.liveStarted) end
+        b.liveStarted=nil; b.activeCount=0
     end
     S.effectSlots={}
-S.viewFight=nil
-S.viewSavedIndex=nil
+    S.viewFight=nil; S.viewSavedIndex=nil
 end
-
 
 local function closeDebuffs(f)
     local t=sec()
@@ -303,7 +317,7 @@ function S.OnCombatEvent(_,result,isError,abilityName,abilityGraphic,abilityActi
                 local q=f.potentialMisses[k]
                 if not q then q={name=name(abilityName),enemy=name(sourceName),amount=0,count=0,largest=0,prevented=0,blockedEstimate=0}; f.potentialMisses[k]=q end
                 q.amount=q.amount+value; q.count=q.count+1; q.largest=math.max(q.largest,value)
-                local bm=tonumber(adv(7)) or 0
+                local bm=tonumber(adv(ADVANCED_STAT_DISPLAY_TYPE_BLOCK_MITIGATION)) or 0
                 local frac=bm>1 and bm/100 or bm
                 frac=math.max(0,math.min(.99,frac))
                 local prevented=value*frac
@@ -332,31 +346,17 @@ end
 function S.OnEffectChanged(_,changeType,effectSlot,effectName,unitTag,beginTime,endTime,
  stackCount,iconName,buffType,effectType,abilityType,statusEffectType,unitName,unitId,abilityId,sourceType)
     local f=S.current
-    if not f or unitTag~="player" or not abilityId or abilityId==0 then return end
-    if BUFF_EFFECT_TYPE_DEBUFF and effectType==BUFF_EFFECT_TYPE_DEBUFF then return end
-    local t=sec()
-    local b=f.buffs[abilityId]
-    if not b then b={name=name(effectName),seconds=0,count=0,icon=iconName}; f.buffs[abilityId]=b end
+    if not f or unitTag~="player" or not effectSlot or not abilityId or abilityId==0 then return end
     local st=S.effectSlots[effectSlot]
-    if changeType==EFFECT_RESULT_GAINED or changeType==EFFECT_RESULT_UPDATED then
-        if not st or not st.active then
-            S.effectSlots[effectSlot]={active=true,id=abilityId,started=t}
-            b.count=b.count+1
-        elseif st.id~=abilityId then
-            local old=f.buffs[st.id]
-            if old then old.seconds=old.seconds+math.max(0,t-st.started) end
-            S.effectSlots[effectSlot]={active=true,id=abilityId,started=t}
-            b.count=b.count+1
-        end
-    elseif changeType==EFFECT_RESULT_FADED then
-        if st and st.active then
-            local old=f.buffs[st.id]
-            if old then old.seconds=old.seconds+math.max(0,t-st.started) end
-            S.effectSlots[effectSlot]=nil
-        end
+    if changeType==EFFECT_RESULT_FADED then
+        -- A late fade for the prior ability must not close a reused slot.
+        if st and st.id==abilityId then closeBuffSlot(f,effectSlot,sec()) end
+    elseif effectType==BUFF_EFFECT_TYPE_DEBUFF then
+        if st then closeBuffSlot(f,effectSlot,sec()) end
+    elseif changeType==EFFECT_RESULT_GAINED or changeType==EFFECT_RESULT_UPDATED then
+        openBuffSlot(f,effectSlot,abilityId,effectName,iconName,sec())
     end
 end
-
 
 -- Enemy debuff tracking. ESO only exposes effects for unit tags the client currently
 -- knows about, so boss-target uptime is intentionally reported separately from all
@@ -584,6 +584,27 @@ end
 -- LibCombat supplies target unitId, abilityId, effect type, source type and a
 -- unique effect slot. Multiple overlapping slots are merged into one uptime
 -- interval per ability/target, preventing uptime above 100%.
+function S.OnLibCombatUnits(_,units)
+    S.units={}
+    for id,u in pairs(units or {}) do
+        S.units[id]={name=u.name,bossId=u.bossId,isBoss=u.isBoss}
+    end
+    local f=S.current or S.last
+    if f then
+        for _,b in pairs(f.debuffs or {}) do
+            local u=S.units[tonumber(b.targetId)] or S.units[b.targetId]
+            if u then
+                b.target=name(u.name)
+                b.boss=(u.bossId~=nil and u.bossId~=0) or u.isBoss==true
+                if f.debuffTargets[b.targetId] then
+                    f.debuffTargets[b.targetId].name=b.target
+                    f.debuffTargets[b.targetId].boss=b.boss
+                end
+            end
+        end
+    end
+end
+
 function S.OnLibCombatEffect(callbackType,timems,unitId,abilityId,changeType,effectType,stacks,sourceType,slotId,hitValue)
     if not statsEnabled() then return end
     local f=S.current
@@ -597,8 +618,8 @@ function S.OnLibCombatEffect(callbackType,timems,unitId,abilityId,changeType,eff
     local isBoss=false
 
     -- LibCombat's unit table is the same normalized unit information CMX uses.
-    if LC and LC.data and LC.data.units and LC.data.units[unitId] then
-        local u=LC.data.units[unitId]
+    if S.units and S.units[unitId] then
+        local u=S.units[unitId]
         if u.name and u.name~="" then targetName=name(u.name) end
         isBoss=(u.bossId~=nil and u.bossId~=0) or u.isBoss==true
     end
@@ -683,7 +704,7 @@ function S.Tick()
     f.resourceSamples=(f.resourceSamples or 0)+1
     local physSample=stat(STAT_PHYSICAL_RESIST)
     local spellSample=stat(STAT_SPELL_RESIST)
-    local blockCostSample=adv(1)
+    local blockCostSample=adv(ADVANCED_STAT_DISPLAY_TYPE_BLOCK_COST)
     if physSample>0 then rangeSample(f,"physicalResistance",physSample) end
     if spellSample>0 then rangeSample(f,"spellResistance",spellSample) end
     rangeSample(f,"maxHealth",hm); rangeSample(f,"maxStamina",stm); rangeSample(f,"maxMagicka",mm)
@@ -724,14 +745,7 @@ end
 
 local function buffSeconds(f,id,b)
     local n=b.seconds or 0
-    if f==S.current then
-        local t=sec()
-        for _,st in pairs(S.effectSlots) do
-            if st.active and st.id==id then n=n+math.max(0,t-st.started) end
-        end
-        local c=S.combatEffectSlots["B:"..tostring(id)]
-        if c then n=n+math.max(0,t-c.started) end
-    end
+    if f==S.current and b.liveStarted then n=n+math.max(0,sec()-b.liveStarted) end
     return n
 end
 local function buffLines(f,maxrows)
@@ -798,6 +812,16 @@ local function copyFight(f)
     end
     local n=cp(f)
     n.finish=(n.finish or 0)>0 and n.finish or ms()
+    if f==S.current then
+        local now=sec()
+        if n.blockStart then n.blockSeconds=n.blockSeconds+math.max(0,now-n.blockStart) end
+        for _,collection in ipairs({n.buffs,n.debuffs}) do
+            for _,b in pairs(collection or {}) do
+                if b.liveStarted then b.seconds=(b.seconds or 0)+math.max(0,now-b.liveStarted) end
+                b.liveStarted=nil; b.activeCount=0
+            end
+        end
+    end
     n.blockStart=nil
     n.savedAt=GetTimeStamp and GetTimeStamp() or 0
     return n
@@ -808,7 +832,7 @@ function S.SaveFight()
     if not f then d("|cFFAA00RyticTank: no fight to save.|r"); return end
     local sv=statsSV(); if not sv then return end
     local saved=copyFight(f)
-    saved.label=os.date and os.date("%Y-%m-%d %H:%M") or ("Fight "..tostring(#sv.savedFights+1))
+    saved.label="Fight "..tostring(#sv.savedFights+1).." - "..tostring(saved.savedAt)
     table.insert(sv.savedFights,saved)
     while #sv.savedFights>20 do table.remove(sv.savedFights,1) end
     S.viewFight=saved; S.viewSavedIndex=#sv.savedFights
@@ -965,8 +989,7 @@ function S.ShowTab(tab)
 end
 
 function S.CloseWindow()
-    if S.window then S.window:SetHidden(true) end
-    if type(SetGameCameraUIMode)=="function" then SetGameCameraUIMode(false) end
+    if S.window then RyticTank.UI.CloseModal(S.window) end
 end
 
 function S.CreateWindow()
@@ -974,10 +997,13 @@ function S.CreateWindow()
     local w=WM:CreateTopLevelWindow("RyticTankTankStats"); S.window=w
     w:SetDimensions(1180,790); w:SetAnchor(CENTER,GuiRoot,CENTER,0,0)
     w:SetMovable(true); w:SetMouseEnabled(true); w:SetClampedToScreen(true); w:SetHidden(true)
-
-    -- Do not capture the keyboard at the TankStats top level. ESO keeps ownership
-    -- of M/I/C/ESC and the rest of its normal UI shortcuts, matching RaidLead and
-    -- DD Positions.
+    RyticTank.UI.AttachModal(w,statsEnabled)
+    w:SetKeyboardEnabled(true)
+    w:SetHandler("OnKeyDown", function(_, key)
+        if key == KEY_ESCAPE then
+            S.CloseWindow()
+        end
+    end)
     local bg=WM:CreateControl(nil,w,CT_BACKDROP); bg:SetAnchorFill()
     bg:SetCenterColor(.005,.008,.012,.96); bg:SetEdgeColor(.4,.45,.5,1)
 
@@ -1042,10 +1068,12 @@ function S.CreateWindow()
     -- wheel scrolling for its dynamically generated buff rows, so use a plain
     -- page-owned control as the clipping/scroll host instead.
     local scroll=WM:CreateControl(nil,bp,CT_CONTROL)
+    -- Keep the buff rows contained inside the upper BUFF UPTIME panel.
+    -- The optimization panel begins at y=467 and must remain visually separate.
     scroll:SetAnchor(TOPLEFT,bp,TOPLEFT,8,72); scroll:SetAnchor(BOTTOMRIGHT,bp,BOTTOMRIGHT,-8,-8)
     scroll:SetMouseEnabled(true)
     local child=WM:CreateControl(nil,scroll,CT_CONTROL)
-    child:SetAnchor(TOPLEFT,scroll,TOPLEFT,0,0); child:SetWidth(1095); child:SetHeight(560)
+    child:SetAnchor(TOPLEFT,scroll,TOPLEFT,0,0); child:SetWidth(1095); child:SetHeight(375)
     S.buffDetailScroll=scroll
     S.buffDetailChild=child
     S.buffDetailRows={}
@@ -1088,18 +1116,6 @@ function S.CreateWindow()
     tabButton(w,"DEBUFFS",965,function() S.ShowTab("debuffs") end)
 
     S.ShowTab("summary")
-
-    -- TankStats is a modal RCRT management window, not a persistent HUD.
-    -- When ESO leaves the gameplay HUD for Map/Inventory/Character/Game Menu/etc.,
-    -- close TankStats completely. It must not restore when ESO's UI closes.
-    if HUD_FRAGMENT and HUD_FRAGMENT.RegisterCallback and not S._hudCloseHooked then
-        S._hudCloseHooked=true
-        HUD_FRAGMENT:RegisterCallback("StateChange",function(_,newState)
-            if newState==SCENE_FRAGMENT_HIDDEN and S.window and not S.window:IsHidden() then
-                S.CloseWindow()
-            end
-        end)
-    end
 end
 
 local function missLines(f)
@@ -1214,7 +1230,7 @@ function S.Refresh()
     local f=S.current or S.last
     local h,hm=power(POWERTYPE_HEALTH); local st,stm=power(POWERTYPE_STAMINA); local m,mm=power(POWERTYPE_MAGICKA)
     local phys=stat(STAT_PHYSICAL_RESIST); local spell=stat(STAT_SPELL_RESIST)
-    local blockCost=adv(1); local blockMit=adv(7)
+    local blockCost=adv(ADVANCED_STAT_DISPLAY_TYPE_BLOCK_COST); local blockMit=adv(ADVANCED_STAT_DISPLAY_TYPE_BLOCK_MITIGATION)
     local d=f and fightTime(f) or 0
     local state="|cAAAAAALAST FIGHT|r"
     if f==S.current then state="|c55FF88CURRENT FIGHT|r"
@@ -1400,9 +1416,26 @@ function S.Refresh()
     S.missingDebuffs:SetText(optimizationLines(f,OPT_DEBUFFS,true))
 end
 
+local function librarySubscriptions(on)
+    if not LibCombat then return end
+    local subscriptions={
+        {LIBCOMBAT_EVENT_EFFECTS_OUT,S.OnLibCombatEffect},
+        {LIBCOMBAT_EVENT_GROUPEFFECTS_OUT,S.OnLibCombatEffect},
+        {LIBCOMBAT_EVENT_UNITS,S.OnLibCombatUnits},
+    }
+    for _,v in ipairs(subscriptions) do
+        if v[1]~=nil then
+            if on then LibCombat:RegisterCallbackType(v[1],v[2],"RyticTankTools")
+            else LibCombat:UnregisterCallbackType(v[1],v[2],"RyticTankTools") end
+        end
+    end
+    if not on then S.units={} end
+end
+
 local function registerRuntime()
     if S.runtimeRegistered then return end
     S.runtimeRegistered=true
+    librarySubscriptions(true)
 
     EM:RegisterForEvent("RyticTankTSCombat",EVENT_PLAYER_COMBAT_STATE,S.OnCombatState)
     EM:RegisterForEvent("RyticTankTSEvents",EVENT_COMBAT_EVENT,S.OnCombatEvent)
@@ -1419,7 +1452,10 @@ local function registerRuntime()
 
     EM:RegisterForUpdate("RyticTankTSTick",250,function()
         if not statsEnabled() then return end
-        if S.current then pcall(S.Tick) end
+        if S.current and not S.tickFailed then
+            local ok,err=pcall(S.Tick)
+            if not ok then S.tickFailed=true; d("|cFF5555Rytic stats sampling stopped for this fight: "..tostring(err).."|r") end
+        end
         if S.window and not S.window:IsHidden() then
             local ok,err=pcall(S.Refresh)
             if not ok and S.defense then S.defense:SetText("|cFF5555UPDATE ERROR|r\n"..tostring(err)) end
@@ -1430,6 +1466,7 @@ end
 local function unregisterRuntime()
     if not S.runtimeRegistered then return end
     S.runtimeRegistered=false
+    librarySubscriptions(false)
     EM:UnregisterForEvent("RyticTankTSCombat",EVENT_PLAYER_COMBAT_STATE)
     EM:UnregisterForEvent("RyticTankTSEvents",EVENT_COMBAT_EVENT)
     if EVENT_PLAYER_DEAD then EM:UnregisterForEvent("RyticTankTSPlayerDead",EVENT_PLAYER_DEAD) end
@@ -1454,7 +1491,7 @@ function S.SetEnabled(enabled)
         -- SetGameCameraUIMode(false).  The module OFF path only needs to hide its
         -- own window; the normal TankStats X/toggle close path still uses
         -- CloseWindow() and retains its existing behavior.
-        if S.window then S.window:SetHidden(true) end
+        if S.window then RyticTank.UI.CloseModal(S.window) end
 
         unregisterRuntime()
         S.effectSlots={}
@@ -1470,8 +1507,7 @@ function S.Toggle()
     end
     if not S.window then S.CreateWindow() end
     if S.window:IsHidden() then
-        S.window:SetHidden(false)
-        if type(SetGameCameraUIMode)=="function" then SetGameCameraUIMode(true) end
+        if not RyticTank.UI.OpenModal(S.window) then return end
         local ok,err=pcall(S.Refresh)
         if not ok then d("|cFF5555RyticTank TankStats: "..tostring(err).."|r") end
     else
@@ -1484,25 +1520,6 @@ function S.Initialize()
     S.CreateWindow()
     SLASH_COMMANDS["/tankstats"]=S.Toggle
     SLASH_COMMANDS["/tank"]=S.Toggle
-    -- Enemy debuffs: use the same normalized LibCombat effect stream CMX uses.
-    if LibCombat and type(LibCombat.RegisterCallbackType)=="function" then
-        local registered=0
-        if LIBCOMBAT_EVENT_EFFECTS_OUT then
-            LibCombat:RegisterCallbackType(LIBCOMBAT_EVENT_EFFECTS_OUT,S.OnLibCombatEffect,"RyticTankTools")
-            registered=registered+1
-        end
-        if LIBCOMBAT_EVENT_GROUPEFFECTS_OUT then
-            LibCombat:RegisterCallbackType(LIBCOMBAT_EVENT_GROUPEFFECTS_OUT,S.OnLibCombatEffect,"RyticTankTools")
-            registered=registered+1
-        end
-        if registered>0 then
-            d("|c55FF88RyticTank TankStats: LibCombat debuff tracking connected.|r")
-        else
-            d("|cFF5555RyticTank TankStats: LibCombat loaded but effect callbacks were not found.|r")
-        end
-    else
-        d("|cFF5555RyticTank TankStats: LibCombat dependency failed to load.|r")
-    end
     S.SetEnabled(statsEnabled())
     d("|c00FF00RyticTank TankStats v4 ready: /tankstats|r")
 end

@@ -1,4 +1,4 @@
-Command Codex 1.0.0 - by brianmit
+Command Codex 1.0.1 - by brianmit
 =================================
 
 Every slash command from the game and your addons in one window,

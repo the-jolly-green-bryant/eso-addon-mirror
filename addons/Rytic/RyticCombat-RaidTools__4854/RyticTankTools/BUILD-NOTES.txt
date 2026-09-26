@@ -1,0 +1,53 @@
+RyticTankTools 3.0.2-test
+
+This is an offline-tested candidate, not a certified ESOUI release. The installed
+add-on and original ZIP were not modified. Grok was not used.
+
+Changes beyond 3.0.1-test
+- Shared SimpleSceneFragment ownership for remaining HUDs and management windows.
+  Modal close keys and owned cursor state are cleaned up on scene changes.
+- Action-bar hidden cooldown polling stops; unchanged two-bar layout and equipment
+  scans are cached. Equipment changes and re-enabling invalidate the cache.
+- Buff uptime uses actual effect slots and counts overlapping copies only once.
+- Live fight saves finalize a copy, preserving the active recording.
+- LibCombat unit metadata uses its callback API; disabled stats unsubscribe.
+- Sync tracks revisions per sender, handles rollover, pairs team titles with the
+  matching revision, and permits explicit resends of unchanged assignments.
+- Leader/roster lifecycle resets stale authority. Local leader revocations survive
+  reload for the same roster. Optional LibGroupUIReload enables reload recovery.
+- Default everyone-assist behavior remains; leader can revoke and restore access.
+- Removed the forced layout reset; named preset PUSH loads the selected preset.
+- Block stat sampling is limited to twice per second; redundant sync refreshes removed.
+
+Verification
+55 passing offline checks: 12 Lua 5.1 syntax checks and 43 behavioral checks.
+Includes actual ESO scene-fragment source with mocked scenes/controls; action-bar
+construction, menu/death/revival/enable transitions, authority, pull label timing,
+buff overlap/fade, sync rollover/stale titles/resends/crown changes, and modal input.
+This does not simulate ESO protected APIs, real network transport, all HUD module
+constructors, or interaction with other add-ons. No live performance benchmark.
+
+Before publishing
+- Test in ESO with two upgraded clients: PUSH, REMOVE/ASSIST, crown transfer,
+  reload/rejoin, and a leader who has no Rytic installed. Optional reload-library
+  recovery and mixed-version behavior need live testing.
+- Test map/inventory/settings transitions, death/rez, weapon swaps, Oakensoul,
+  transformations, quickslot use, UI reload, and enabled/disabled settings.
+- Independently verify ownership/reservations of LGB IDs 180/181/182 and asset/code
+  permissions. Existing IDs and wire schemas were retained, not certified.
+- The required ESO disclaimer remains in README; retain credits and disclose
+  AI assistance. Check the current ESOUI upload rules when preparing publication.
+
+Remaining review findings
+- Raid/position list refreshes still create replacement controls; pooling remains.
+- Group frames still perform frequent full layout work; DPS subset balancing can
+  become expensive with large groups. Avoid claiming broad CPU/memory gains.
+- English-name matching, some legacy magic stat IDs, native-control compatibility,
+  and local-only pull fallback still need follow-up. Existing textures are unchanged.
+- Root cause of the intermittent action-bar report is not proven in a live client;
+  this fixes identified competing visibility ownership and stale-state paths.
+
+Installation
+Close ESO, back up the installed RyticTankTools folder and SavedVariables, then
+replace the add-on folder from this ZIP. Run only one copy. Keep the libraries
+listed in the manifest installed. Restore both backups with ESO closed to roll back.

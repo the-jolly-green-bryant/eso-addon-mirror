@@ -234,6 +234,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pvp Ready Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/Pvp-Ready-Emotes__2d86078c-b982-4ffc-a7f0-7905e41c2354) | Architectofmusic | Console | — |
 | [PvP Skill Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DarkSoules/PvP-Skill-Tracker__3905) | DarkSoules | PC / Mac | 1.3 |
 | [PvP Target Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bucketmore/PvP-Target-Info__a5490d07-2b02-4714-bf07-a18820977a3c) | Bucketmore | Console | — |
+| [PvP UA (Patch)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/clubwratt/PvP-UA-Patch__5079d9ce-7098-43fd-8b50-42b172512fd7) | clubwratt | Console | — |
 | [PvP UA!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/PvP-UA__a453b6d3-5eb9-42cb-812d-605c297e8e87) | user562x | Console | — |
 | [PvP-erformance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/StaticWave/PvP-erformance__4730) | StaticWave | PC / Mac | v1.0.7 |
 | [PvPCooldownTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/PvPCooldownTracker__b3a44425-48ff-494d-bbfe-64c8be868720) | Vixen_Hunny | Console | — |

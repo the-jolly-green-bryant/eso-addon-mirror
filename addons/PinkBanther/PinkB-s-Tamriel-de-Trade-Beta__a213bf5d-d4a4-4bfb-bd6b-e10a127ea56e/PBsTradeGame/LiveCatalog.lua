@@ -128,7 +128,8 @@ end
 function L.BaseValue(id,name,average)
     local special=C.canonical.specialValues and C.canonical.specialValues[L.Key(name)]
     if special then
-        local tier={label=special.label or "特別物件",category=special.category,yield=special.yield or C.canonical.defaultYield}
+        local tier={label=special.label or "特別物件",category=special.category,yield=special.yield or C.canonical.defaultYield,
+            finalAcquisition=special.finalAcquisition==true}
         return special.value,math.floor(special.value*tier.yield),tier
     end
     local factor,yield,tier=L.PriceFactor(id,name)
@@ -155,7 +156,8 @@ local function add(id,name,zone,category,description,source,sourceData)
         independenceRisk=8+seed%25,independenceIncrease=7+seed%12,
         gaugeAcceleration=.8+(seed%15)/10,groups={},negotiationResistances={},isHeadquarters=false,
         businessProfile="canonical",profileName="ESO実在地点",description=description~="" and description or zone.name.."で確認された実在地点。",
-        minChapter=zone.minChapter,canonical=true,requiresVisit=true,canonicalSource=source,sourceData=sourceData}
+        minChapter=zone.minChapter,canonical=true,requiresVisit=true,canonicalSource=source,sourceData=sourceData,
+        finalAcquisition=tier and tier.finalAcquisition or false}
     D.properties[#D.properties+1]=p; D.AddProperty(p); index(p); L.count=L.count+1; return p
 end
 function L.Import()
@@ -195,10 +197,12 @@ function L.Import()
         {id="eso_known_drunken_lion",name="酔いどれライオン",zone="glenumbra",category="inn"},
         {id="eso_known_maras_kiss",name="マーラの口付け",zone="auridon",category="inn"},
         {id="eso_known_maras_kiss_pub",name="パブ マーラの口付け",zone="auridon",category="tavern"},
+        {id="eso_known_tor_dryoch",name="トール・ドライオク",zone="glenumbra",category="market",
+            description="第5章の後に最後の証文が届く、100京ゴールド級の最終物件。"},
     }
     for _,place in ipairs(knownInteriors) do
         add(place.id,place.name,D.zoneById[place.zone],place.category,
-            "ESO内の実在する宿屋・酒場。現地で明示的に物件登録できます。","eso_known",{known=true})
+            place.description or "ESO内の実在する宿屋・酒場。現地で明示的に物件登録できます。","eso_known",{known=true})
     end
     return L.count
 end
@@ -240,10 +244,19 @@ function L.Resolve(state,record)
     if not p and record.interior then p=L.FindAnywhere(record.name) or (record.alt and L.FindAnywhere(record.alt)) end
     -- POI/node indices can be renumbered between client versions. When no exact canonical
     -- name match exists, a house gets a stable ID based on the API's houseId instead.
+    -- Never reuse that ID when an earlier observation attached it to another name/region.
+    -- A stale record used to make Snugpod resolve as the Rosy Lion for the rest of the
+    -- session. Keep the base ID for the normal case and disambiguate only a collision.
     if not p and record.zoneId and record.houseId and record.houseId~=0 then
         local zone=D.zoneById[record.zoneId]
-        local id="eso_houseid_"..record.houseId
-        p=D.propertyById[id] or add(id,record.name,zone,"inn",
+        local baseId="eso_houseid_"..record.houseId
+        local id=baseId
+        local existing=D.propertyById[id]
+        if existing and (L.Key(existing.name)~=L.Key(record.name) or existing.zone~=record.zoneId) then
+            id=baseId.."_"..hash(record.zoneId.."|"..record.name)
+            existing=D.propertyById[id]
+        end
+        p=existing or add(id,record.name,zone,"inn",
             "ESOの住宅IDから所在地を確認した宿屋・住宅。","eso_house",{houseId=record.houseId})
     end
     if not p and record.zoneId then

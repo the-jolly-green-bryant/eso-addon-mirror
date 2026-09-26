@@ -210,6 +210,79 @@ local function build_battle(win)
 
     b.occ_pool = rect_pool(b.occ)
 
+    strip("bal", "MATCH BALANCE", nil, L.balance_h)
+    local BAL_ICON, BAL_Y = 28, 18
+    local function glyph(tex, x)
+        local ic = P.icon(b.bal, tex)
+        ic:SetDimensions(BAL_ICON, BAL_ICON)
+        ic:SetAnchor(TOPLEFT, b.bal, TOPLEFT, x, BAL_Y)
+        return ic
+    end
+    local function value(anchorTo, w)
+        local l = P.label(b.bal, S.FONT.row, K.COLOR.text)
+        U.clamp_line(l)
+        l:SetAnchor(LEFT, anchorTo, RIGHT, 5, 0)
+        l:SetDimensions(w, BAL_ICON)
+        l:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+        return l
+    end
+    b.balIcon = glyph(Icons.BALANCE, 6)
+    b.balScore = value(b.balIcon, 30)
+    b.balScaleW, b.balScaleN = 72, 12
+    b.balScale = BGMeter.zenimax.ui.create_control(nil, b.bal, CT_CONTROL)
+    b.balScale:SetDimensions(b.balScaleW, 5)
+    b.balScale:SetAnchor(LEFT, b.balScore, RIGHT, 4, 0)
+    b.balScaleSegs = {}
+    local segW = b.balScaleW / b.balScaleN
+    for i = 1, b.balScaleN do
+        local c = U.balance_scale_color((i - 0.5) / b.balScaleN)
+        local seg = P.rect(b.balScale, { c[1], c[2], c[3], 0.55 })
+        seg:SetDimensions(segW, 5)
+        seg:SetAnchor(TOPLEFT, b.balScale, TOPLEFT, (i - 1) * segW, 0)
+        b.balScaleSegs[i] = seg
+    end
+    b.balMark = P.rect(b.bal, { 1, 1, 1, 0.95 })
+    b.balMark:SetDimensions(3, 11)
+    b.balTiltEnd = 6 + BAL_ICON + 5 + 30 + 4 + 72
+    b.balCampX = 180
+    b.balBaseIcon = glyph(Icons.CAMP, b.balCampX)
+    b.balBase = value(b.balBaseIcon, 40)
+    b.balStopIcon = glyph(Icons.SHEATHED, 258)
+    b.balStop = value(b.balStopIcon, 58)
+    b.balLeftW = 350
+    local EXP_W = 118
+    local function exp_block(right, iconSize)
+        local e = { width = EXP_W }
+        e.icon = P.icon(b.bal)
+        e.icon:SetDimensions(iconSize, iconSize)
+        e.icon:SetAnchor(TOPRIGHT, b.bal, TOPRIGHT, -(right + 96 + (22 - iconSize) / 2), 21 - (iconSize - 22) / 2)
+        e.barM = P.rect(b.bal, { 1, 1, 1, 0.10 })
+        e.barM:SetDimensions(44, 5)
+        e.barM:SetAnchor(TOPRIGHT, b.bal, TOPRIGHT, -(right + 50), 22)
+        e.fillM = P.rect(b.bal, { 1, 1, 1, 0.8 })
+        e.fillM:SetAnchor(TOPLEFT, e.barM, TOPLEFT, 0, 0)
+        e.fillM:SetDimensions(0, 5)
+        e.valM = P.label(b.bal, S.FONT.small, K.COLOR.text)
+        U.clamp_line(e.valM)
+        e.valM:SetAnchor(TOPRIGHT, b.bal, TOPRIGHT, -right, 18)
+        e.valM:SetDimensions(46, 12)
+        e.barO = P.rect(b.bal, { 1, 1, 1, 0.10 })
+        e.barO:SetDimensions(44, 5)
+        e.barO:SetAnchor(TOPRIGHT, b.bal, TOPRIGHT, -(right + 50), 36)
+        e.fillO = P.rect(b.bal, { 1, 1, 1, 0.8 })
+        e.fillO:SetAnchor(TOPLEFT, e.barO, TOPLEFT, 0, 0)
+        e.fillO:SetDimensions(0, 5)
+        e.valO = P.label(b.bal, S.FONT.small, K.COLOR.text)
+        U.clamp_line(e.valO)
+        e.valO:SetAnchor(TOPRIGHT, b.bal, TOPRIGHT, -right, 32)
+        e.valO:SetDimensions(46, 12)
+        e.all = { e.icon, e.barM, e.fillM, e.valM, e.barO, e.fillO, e.valO }
+        return e
+    end
+    b.balAva = exp_block(6, 28)
+    b.balVet = exp_block(6 + EXP_W + 8, 22)
+    W.tip_dynamic(b.bal)
+
     strip("race", "DAMAGE RACE", nil)
     b.race_pool = rect_pool(b.race)
     b.race_line_pool = b.lines_ok and BGMeter.Plot.pool.new(
@@ -328,6 +401,7 @@ local function apply_dynamic_min_width(m)
     else
         extra = 46 + 2
     end
+    if BGMeter.Prefs.get("show_balance") then extra = extra + L.balance_h + 2 end
     local needed_h = L.header_h + 24 + #m.battle * L.row_h + L.chart_h + extra + 8 + L.footer_h + 12
     local dyn_h = math.max(L.min_h, math.min(needed_h, L.max_h))
 

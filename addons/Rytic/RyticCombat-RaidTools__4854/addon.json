@@ -22,7 +22,7 @@
     "RyticTankTools"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4854/",
-  "fingerprint": "396c513cf0295cac3f602e60e434499c27cecb35ad783161d7f675e34e8bbef6",
+  "fingerprint": "2ffe7cf199d2ce6dabd92dc63e3419a3c3b0f7f51a3f91b5f09e8ed3070139a3",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw17534.png",
     "https://cdn-eso.mmoui.com/preview/pvw17535.png",
@@ -38,11 +38,11 @@
   "source_id": "4854",
   "source_url": "https://www.esoui.com/downloads/info4854-RyticCombatRaidTools.html",
   "stats": {
-    "downloads": 58,
+    "downloads": 72,
     "favorites": 1,
-    "monthly_downloads": 51
+    "monthly_downloads": 65
   },
   "title": "RyticCombat&RaidTools",
-  "updated_at": 1790296743000,
-  "version": "3.0"
+  "updated_at": 1790378638000,
+  "version": "3.0.1"
 }

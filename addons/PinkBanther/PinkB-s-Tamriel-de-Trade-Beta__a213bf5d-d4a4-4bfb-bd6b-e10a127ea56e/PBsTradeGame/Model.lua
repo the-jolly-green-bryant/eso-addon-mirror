@@ -43,6 +43,7 @@ function M.PriceCanonical(s,p,average)
     local L=PBTrade.LiveCatalog; if not L then return M.ScaleToMarket(s,p) end
     local value,profit,tier=L.BaseValue(p.id,p.name,average or M.MarketAverage(s))
     p.marketValue,p.expectedProfit,p.valueTier=value,profit,tier and tier.label or nil
+    p.finalAcquisition=tier and tier.finalAcquisition==true or false
     if tier and tier.category and p.category~="inn" then p.category=tier.category end
     for _=1,p.investCount or 0 do
         p.marketValue=math.floor(p.marketValue*(1+C.admin.investValueGain)); p.expectedProfit=math.floor(p.expectedProfit*(1+C.admin.investProfitGain))
@@ -62,6 +63,7 @@ function M.Owned(s, owner)
     return result
 end
 function M.IsAvailable(s,p)
+    if p.finalAcquisition and not s.campaignComplete then return false end
     local company=s.companies[p.owner]
     if (p.minChapter or (company and company.minChapter) or 1)>s.chapter then return false end
     for _,id in ipairs(p.requiresProperties or {}) do
@@ -207,13 +209,41 @@ function M.GroupStatus(s,id,members)
         bonus=group.bonus+landmarkBonus,baseBonus=group.bonus,landmarks=landmarks,landmarkBonus=landmarkBonus,tier=group.tier,
         discoveryChance=group.discoveryChance}
 end
+-- Groups an AI company can actually activate from its current portfolio.  COM companies do not
+-- receive free discoveries: every listed group already satisfies its real ownership minimum.
+function M.CompanyGroups(s,owner)
+    local buckets={}
+    for _,definition in ipairs(D.properties) do
+        local p=s.properties[definition.id]
+        if p and p.owner==owner and M.IsAvailable(s,p) then
+            for _,id in ipairs(p.groups or {}) do
+                local members=buckets[id]; if not members then members={}; buckets[id]=members end
+                members[#members+1]=p
+            end
+        end
+    end
+    local rows={}
+    for id,members in pairs(buckets) do
+        local group=D.groups[id]
+        local required=group and math.max(group.minimum or 2,group.discoverAt or 0)
+        if group and #members>=required then
+            local landmarks=0; for _,p in ipairs(members) do if p.canonical then landmarks=landmarks+1 end end
+            local landmarkBonus=math.min(C.groups.landmarkBonusMax,landmarks*C.groups.landmarkBonusPerMember)
+            rows[#rows+1]={id=id,name=group.name,members=members,count=#members,minimum=group.minimum,
+                required=required,bonus=group.bonus+landmarkBonus,tier=group.tier}
+        end
+    end
+    table.sort(rows,function(a,b) if a.bonus~=b.bonus then return a.bonus>b.bonus end return a.id<b.id end)
+    return rows
+end
 function M.AvailableGroups(s)
     local rows={}
     local ids={}; for id in pairs(D.groups) do ids[#ids+1]=id end
     for _,status in pairs(M.GroupStatusAll(s,ids)) do if status.usable then rows[#rows+1]=status end end
     table.sort(rows,function(a,b) return a.name<b.name end); return rows
 end
--- Endless trade: every buyable property (regular ones, plus real places already visited).
+-- Legacy all-property progress remains available for old saves and statistics. The live ESO
+-- catalog is open-ended, so it is no longer used as the true-ending condition.
 function M.EverythingStatus(s)
     local owned,total=0,0
     for _,definition in ipairs(D.properties) do
@@ -224,35 +254,37 @@ function M.EverythingStatus(s)
     end
     return owned,total
 end
-D.endlessChapter={title="果てしない交易",subtitle="すべての物件を商会の旗の下へ",background="chapter_5",
-    description="戦は終わっても、帳簿に終わりはありません。独立した商人たちを再び束ね、タムリエルのすべての物件（訪れた実在地点を含む）を買収してください。"}
+D.endlessChapter={title="最後の大買収",subtitle="トール・ドライオクを商会の旗の下へ",background="chapter_5",
+    description="モラグ・バルの鎖を断った商会に、最後の証文が届きました。グレナンブラでトール・ドライオクを物件登録し、100京ゴールド級の最終買収を成立させてください。"}
+function M.TrueEndingProperty(s)
+    for _,definition in ipairs(D.properties) do
+        local p=s.properties[definition.id]
+        if p and p.finalAcquisition then return p end
+    end
+end
 function M.StartEndless(s,random)
     if s.endless then return nil end
     s.endless=true
-    local candidates={}
-    for _,definition in ipairs(D.properties) do
-        local p=s.properties[definition.id]
-        if p and p.owner==C.playerId and not p.isHeadquarters and not M.IsObjective(s,p.id) then candidates[#candidates+1]=p end
-    end
-    random=random or math.random
-    for i=#candidates,2,-1 do local j=math.min(i,math.floor(random()*i)+1); candidates[i],candidates[j]=candidates[j],candidates[i] end
-    local count=math.floor(#candidates*C.endless.independenceShare+.5)
-    for i=1,count do local p=candidates[i]; p.owner=C.neutralId; p.independenceRisk=C.endless.independenceRisk end
-    local owned,total=M.EverythingStatus(s)
-    return {count=count,owned=owned,total=total}
+    local target=M.TrueEndingProperty(s)
+    return {count=0,target=target,registered=target and M.IsPropertyVisited(s,target) or false}
 end
 function M.CheckTrueEnding(s)
-    if not s.endless or s.trueEnding then return false end
-    local owned,total=M.EverythingStatus(s)
-    if total>0 and owned>=total then s.trueEnding=true; return true end
+    if not s.campaignComplete or s.trueEnding then return false end
+    local target=M.TrueEndingProperty(s)
+    if target and M.IsPropertyVisited(s,target) and target.owner==C.playerId then s.trueEnding=true; return true end
     return false
 end
 function M.CampaignStatus(s)
-    if s.endless then
-        local owned,total=M.EverythingStatus(s); local assets=M.Assets(s)
-        local primary="全物件 "..owned.." / "..total
-        return {chapter=D.endlessChapter,current=owned,target=total,complete=s.trueEnding==true,assets=assets,
-            assetComplete=true,minimumCycles=0,cycleComplete=true,endless=true,
+    if s.campaignComplete then
+        local target=M.TrueEndingProperty(s); local assets=M.Assets(s)
+        local registered=target and M.IsPropertyVisited(s,target) or false
+        local owned=target and target.owner==C.playerId or false
+        local primary=s.trueEnding and "トール・ドライオク買収完了"
+            or (registered and ("最終買収 "..(owned and "成立" or "未成立").." / 評価額 "..M.FormatCompact(target.marketValue))
+                or "トール・ドライオクを現地で物件登録")
+        return {chapter=D.endlessChapter,current=owned and 1 or 0,target=1,complete=s.trueEnding==true,assets=assets,
+            assetComplete=true,endless=true,
+            finalProperty=target,registered=registered,
             summary=primary.."\n総資産 "..M.FormatCompact(assets)..(s.trueEnding and "\n真のエンディング到達" or ""),short=primary}
     end
     local chapter=D.campaigns[s.chapter]; if not chapter then return nil end
@@ -266,21 +298,30 @@ function M.CampaignStatus(s)
     end
     local assets=M.Assets(s); local assetTarget=objective.type=="assets" and objective.target or objective.assetTarget
     local assetComplete=not assetTarget or assets>=assetTarget
-    local minimumCycles=objective.minimumCycles or 0; local cycleComplete=s.cycles>=minimumCycles
-    complete=complete and assetComplete and cycleComplete
+    complete=complete and assetComplete
     local primary=objective.type=="assets" and ("総資産 "..M.FormatCompact(assets).." / "..M.FormatCompact(target))
         or ("中枢拠点 "..current.." / "..target)
     local parts={primary}
     if objective.type~="assets" and assetTarget then parts[#parts+1]="総資産 "..M.FormatCompact(assets).." / "..M.FormatCompact(assetTarget) end
-    if minimumCycles>0 then parts[#parts+1]="期数 "..math.min(s.cycles,minimumCycles).." / "..minimumCycles end
     return {chapter=chapter,current=current,target=target,complete=complete,assets=assets,assetTarget=assetTarget,
-        assetComplete=assetComplete,minimumCycles=minimumCycles,cycleComplete=cycleComplete,
+        assetComplete=assetComplete,
         summary=table.concat(parts,"\n"),short=primary}
+end
+function M.FormChapterTwoAlliance(s)
+    local id=C.campaign.chapterTwoAlly
+    local company=id and s.companies[id]
+    if not company or company.dissolved or #M.Owned(s,id)==0 then return false end
+    if not M.IsAllied(s,id) then s.alliances[id]={trust=C.alliance.startTrust,automatic=true} end
+    return true
 end
 function M.AdvanceCampaign(s)
     if s.endless then return nil end
     local status=M.CampaignStatus(s)
-    if status and status.complete and s.chapter<#D.campaigns then s.chapter=s.chapter+1; M.Unlock(s); return D.campaigns[s.chapter] end
+    if status and status.complete and s.chapter<#D.campaigns then
+        s.chapter=s.chapter+1; M.Unlock(s)
+        if s.chapter==2 then M.FormChapterTwoAlliance(s) end
+        return D.campaigns[s.chapter]
+    end
     if status and status.complete and s.chapter==#D.campaigns and not s.campaignComplete then
         s.campaignComplete=true; return {ending=true,title="交易戦終結",background="chapter_5"}
     end
@@ -477,7 +518,7 @@ function M.RivalTurn(s,random)
             local budget=c.cash*R.maxCashShare; local best,bestScore
             for _=1,R.samples do
                 local p=s.properties[D.properties[math.min(count,math.floor(random()*count)+1)].id]
-                if p and p.owner~=id and p.owner~=C.playerId and not protected[p.id] and not p.isHeadquarters
+                if p and p.owner~=id and p.owner~=C.playerId and not protected[p.id] and not p.isHeadquarters and not p.finalAcquisition
                     and M.IsAvailable(s,p) and math.floor(p.marketValue*R.priceFactor)<=budget then
                     local score=p.marketValue*(p.category==c.acquisitionBias and R.biasWeight or 1)
                     if not bestScore or score>bestScore then best,bestScore=p,score end
@@ -581,7 +622,7 @@ function M.IsObjective(s,id)
     return objectiveIds[id]==true
 end
 function M.IsCriticalProperty(s,p)
-    return p and (p.isHeadquarters or p.finalStronghold or M.IsObjective(s,p.id)) and true or false
+    return p and (p.isHeadquarters or p.finalStronghold or p.finalAcquisition or M.IsObjective(s,p.id)) and true or false
 end
 function M.ActivePolicy(s)
     if not s.activePolicy or (s.policyUntil or 0)<=s.cycles then return nil end
@@ -855,7 +896,23 @@ function M.Load(saved)
             if definition.generatedName and p and p.owner~=C.playerId then p.owner=definition.owner end
         end
     end
+    -- v10 moved Dophore from Stormhaven to Stros M'Kai, installed House Tamrith in
+    -- Stormhaven and split High Isle between Verelois and Dufort. Preserve anything the
+    -- player already bought; otherwise adopt the authored regional balance. A chapter-five
+    -- Molag takeover is also preserved verbatim.
+    if (saved.schemaVersion or 0)<10 and not saved.molagTakeover then
+        local rebalanced={stormhaven=true,stros=true,highisle=true}
+        for _,definition in ipairs(D.properties) do
+            local p=s.properties[definition.id]
+            if definition.generatedName and rebalanced[definition.zone] and p and p.owner~=C.playerId then
+                p.owner=definition.owner
+            end
+        end
+    end
     for _,key in ipairs({"visited","visitedProperties","unlocked","learnedTactics","learnedGroups","alliances"}) do if type(saved[key])=="table" then s[key]=M.Copy(saved[key]) end end
+    -- v10 introduced the promised Fullbright alliance. Saves already beyond the chapter-one
+    -- transition receive it on load if the company still exists; dissolved companies stay gone.
+    if (saved.schemaVersion or 0)<10 and s.chapter>=2 then M.FormChapterTwoAlliance(s) end
     for oldId,newId in pairs(remap) do if s.visitedProperties[oldId] then s.visitedProperties[oldId]=nil; s.visitedProperties[newId]=true end end
     -- Real places new to this save, and (once per valuation version) the ones saved under an
     -- older pricing rule, are priced from today's average property.
@@ -882,17 +939,25 @@ function M.RollCounterattack(s,random)
         local c=s.companies[id]
         -- Allies never raise a hostile bid against the player.
         if id~=C.playerId and id~=C.neutralId and not M.IsAllied(s,id) and (c.minChapter or 1)<=s.chapter and c.cash>=C.counterattack.minimumCash and #M.Owned(s,id)>0 then
-            local weight=c.aggression or .5; total=total+weight
-            candidates[#candidates+1]={id=id,company=c,weight=weight}
+            local _,reserves=M.CompanyAssets(s,id)
+            local funding=c.cash+reserves
+            -- Serious attacks come disproportionately from companies that can actually finance
+            -- them, while aggression still distinguishes personalities at equal strength.
+            local weight=(c.aggression or .5)*math.sqrt(math.max(1,funding/C.counterattack.minimumCash))
+            total=total+weight
+            candidates[#candidates+1]={id=id,company=c,weight=weight,funding=funding,aggression=c.aggression or .5}
         end
     end
     if total<=0 then return nil,"敵商会は攻撃資金を準備できませんでした" end
     local pick=random()*total; local selected=candidates[#candidates]
     for _,candidate in ipairs(candidates) do pick=pick-candidate.weight; if pick<0 then selected=candidate; break end end
-    local chance=math.min(C.counterattack.maxChance,C.counterattack.baseChance+(selected.company.aggression or .5)*C.counterattack.aggressionWeight)
+    local chapterRule=C.counterattack.chapter[s.chapter] or C.counterattack.chapter[#C.counterattack.chapter]
+    local chance=math.min(C.counterattack.maxChance,C.counterattack.baseChance+(selected.company.aggression or .5)*C.counterattack.aggressionWeight+(chapterRule.chance or 0))
     local policy,event=M.ActivePolicy(s),M.ActiveMarketEvent(s)
     chance=chance*(policy and policy.counterattackMultiplier or 1)*(event and event.counterattackMultiplier or 1)
     chance=math.min(C.counterattack.maxChance,chance)
+    local portfolioFactor=math.min(1,C.counterattack.portfolioChanceFloor+math.max(0,#owned-1)*C.counterattack.portfolioChanceStep)
+    chance=chance*portfolioFactor
     -- A guard contract from domestic affairs halves the odds while it lasts.
     if (s.guardPeriods or 0)>0 then chance=chance*C.admin.guardChanceFactor end
     -- A sabotage scandal makes rivals bolder until the next settlement.
@@ -903,12 +968,21 @@ function M.RollCounterattack(s,random)
         if not source or (p.isHeadquarters and not source.isHeadquarters)
             or (p.isHeadquarters==source.isHeadquarters and p.marketValue>source.marketValue) then source=p end
     end
-    local best,score
+    local attackable={}
     for _,p in ipairs(owned) do
+        if M.IsAvailable(s,p) and s.unlocked[p.zone] then attackable[#attackable+1]=p end
+    end
+    if #attackable==0 then return nil,"現在の交易圏に攻撃可能な自社物件がありません" end
+    local best,score,maxValue
+    for _,p in ipairs(attackable) do maxValue=math.max(maxValue or 0,p.marketValue) end
+    for _,p in ipairs(attackable) do
         local value=random()+p.independenceRisk/C.battle.riskMax*C.counterattack.riskWeight
-        if p.category==selected.company.acquisitionBias then value=value+selected.weight end
+        if p.category==selected.company.acquisitionBias then value=value+selected.aggression end
         if p.isHeadquarters then value=value+C.counterattack.headquartersWeight end
+        value=value+(p.marketValue/math.max(1,maxValue))*C.counterattack.valueWeight
         if not score or value>score then best,score=p,value end
     end
-    return {companyId=selected.id,propertyId=best.id,sourcePropertyId=source.id,chance=chance},selected.company.name.."が"..best.name.."への買収を仕掛けました"
+    return {companyId=selected.id,propertyId=best.id,sourcePropertyId=source.id,chance=chance,
+        threat=chapterRule.label,chapter=s.chapter,funding=selected.funding},
+        selected.company.name.."が"..best.name.."への買収を仕掛けました（"..chapterRule.label.."）"
 end

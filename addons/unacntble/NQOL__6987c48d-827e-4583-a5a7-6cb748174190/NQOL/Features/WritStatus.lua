@@ -11,7 +11,7 @@ local DISPLAY_SIZE_MIN = 360
 local DISPLAY_SIZE_MAX = 600
 local MAX_PAYLOAD_LENGTH = 2200
 local MAX_JOURNAL_QUESTS_FALLBACK = 25
-local PAYLOAD_PREFIX = "NQWS1"
+local PAYLOAD_PREFIX = "NQWS2"
 local QUEST_MAIN_STEP = 1
 
 local control
@@ -190,22 +190,23 @@ local function IsDailyCraftingQuest(questIndex)
         and GetJournalQuestType(questIndex) == QUEST_TYPE_CRAFTING
 end
 
-local function GetQuestConditionCount(questIndex)
-    if type(GetJournalQuestNumConditions) == "function" then
-        return tonumber(GetJournalQuestNumConditions(questIndex, QUEST_MAIN_STEP)) or 0
-    end
-    if type(GetJournalQuestStepInfo) == "function" then
-        return tonumber(select(5, GetJournalQuestStepInfo(questIndex, QUEST_MAIN_STEP))) or 0
-    end
-    return 0
-end
-
 local function ActiveConditions()
     local byCraftingType = { {}, {}, {}, {}, {}, {}, {} }
+    local states, reasons = {}, {}
+    local unknownQuest = false
+    for craftingType = 1, 7 do states[craftingType] = "A" end
     local maximum = tonumber(MAX_JOURNAL_QUESTS) or MAX_JOURNAL_QUESTS_FALLBACK
     for questIndex = 1, maximum do
         if IsValidQuestIndex(questIndex) and IsDailyCraftingQuest(questIndex) then
-            for conditionIndex = 1, GetQuestConditionCount(questIndex) do
+            local questType, ready, conditionCount = NQOL.GPSAdvancedData.GetWritQuestInfo(questIndex)
+            if not questType then
+                unknownQuest = true
+            elseif ready then
+                states[questType] = "R"
+            else
+                states[questType] = "C"
+            end
+            for conditionIndex = 1, ready and 0 or conditionCount do
                 local itemId, materialId, craftingType, quality = GetQuestConditionItemInfo(
                     questIndex,
                     QUEST_MAIN_STEP,
@@ -219,6 +220,7 @@ local function ActiveConditions()
                 if type(craftingType) == "number"
                     and craftingType >= 1
                     and craftingType <= 7
+                    and craftingType == questType
                     and type(itemId) == "number"
                     and itemId > 0
                     and type(current) == "number"
@@ -232,11 +234,27 @@ local function ActiveConditions()
                         quality = quality,
                         amount = required - current,
                     }
+                elseif questType
+                    and (type(current) ~= "number" or type(required) ~= "number"
+                        or (current < required and (craftingType ~= questType
+                            or type(itemId) ~= "number" or itemId <= 0)))
+                then
+                    states[questType] = "U"
+                    reasons[questType] = "incomplete item condition metadata"
                 end
             end
         end
     end
-    return byCraftingType
+    for craftingType = 1, 7 do
+        if states[craftingType] == "C" and #byCraftingType[craftingType] == 0 then
+            states[craftingType] = "U"
+            reasons[craftingType] = "active writ has no readable unfinished item objectives"
+        elseif states[craftingType] == "A" and unknownQuest then
+            states[craftingType] = "U"
+            reasons[craftingType] = "daily crafting quest type unavailable"
+        end
+    end
+    return byCraftingType, states, reasons
 end
 
 local function SmithingFailures(craftingType, conditions, sharedStyles)
@@ -614,13 +632,22 @@ local function FatalPayload(currentGeneration, code, subject)
 end
 
 local function BuildNormalPayload(currentGeneration)
-    local conditionsByType = ActiveConditions()
-    local freeSlots = GetNumBagFreeSlots(BAG_BACKPACK)
+    local conditionsByType, states, reasons = ActiveConditions()
+    local needsCrafting = false
+    for craftingType = 1, 7 do
+        if states[craftingType] == "C" then needsCrafting = true end
+    end
+    local freeSlots = 0
     local sharedStyles = {}
-    local styleSettings = WritCreater:GetSettings().styles or {}
-    for styleId, enabled in pairs(styleSettings) do
-        if type(styleId) == "number" and enabled then
-            sharedStyles[styleId] = GetCurrentSmithingStyleItemCount(styleId)
+    if needsCrafting then
+        local available, dependency = RequiredDependenciesAvailable()
+        if not available then return FatalPayload(currentGeneration, "dependency", dependency) end
+        freeSlots = GetNumBagFreeSlots(BAG_BACKPACK)
+        local styleSettings = WritCreater:GetSettings().styles or {}
+        for styleId, enabled in pairs(styleSettings) do
+            if type(styleId) == "number" and enabled then
+                sharedStyles[styleId] = GetCurrentSmithingStyleItemCount(styleId)
+            end
         end
     end
 
@@ -639,28 +666,30 @@ local function BuildNormalPayload(currentGeneration)
         end
 
         local failures
-        if isEquipment and freeSlots < slotsNeeded then
+        if states[craftingType] ~= "C" then
+            failures = {}
+        elseif isEquipment and freeSlots < slotsNeeded then
             failures = {}
             AddFailure(failures, "inventory", "backpack slots", freeSlots, slotsNeeded)
         else
             failures = CheckType(craftingType, conditions, sharedStyles)
         end
-        if #conditions == 0 then
-            AddFailure(failures, "resolution", "active writ", 0, 1)
-        elseif #failures == 0 and isEquipment then
+        if states[craftingType] == "C" and #failures == 0 and isEquipment then
             freeSlots = freeSlots - slotsNeeded
         end
-        parts[#parts + 1] = EncodeResult(craftingType, failures)
+        if states[craftingType] == "U" then
+            parts[#parts + 1] = tostring(craftingType) .. ",U," .. EscapeSubject(reasons[craftingType])
+        elseif states[craftingType] ~= "C" then
+            parts[#parts + 1] = tostring(craftingType) .. "," .. states[craftingType]
+        else
+            parts[#parts + 1] = EncodeResult(craftingType, failures)
+        end
     end
     return FinalizePayload(parts)
 end
 
 local function BuildPayload()
     local currentGeneration = NextGeneration()
-    local available, dependency = RequiredDependenciesAvailable()
-    if not available then
-        return FatalPayload(currentGeneration, "dependency", dependency)
-    end
     local success, payload = pcall(BuildNormalPayload, currentGeneration)
     if not success then
         return FatalPayload(currentGeneration, "probe", tostring(payload))

@@ -237,6 +237,7 @@ function GamepadOptions.BuildChatRemindersOptionsData()
         GamepadOptions.WithHeader(GamepadOptions.BuildChatRemindersHorizontalPositionOption(), NQOL.L("ui.headers.position_and_appearance_346f660")),
         GamepadOptions.BuildChatRemindersVerticalPositionOption(),
         GamepadOptions.BuildChatRemindersWidthOption(),
+        GamepadOptions.BuildChatRemindersWrapTextOption(),
         GamepadOptions.BuildChatRemindersFontOption(),
         GamepadOptions.BuildChatRemindersFontSizeOption(),
         GamepadOptions.BuildChatRemindersBackgroundOpacityOption(),

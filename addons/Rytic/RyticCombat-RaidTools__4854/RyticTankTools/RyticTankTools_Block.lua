@@ -21,8 +21,8 @@ local function GetBlockStats()
     local blockMit = 0
 
     if GetAdvancedStatValue then
-        local _, costValue = GetAdvancedStatValue(1)
-        local _, _, mitigationValue = GetAdvancedStatValue(7)
+        local _, costValue = GetAdvancedStatValue(ADVANCED_STAT_DISPLAY_TYPE_BLOCK_COST)
+        local _, _, mitigationValue = GetAdvancedStatValue(ADVANCED_STAT_DISPLAY_TYPE_BLOCK_MITIGATION)
         blockCost = tonumber(costValue) or 0
         blockMit = tonumber(mitigationValue) or 0
     end
@@ -35,23 +35,10 @@ function Block.CreateHUD()
 
     local window = wm:CreateTopLevelWindow("RyticTankBlockHUD")
     Block.window = window
-    -- ESOUI HUD fragment: automatically hide this HUD when menus open.
-    local hudFragment = ZO_HUDFadeSceneFragment:New(window, nil, 0)
-    Block.hudFragment = hudFragment
-
-    -- Let ESO scene/fragment state own HUD visibility. Death is an additional
-    -- authoritative gate so native scene transitions cannot resurrect this HUD.
-    Block.fragmentVisible = false
-    hudFragment:RegisterCallback("StateChange", function(oldState, newState)
-        local visible = (newState == SCENE_FRAGMENT_SHOWING or newState == SCENE_FRAGMENT_SHOWN)
-        local alive = not IsUnitDead("player")
-        Block.fragmentVisible = visible and alive
-        local s = RyticTank.saved.block
-        local hideForCombat = s.combatOnly and not IsUnitInCombat("player")
-        window:SetHidden(not (Block.fragmentVisible and s.enabled and not hideForCombat))
-    end)
-    HUD_SCENE:AddFragment(hudFragment)
-    HUD_UI_SCENE:AddFragment(hudFragment)
+    Block.hudFragment=RyticTank.UI.Attach(window,function()
+        local settings=RyticTank.saved.block
+        return settings.enabled and not IsUnitDead("player") and (not settings.combatOnly or IsUnitInCombat("player"))
+    end,Block.Update)
     window:SetDimensions(430, 92)
     window:ClearAnchors()
     window:SetAnchor(
@@ -102,39 +89,16 @@ function Block.Update()
     local window = Block.window
     if not window then return end
 
-    local s = RyticTank.saved.block
-
-    if not s.enabled then
-        window:SetHidden(true)
-        return
-    end
-
-    -- Death/death recap is authoritative. The 50 ms loop may never show Block
-    -- again until ESO reports the player alive.
-    if IsUnitDead("player") then
-        window:SetHidden(true)
-        return
-    end
-
-    -- Hide OOC: when enabled, the Block HUD exists only while the player is
-    -- actually in combat.  Master OFF and ESO scene/fragment visibility still
-    -- remain authoritative.
-    -- Settings stores this option as block.combatOnly.
-    if s.combatOnly and not IsUnitInCombat("player") then
-        window:SetHidden(true)
-        return
-    end
-
-    -- Scene/fragment state is authoritative.  Do not call SetHidden(false)
-    -- here: doing so every 50 ms overrides ESO hiding the HUD for the map/menu.
-    if not Block.fragmentVisible then
-        window:SetHidden(true)
-        return
-    end
-    window:SetHidden(false)
+    if not RyticTank.UI.Refresh(window) then return end
 
     local blocking = IsBlockActive()
-    local blockCost, blockMit = GetBlockStats()
+    local now=GetFrameTimeMilliseconds()
+    if not Block.statsAt or now-Block.statsAt>=500 then
+        Block.blockCost,Block.blockMit=GetBlockStats(); Block.statsAt=now
+    end
+    local blockMit=Block.blockMit or 0
+    if Block.lastBlocking==blocking and Block.lastMit==blockMit then return end
+    Block.lastBlocking=blocking; Block.lastMit=blockMit
 
     if blocking then
         Block.state:SetText("BLOCKING")
@@ -197,7 +161,7 @@ function Block.SetEnabled(enabled)
     else
         unregisterRuntime()
         if Block.window then
-            Block.window:SetHidden(true)
+            RyticTank.UI.Refresh(Block.window)
         end
     end
 end
@@ -227,35 +191,4 @@ function Block.Initialize()
     Block.CreateHUD()
     Block.SetEnabled(RyticTank.saved.block.enabled ~= false)
 
-    EM:UnregisterForEvent("RyticTankBlockDeathState", EVENT_UNIT_DEATH_STATE_CHANGED)
-    EM:RegisterForEvent("RyticTankBlockDeathState", EVENT_UNIT_DEATH_STATE_CHANGED, function(_, unitTag, isDead)
-        if unitTag ~= "player" or not Block.window then return end
-        if isDead then
-            Block.fragmentVisible = false
-            Block.window:SetHidden(true)
-        else
-            zo_callLater(function()
-                if not Block.window then return end
-                local state = Block.hudFragment and Block.hudFragment.GetState and Block.hudFragment:GetState()
-                local hudVisible = (state == SCENE_FRAGMENT_SHOWING or state == SCENE_FRAGMENT_SHOWN)
-                Block.fragmentVisible = hudVisible and not IsUnitDead("player")
-                Block.Update()
-            end, 0)
-        end
-    end)
-
-    EM:UnregisterForEvent("RyticTankBlockPlayerActivated", EVENT_PLAYER_ACTIVATED)
-    EM:RegisterForEvent("RyticTankBlockPlayerActivated", EVENT_PLAYER_ACTIVATED, function()
-        zo_callLater(function()
-            if not Block.window then return end
-            local s = RyticTank.saved.block
-            if s.enabled and not IsUnitDead("player") then
-                Block.fragmentVisible = true
-                Block.Update()
-            else
-                Block.fragmentVisible = false
-                Block.window:SetHidden(true)
-            end
-        end, 0)
-    end)
 end

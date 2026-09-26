@@ -31,13 +31,13 @@ function AutoCategory.BaseUI:updateValue()
 
     local name = self.controlName
 
-    logDebug("[AC_Classes] updateControl: getting control for ", name)
+    --logDebug("[AC_Classes] updateControl: getting control for ", name)
     local uiCtrl = WINDOW_MANAGER:GetControlByName(name)
     if not uiCtrl then
         return
     end
 
-    logDebug("[AC_Classes] updateValue: value changed - need to update ", name)
+    --logDebug("[AC_Classes] updateValue: value changed - need to update ", name)
     uiCtrl:UpdateValue(false, val)
 end
 
@@ -74,17 +74,21 @@ function AutoCategory.BaseDD:assign(cvtTbl)
 	self.cvt:assign(cvtTbl)
 end
 
+function AutoCategory.BaseDD:assignNE(cvtTbl)
+	self.cvt:assignNE(cvtTbl)
+end
+
 function AutoCategory.BaseDD:updateControl()
 	if not self.cvt.controlName then return end
 
-	logDebug("[AC_Classes] updateControl: getting control for ", self.cvt.controlName)
+	--logDebug("[AC_Classes] updateControl: getting control for ", self.cvt.controlName)
 	local dropdownCtrl = WINDOW_MANAGER:GetControlByName(self.cvt.controlName)
     if dropdownCtrl == nil then
         return
     end
 
 	if self.cvt.dirty == true then		-- only do this if cvt lists have been modified
-		logDebug("[AC_Classes] updateControl: dropdown lists changed - updating ", self.cvt.controlName)
+		--logDebug("[AC_Classes] updateControl: dropdown lists changed - updating ", self.cvt.controlName)
 		-- only update the choices if we know that the lists contents changed
 		self.cvt.dirty = nil
         local numchoices = #self.cvt.choices
@@ -92,14 +96,14 @@ function AutoCategory.BaseDD:updateControl()
         if self.cvt.choicesValues then numvalues = #self.cvt.choicesValues end
         local numtt = 0
         if self.cvt.choicesTooltips then numtt = #self.cvt.choicesTooltips end
-        logDebug("[AC_Classes] #choices=", numchoices, " #choicesValues=", numvalues,
-            " #choicesTooltips=", numtt)
+        --logDebug("[AC_Classes] #choices=", numchoices, " #choicesValues=", numvalues,
+        --    " #choicesTooltips=", numtt)
 		dropdownCtrl:UpdateChoices(self.cvt.choices, self.cvt.choicesValues,
 			self.cvt.choicesTooltips)
 	end
 
 	if self.cvt.indexValue ~= nil then
-		logDebug("[AC_Classes] updateControl: value changed - need to update ", self.cvt.controlName)
+		--logDebug("[AC_Classes] updateControl: value changed - need to update ", self.cvt.controlName)
 		dropdownCtrl:UpdateValue(false, self.cvt.indexValue)
 	end
 

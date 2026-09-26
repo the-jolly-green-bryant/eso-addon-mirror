@@ -161,6 +161,14 @@
 --          spell-resist reagent buff itself is UNCHANGED - this was a
 --          deliberate, explicit request to redesign shelter specifically,
 --          not the reagent mechanic.
+-- v3.4.33: Fixed the RETICLE:TryHandlingInteraction pre-hook reading the
+--          wrong argument. ZO_PreHook passes the method's self (RETICLE)
+--          first - confirmed in the ESOUI client source (zo_hook.lua,
+--          reticle.lua, 12.0.8) - so the hook's `interactionPossible`
+--          was actually RETICLE and always truthy. Now reads
+--          (self, interactionPossible), and clears the remembered prompt
+--          text when nothing is interactable, so a later interact-key
+--          press with nothing targeted can't reuse an old "Sit" prompt.
 
 Frostfall = Frostfall or {}
 local FV = Frostfall
@@ -169,7 +177,7 @@ local FV = Frostfall
 -- CONSTANTS
 -- ============================================================
 FV.NAME            = "Frostfall"
-FV.VERSION         = "3.4.32"
+FV.VERSION         = "3.4.33"
 FV.DISPLAY_NAME    = "Frostfall Temperature System"
 FV.SAVED_VARS_VER  = 8   -- unchanged: spellResistRemainingSeconds (v3.4.21, replacing v3.4.19's spellResistEndTimestamp) is additive and needs no data migration
 
@@ -1508,10 +1516,14 @@ local _lastRestInteractionText = nil
 local function HookRestWorldInteractionDetection()
     -- Never blocks anything (always returns false) — only records what the
     -- current interaction prompt says.
-    ZO_PreHook(RETICLE, "TryHandlingInteraction", function(interactionPossible)
+    -- ZO_PreHook passes the method's self (RETICLE) as the first argument
+    -- (v3.4.33 fix - see header).
+    ZO_PreHook(RETICLE, "TryHandlingInteraction", function(self, interactionPossible)
         if interactionPossible then
             local action, interactableName = GetGameCameraInteractableActionInfo()
             _lastRestInteractionText = (action or "") .. " " .. (interactableName or "")
+        else
+            _lastRestInteractionText = nil
         end
         return false
     end)

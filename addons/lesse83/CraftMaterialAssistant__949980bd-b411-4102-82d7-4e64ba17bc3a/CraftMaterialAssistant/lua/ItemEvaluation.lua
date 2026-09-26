@@ -6,7 +6,7 @@ function CMA:DetermineItemAction(bag, slotIndex)
 
     -- TODO: Turn on for Item-Identification
     -- local i = GetItemLink(bag, slotIndex)
-    -- local id = GetItemLinkItemId(itemLink)
+    -- local id = GetItemLinkItemId(i)
     -- self:SendChatMessage(i)
     -- self:SendChatMessage("id: " .. id)
     -- self:SendChatMessage("itemType: " .. itemType)

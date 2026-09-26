@@ -1030,25 +1030,11 @@ local function EnsureHUD()
     local wm=WM
     local w=wm:CreateTopLevelWindow("RyticTankSetHUD")
     Sets.window=w
-    -- ESOUI HUD fragment: hide with ESO menus and restore with gameplay.
-    -- Register before attaching so /reloadui cannot miss the initial transition.
-    local hudFragment=ZO_HUDFadeSceneFragment:New(w,nil,0)
-    Sets.hudFragment=hudFragment
-    Sets.fragmentVisible=false
-
-    hudFragment:RegisterCallback("StateChange",function(oldState,newState)
-        local visible=(newState==SCENE_FRAGMENT_SHOWING or newState==SCENE_FRAGMENT_SHOWN)
-        local alive=not IsUnitDead("player")
-        Sets.fragmentVisible=(visible and alive)
-        if not Sets.fragmentVisible then
-            w:SetHidden(true)
-        elseif Sets.Update then
-            Sets.Update()
-        end
-    end)
-
-    HUD_SCENE:AddFragment(hudFragment)
-    HUD_UI_SCENE:AddFragment(hudFragment)
+    Sets.hudFragment=RyticTank.UI.Attach(w,function()
+        local settings=RyticTank.saved.sets
+        return settings.enabled and not IsUnitDead("player") and
+            (settings.preview or Sets.editMode or not settings.hideOutOfCombat or IsUnitInCombat("player"))
+    end,function() Sets.Update() end)
     w:SetClampedToScreen(true)
     w:ClearAnchors()
     w:SetAnchor(TOPLEFT,GuiRoot,TOPLEFT,
@@ -1194,23 +1180,7 @@ end
 function Sets.Update()
     local w=Sets.window
     if not w then return end
-    local s=RyticTank.saved.sets
-
-    if not s.enabled then w:SetHidden(true) return end
-
-    if not Sets.fragmentVisible then
-        w:SetHidden(true)
-        return
-    end
-
-    if s.preview then
-        w:SetHidden(false)
-    elseif s.hideOutOfCombat and not IsUnitInCombat("player") then
-        w:SetHidden(true)
-        return
-    else
-        w:SetHidden(false)
-    end
+    if not RyticTank.UI.Refresh(w) then return end
 
     local now=GetGameTimeMilliseconds()
     for _,c in ipairs(Sets.items) do
@@ -1547,7 +1517,7 @@ function Sets.SetEnabled(enabled)
         Sets.Update()
     else
         Sets.UnregisterTracking()
-        if Sets.window then Sets.window:SetHidden(true) end
+        if Sets.window then RyticTank.UI.Refresh(Sets.window) end
     end
 end
 
@@ -1567,57 +1537,14 @@ function Sets.Initialize()
         Sets.RegisterTracking()
     else
         Sets.UnregisterTracking()
-        if Sets.window then Sets.window:SetHidden(true) end
+        if Sets.window then RyticTank.UI.Refresh(Sets.window) end
     end
-
-    -- Match the proven Action Bar startup/reload reconciliation:
-    -- EVENT_PLAYER_ACTIVATED means gameplay is active, so do not depend on a
-    -- fragment GetState() value that may still be stale immediately after reload.
-    -- Normal fragment callbacks take over afterward for Map/Inventory/Menu/etc.
-    EM:UnregisterForEvent("RyticTankSetsPlayerActivated",EVENT_PLAYER_ACTIVATED)
-    EM:RegisterForEvent("RyticTankSetsPlayerActivated",EVENT_PLAYER_ACTIVATED,function()
-        zo_callLater(function()
-            if not Sets.window then return end
-            local s=RyticTank.saved.sets
-            local alive=not IsUnitDead("player")
-            if s.enabled and alive then
-                Sets.fragmentVisible=true
-                Sets.Update()
-            else
-                Sets.fragmentVisible=false
-                Sets.window:SetHidden(true)
-            end
-        end,0)
-    end)
-
-    EM:UnregisterForEvent("RyticTankSetsDeathState",EVENT_UNIT_DEATH_STATE_CHANGED)
-    EM:RegisterForEvent("RyticTankSetsDeathState",EVENT_UNIT_DEATH_STATE_CHANGED,function(_,unitTag,isDead)
-        if unitTag~="player" or not Sets.window then return end
-        if isDead then
-            Sets.fragmentVisible=false
-            Sets.window:SetHidden(true)
-        else
-            zo_callLater(function()
-                if not Sets.window then return end
-                local s=RyticTank.saved.sets
-                if not s.enabled then
-                    Sets.fragmentVisible=false
-                    Sets.window:SetHidden(true)
-                    return
-                end
-                local state=Sets.hudFragment and Sets.hudFragment.GetState and Sets.hudFragment:GetState()
-                local hudVisible=(state==SCENE_FRAGMENT_SHOWING or state==SCENE_FRAGMENT_SHOWN)
-                Sets.fragmentVisible=hudVisible and not IsUnitDead("player")
-                Sets.Update()
-            end,0)
-        end
-    end)
 
     SLASH_COMMANDS["/setmove"]=function()
         local hud=Sets.window
         if not hud then return end
         Sets.editMode=not Sets.editMode
-        hud:SetMovable(true); hud:SetMouseEnabled(true); hud:SetHidden(false)
+        hud:SetMovable(Sets.editMode); hud:SetMouseEnabled(Sets.editMode); RyticTank.UI.Refresh(hud)
         if Sets.editMode then
             hud:SetHandler("OnMouseDown",function(_,button)
                 if button==MOUSE_BUTTON_INDEX_LEFT then hud:StartMoving() end

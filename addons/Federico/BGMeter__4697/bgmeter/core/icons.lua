@@ -23,6 +23,9 @@ Icons.ROLE = {
 }
 
 Icons.XP  = "EsoUI/Art/Icons/Icon_Experience.dds"
+Icons.BALANCE  = "bgmeter/assets/balance.dds"
+Icons.CAMP     = "bgmeter/assets/camp.dds"
+Icons.SHEATHED = "bgmeter/assets/sheathed.dds"
 Icons.CP  = "EsoUI/Art/Champion/champion_icon_32.dds"
 
 function Icons.ap()

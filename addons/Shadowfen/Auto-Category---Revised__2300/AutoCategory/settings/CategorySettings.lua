@@ -136,14 +136,14 @@ function CatSet_SelectTag_LAM:setValue(value)
 
 	self:select(value)
 
-	CatSet_SelectRule_LAM:assign(AutoCategory.RulesW.tagGroups[value])
+	CatSet_SelectRule_LAM:assignNE(AutoCategory.RulesW.tagGroups[value])
 	if currentRule and currentRule.tag == value then
 		CatSet_SelectRule_LAM:select(currentRule.name)
 	end
 	CatSet_SelectRule_LAM:refresh()
 	CatSet_SelectRule_LAM:updateControl()
 
-	AC_UI.AddCat_SelectTag_LAM:assign({choices=AutoCategory.RulesW.tags})
+	AC_UI.AddCat_SelectTag_LAM:assignNE(AutoCategory.RulesW.tags) --{choices=AutoCategory.RulesW.tags})
 	AC_UI.AddCat_SelectTag_LAM:updateControl()
 
 	AC_UI.AddCat_SelectRule_LAM:updateControl()
@@ -198,7 +198,7 @@ function CatSet_SelectRule_LAM:refresh()
 	local dataCurrentRules_EditRule = CVT:New(nil,nil,CVT.USE_TOOLTIPS)
 	local oldndx = self:getValue()
 	if AutoCategory.RulesW.tagGroups[ltag] then
-		dataCurrentRules_EditRule:assign(AutoCategory.RulesW.tagGroups[ltag])
+		dataCurrentRules_EditRule:assignNE(AutoCategory.RulesW.tagGroups[ltag])
 	end
 	self:assign(dataCurrentRules_EditRule)
 	if oldndx then
@@ -261,7 +261,7 @@ function catSet_NewCat_LAM:execute()
 	CatSet_SelectTag_LAM:updateControl()
 
 	AC_UI.AddCat_SelectTag_LAM:setValue(currentRule.tag)
-	AC_UI.AddCat_SelectRule_LAM:assign(AC_UI.AddCat_SelectRule_LAM.filterRules(getCurrentBagId(),currentRule.tag))
+	AC_UI.AddCat_SelectRule_LAM:assignNE(AC_UI.AddCat_SelectRule_LAM.filterRules(getCurrentBagId(),currentRule.tag))
 	AC_UI.AddCat_SelectTag_LAM:refresh()
 	AC_UI.BagSet.updateControls()
 
@@ -313,7 +313,7 @@ function catSet_CopyCat_LAM:execute()
 	local SelectRule_LAM = AC_UI.AddCat_SelectRule_LAM
     AutoCategory.RulesW:CompileAll()
 	-- Add the rule to the bagSet Add Category dropdown and perform appropriate updates
-	SelectRule_LAM:assign(SelectRule_LAM.filterRules(getCurrentBagId(), currentRule.tag))
+	SelectRule_LAM:assignNE(SelectRule_LAM.filterRules(getCurrentBagId(), currentRule.tag))
 	AC_UI.BagSet.updateControls()
 end
 
@@ -374,7 +374,7 @@ function CatSet_NameEdit_LAM:setValue(value)
 	if currentRule == nil then
 		currentRule = AutoCategory.GetRuleByName(value)
 	end
-	AC_UI.AddCat_SelectRule_LAM:assign(AC_UI.AddCat_SelectRule_LAM.filterRules(getCurrentBagId(),currentRule.tag))
+	AC_UI.AddCat_SelectRule_LAM:assignNE(AC_UI.AddCat_SelectRule_LAM.filterRules(getCurrentBagId(),currentRule.tag))
 	AC_UI.AddCat_SelectRule_LAM:updateControl()
 	-- apparently one the AddCat_SelectRule_LAM calls is reseting the currentRule!
 	currentRule = AutoCategory.GetRuleByName(value)
@@ -460,10 +460,10 @@ function CatSet_TagEdit_LAM:setValue(value)
 	end
 	local _, rbyt = CatSet_TagEdit_LAM.changeTag(currentRule, oldtag, value)
 	CatSet_SelectTag_LAM:select(currentRule.tag)
-	CatSet_SelectRule_LAM:assign(rbyt)
+	CatSet_SelectRule_LAM:assignNE(rbyt)
 	CatSet_SelectRule_LAM:select(currentRule.name)
 	AddCat_SelectTag_LAM:select(currentRule.tag)
-	AddCat_SelectRule_LAM:assign(AddCat_SelectRule_LAM.filterRules(getCurrentBagId(), value))
+	AddCat_SelectRule_LAM:assignNE(AddCat_SelectRule_LAM.filterRules(getCurrentBagId(), value))
 	AddCat_SelectRule_LAM:select(currentRule.name)
 	AC_UI.RefreshControls()
 end
@@ -727,17 +727,18 @@ function AC_UI.CatSet.updateControls()
 end
 
 function AC_UI.CatSet.setRule(rule)
-	CatSet_SelectTag_LAM:refresh()
-	CatSet_SelectTag_LAM:setValue(rule.tag)
-
-	CatSet_SelectRule_LAM:refresh()
 	CatSet_SelectRule_LAM:setValue(rule.name)
+	CatSet_SelectRule_LAM:refresh()
+
+	CatSet_SelectTag_LAM:setValue(rule.tag)
+	CatSet_SelectTag_LAM:refresh()
+
 	CatSet_SelectRule_LAM:updateControl()
 end
 -- -------------------------------------------------------
 
 function AC_UI.CatSet_Init()
 	
-    CatSet_SelectTag_LAM:assign( { choices=AutoCategory.RulesW.tags} )
+    CatSet_SelectTag_LAM:assignNE(AutoCategory.RulesW.tags) -- { choices=AutoCategory.RulesW.tags} )
 end
 

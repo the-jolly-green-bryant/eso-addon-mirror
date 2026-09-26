@@ -7,7 +7,7 @@ local ZO_SavedVars = ZO_SavedVars
 local ZO_DeepTableCopy = ZO_DeepTableCopy
 local GetWorldName = GetWorldName
 RyticTank.name = "RyticTankTools"
-RyticTank.version = "3.0.0"
+RyticTank.version = "3.0.1-test"
 
 RyticTank.defaults = {
     sets = {
@@ -83,16 +83,8 @@ local function OnLoaded(_, addonName)
     if RyticTank.saved.block.combatOnly == nil then RyticTank.saved.block.combatOnly = false end
     if RyticTank.saved.block.scale == nil then RyticTank.saved.block.scale = 1.0 end
 
-    -- One-time Pic-2 layout migration. Defaults alone do not overwrite existing SavedVariables.
-    if (RyticTank.saved.layoutDefaultsVersion or 0) < 2 then
-        RyticTank.saved.resources.scale = 0.85
-        RyticTank.saved.resources.position = {x=684, y=444}
-        RyticTank.saved.sets.position = {x=661, y=560}
-        RyticTank.saved.sets.orientation = "VERTICAL"
-        RyticTank.saved.block.position = {x=800, y=500}
-        RyticTank.saved.block.scale = 1.0
-        RyticTank.saved.layoutDefaultsVersion = 2
-    end
+    -- Default changes must not reset established positions or scales.
+    RyticTank.saved.layoutDefaultsVersion=2
 
     if RyticTank.Settings and RyticTank.Settings.Initialize then
         local ok, err = pcall(RyticTank.Settings.Initialize)

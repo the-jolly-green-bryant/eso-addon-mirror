@@ -27,12 +27,12 @@ Zone lookups are keyed entirely by real, language-independent [b]zoneId[/b] — 
 
 [list]
 [*][b]Per-zone interior/exterior defaults[/b] for all 1,053 zoneIds LibZoneTemp v2.3.15 tracks — overland zones, delves, dungeons, trials, and player houses
-[*][b]Live door-transition toggle[/b] for ordinary building interiors with no zone/map change, ported from the DoorDeltaTest diagnostic addon
+[*][b]Live door-transition toggle[/b] for ordinary building interiors with no zone/map change, ported from the DoorDeltaTest diagnostic addon, including doors entered by picking the lock
 [*][b]Map-teleport check[/b] that resets to the zone default when the player fast-travels to a different part of the same zone — covering wayshrine travel, player-house map travel, and a general world-map-open/close fallback for cases where the specific triggering function isn't known
 [*][b]Logout/login persistence[/b] — normally, a player who logs out inside an interior pocket of an exterior-default zone and logs back into the same spot stays flagged interior; a known gap exists for some cases after a long offline gap specifically (see Design Notes) — `/lid debug flip` is available as a manual workaround
-[*][b]Settings panel[/b] — configurable door-check delay, door-transition distance threshold, per-zone interior/exterior overrides
+[*][b]Settings panel[/b] — configurable door watch window, door-transition distance threshold, per-zone interior/exterior overrides
 [*][b]Debug-only on-screen HUD[/b] showing live INDOORS/OUTDOORS status, off by default
-[*][b]Slash commands[/b] — [code]/amioutside[/code], [code]/lid debug hud on|off[/code], [code]/lid debug saved[/code], [code]/lid debug flip[/code]
+[*][b]Slash commands[/b] — [code]/amioutside[/code], [code]/lid debug hud on|off[/code], [code]/lid debug saved[/code], [code]/lid debug flip[/code], [code]/lid debug trace on|off[/code]
 [/list]
 
 [size=5][b]Dependencies[/b][/size]
@@ -80,10 +80,11 @@ local isInterior, isKnown = LibInteriorDetection.IsZoneInterior(zoneId)
 [size=5][b]Slash Commands[/b][/size]
 
 [list]
-[*][b]/amioutside[/b] — prints the live state as true/false, plus a diagnostic line with zone name, zoneId, the zone's static default, the current door-delta threshold, and the current door-check delay
+[*][b]/amioutside[/b] — prints the live state as true/false, plus a diagnostic line with zone name, zoneId, the zone's static default, the current door-delta threshold, and the current door watch window
 [*][b]/lid debug hud on|off[/b] — shows/hides the on-screen debug HUD. Off by default; state persists across relogs (account-wide) but is deliberately not exposed in the settings menu
 [*][b]/lid debug saved[/b] — dumps saved-vs-current raw zoneId/position/state, for diagnosing a failed restore-on-login
 [*][b]/lid debug flip[/b] — inverts the live indoor/outdoor flag for the current session only (not persisted); a manual workaround if the automatic detection ever gets it wrong, overridden normally by the next real zone change, door interaction, or map teleport
+[*][b]/lid debug trace on|off[/b] — logs every change to the indoor/outdoor flag to chat (which mechanism made it, a timestamp, and the measured distance), plus every interaction, door-check result, travel trigger, and zone (de)activation. For diagnosing unexpected flips from real data. Off by default; persists across relogs (account-wide), not exposed in the settings menu. Chatty while on - turn it off when done
 [/list]
 
 [size=5][b]Settings Panel[/b][/size]
@@ -91,7 +92,7 @@ local isInterior, isKnown = LibInteriorDetection.IsZoneInterior(zoneId)
 Access via [b]/lidsettings[/b] or [b]Settings → Addons → LibInteriorDetection Settings[/b]:
 
 [list]
-[*][b]Door Check Delay (seconds)[/b] — slider, 3-13, default 3. How long after an interaction the door-toggle mechanism waits before comparing positions. Raised from an original 1-5/default-1 range after the author found delays below ~3s stopped detection working entirely on their system.
+[*][b]Door Watch Window (seconds)[/b] — slider, 5-20, default 10. How long after your last interaction the library keeps watching for the sudden position jump a door makes. A door is counted the moment it lands (the trace reports how long each door took), so this only needs to exceed your slowest door; it does not delay detection. Replaced the fixed Door Check Delay in 1.3.0.
 [*][b]Door Transition Distance Threshold[/b] — slider, 1000-8000 raw world units (10m-80m), default 2000 (20m). How far the player's raw position must move after an interaction to count as a door transition.
 [*][b]Zone to Override[/b] / [b]Override[/b] — pick any zone from the library's own 1,053-entry table and force it to Interior, Exterior, or back to the library default. A live list shows every override currently set, and a "Clear All Overrides" button resets them all.
 [/list]
@@ -107,10 +108,12 @@ If zone default is INTERIOR:
 
 If zone default is EXTERIOR:
   liveFlag starts false
-  each detected door transition flips it  -- interaction, then a
-                                           -- configurable delay later a
-                                           -- same-zone raw-position delta
-                                           -- over threshold
+  each detected door transition flips it  -- interaction (or lockpick
+                                           -- success), then a single
+                                           -- same-zone position JUMP over
+                                           -- threshold between two samples
+                                           -- 0.25s apart, within the watch
+                                           -- window
 [/code]
 
 [b]Known limitation:[/b] this assumes symmetric in/out door pairs. A player going tavern → basement → tavern → street (three real door crossings from one exterior-default zone) desyncs the flag, since nested interiors aren't tracked as a stack in this version.
@@ -144,7 +147,9 @@ Final split: [b]671 interior / 382 exterior[/b].
 
 [b]Why doesn't the door toggle also catch a same-zone map teleport?[/b] It's gated on an interaction, and a remote map click isn't one. Testing confirmed this case doesn't fire `EVENT_PLAYER_ACTIVATED` either, unlike a cross-zone teleport or entering a full-zone-change location. Three complementary trigger sources feed a single check: `FastTravelToNode(...)` for wayshrine-style map travel (sourced from a decade-old ESOUI forum thread, confirmed correct in-game), `RequestJumpToHouse`/`JumpToHouse`/`JumpToSpecificHouse` for player-house travel (confirmed real via UESP's own API export data), and a world-map-open/close watcher as a more general fallback for cases where the specific internal function isn't known or hookable (e.g. a house's exterior-door sub-option, which fires none of the other three). All feed the same reset-to-zone-default check rather than toggling, since a teleport (unlike a door) isn't symmetric and can land the player anywhere regardless of their prior state.
 
-[b]Why does the check poll for up to 15 seconds instead of a fixed delay?[/b] Testing revealed ESO's "Recall" ability (used for any world-map-initiated travel, to either a wayshrine or a house) is an 8-second cast, not instant — but standing physically at a wayshrine and picking another one skips that cast entirely. The four hooked functions and the world-map watcher all fire at actual-teleport-execution time regardless of which case applies, so a fixed delay tuned for the instant case would be too early for the cast-gated one. A bounded poll (once per second, stopping as soon as a real position change appears or the window expires) is robust to not knowing which case applies in advance, without needing a third delay-tuning guess after the first two (1-5s, then 3-13s) both proved wrong for at least one real scenario.
+[b]Why does the check poll for up to 15 seconds instead of a fixed delay?[/b] Testing revealed ESO's "Recall" ability (used for any world-map-initiated travel, to either a wayshrine or a house) is an 8-second cast, not instant — but standing physically at a wayshrine and picking another one skips that cast entirely. The four hooked functions and the world-map watcher all fire at actual-teleport-execution time regardless of which case applies, so a fixed delay tuned for the instant case would be too early for the cast-gated one. A bounded poll (every 0.25s since 1.2.3, looking for a single sudden jump between samples, stopping as soon as one appears or the window expires) is robust to not knowing which case applies in advance, without needing a third delay-tuning guess after the first two (1-5s, then 3-13s) both proved wrong for at least one real scenario.
+
+[b]Why does the door check watch for a jump instead of comparing two positions? (1.3.0)[/b] Until 1.2.6 it compared the position at the interaction with the position a fixed delay later. Traces showed two problems with that: some doors (Daggerfall Cathedral) take longer than 3 seconds to move the player, so the check fired before the move and the entry was missed; and sprinting or riding after any interaction could add up to the 20m threshold. A door moves the player in one step, so sampling every 0.25s and looking for a single jump catches slow and fast doors alike, and ordinary movement never comes close. Each interaction adds one "credit" and each counted jump spends one, so a stray jump with no interaction behind it is ignored; a jump within 1.5s of a counted one is also ignored in case a landing ever settles in two steps (unverified - a guess, logged when it happens).
 
 [b]Why is the logout/login persistence character-specific, not account-wide?[/b] A saved position only means something for the character that was actually standing there. Account-wide storage (as LibZoneTemp uses for its temperature overrides, a genuine cross-character preference) would let one character's last position leak into a different character's login, producing a wrong restore rather than no restore at all.
 

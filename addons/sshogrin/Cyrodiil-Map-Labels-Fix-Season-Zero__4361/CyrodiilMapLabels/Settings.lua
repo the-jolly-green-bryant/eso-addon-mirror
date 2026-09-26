@@ -1,3 +1,14 @@
+-- Dynamically generate the alphabetized choices array cleanly outside the table
+local fontChoicesList = {}
+if CyrodiilMapLabelsFonts then
+    for displayName in pairs(CyrodiilMapLabelsFonts) do
+        table.insert(fontChoicesList, displayName)
+    end
+    table.sort(fontChoicesList)
+else
+    fontChoicesList = {"Standard Bold"}
+end
+
 function CyrodiilMapLabelsAddon.CreateSettingsMenu()
     local lam = LibAddonMenu2
     if not lam then return end
@@ -7,15 +18,15 @@ function CyrodiilMapLabelsAddon.CreateSettingsMenu()
 
     local panelData = {
         type = "panel",
-        name = "Cyrodiil Map Labels", -- Kept as unlocalized string ID identifier to handle LAM caching safety cleanly
-        displayName = GetString(_G[prefix .. "title"]), -- Native lookup maps your localized addon title text automatically
+        name = "CyrodiilMapLabels",
+        displayName = GetString(_G[prefix .. "title"]),
         author = "Neurowise & |c2046e5sshogrin|r",
         version = CyrodiilMapLabelsDefaults.version,
         registerForRefresh = true,
     }
 
     local optionsData = {
-       [1] = {
+        [1] = {
             type = "dropdown",
             name = GetString(_G[prefix .. "nameDropdown"]),
             tooltip = GetString(_G[prefix .. "descDropdown"]),
@@ -28,9 +39,12 @@ function CyrodiilMapLabelsAddon.CreateSettingsMenu()
                 if value == GetString(_G[prefix .. "choiceShort"]) then db.datasetChoice = "Short Names" else db.datasetChoice = "Long Names" end
                 CyrodiilMapLabelsAddon.UpdateLabels() 
             end,
-            default = CyrodiilMapLabelsDefaults.datasetChoice == "Short Names" and GetString(_G[prefix .. "choiceShort"]) or GetString(_G[prefix .. "choiceLong"]),
+            default = function()
+                if CyrodiilMapLabelsDefaults.datasetChoice == "Short Names" then return GetString(_G[prefix .. "choiceShort"]) end
+                return GetString(_G[prefix .. "choiceLong"])
+            end,
         },
-       [2] = {
+        [2] = {
             type = "checkbox",
             name = GetString(_G[prefix .. "nameCheckbox"]),
             tooltip = GetString(_G[prefix .. "descCheckbox"]),
@@ -38,15 +52,15 @@ function CyrodiilMapLabelsAddon.CreateSettingsMenu()
             setFunc = function(value) db.useAllianceColors = value CyrodiilMapLabelsAddon.UpdateLabels() end,
             default = CyrodiilMapLabelsDefaults.useAllianceColors,
         },
-       [3] = {
+        [3] = {
             type = "colorpicker",
             name = GetString(_G[prefix .. "nameColor"]),
-            tooltip = GetString(_G[prefix .. "descColor"]),
+            tooltip = Get_String and GetString(_G[prefix .. "descColor"]) or "Custom text color.",
             getFunc = function() return db.fallbackR, db.fallbackG, db.fallbackB end,
             setFunc = function(r, g, b) db.fallbackR, db.fallbackG, db.fallbackB = r, g, b CyrodiilMapLabelsAddon.UpdateLabels() end,
             default = { r = CyrodiilMapLabelsDefaults.fallbackR, g = CyrodiilMapLabelsDefaults.fallbackG, b = CyrodiilMapLabelsDefaults.fallbackB },
         },
-       [4] = {
+        [4] = {
             type = "slider",
             name = GetString(_G[prefix .. "nameSlider"]),
             tooltip = GetString(_G[prefix .. "descSlider"]),
@@ -55,8 +69,33 @@ function CyrodiilMapLabelsAddon.CreateSettingsMenu()
             setFunc = function(value) db.fontScale = value CyrodiilMapLabelsAddon.UpdateLabels() end,
             default = CyrodiilMapLabelsDefaults.fontScale,
         },
+        [5] = {
+            type = "dropdown",
+            name = "Font Style",
+            tooltip = "Choose the text style used for map labels.",
+            choices = fontChoicesList,
+            getFunc = function() 
+                if CyrodiilMapLabelsFonts then
+                    for displayName, internalName in pairs(CyrodiilMapLabelsFonts) do
+                        if internalName == (db.fontStyle or CyrodiilMapLabelsDefaults.fontStyle) then
+                            return displayName
+                        end
+                    end
+                end
+                return "Standard Bold"
+            end,
+            setFunc = function(value) 
+                if CyrodiilMapLabelsFonts then
+                    db.fontStyle = CyrodiilMapLabelsFonts[value] or "ZoFontGameBold"
+                else
+                    db.fontStyle = "ZoFontGameBold"
+                end
+                CyrodiilMapLabelsAddon.UpdateLabels() 
+            end,
+            default = "Standard Bold",
+        },
     }
 
-    lam:RegisterAddonPanel("CyrodiilMapLabelsOptions", panelData)
-    lam:RegisterOptionControls("CyrodiilMapLabelsOptions", optionsData)
+    lam:RegisterAddonPanel("CyrodiilMapLabelsOptionsPanel", panelData)
+    lam:RegisterOptionControls("CyrodiilMapLabelsOptionsPanel", optionsData)
 end

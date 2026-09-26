@@ -22,7 +22,7 @@
     "LibInteriorDetection"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4816/",
-  "fingerprint": "664bb780aa69a5c0d3187fd797d62e1e691806391dbec6e4eebfc2235cbfaad5",
+  "fingerprint": "643f869f3a77557ffcade62602fc27af3898efab643703dc4fac86f7277b2b63",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4816",
   "source_url": "https://www.esoui.com/downloads/info4816-LibInteriorDetection.html",
   "stats": {
-    "downloads": 67,
+    "downloads": 249,
     "favorites": 0,
-    "monthly_downloads": 64
+    "monthly_downloads": 237
   },
   "title": "LibInteriorDetection",
-  "updated_at": 1788859097000,
-  "version": "1.1.0"
+  "updated_at": 1790384829000,
+  "version": "1.3.0"
 }

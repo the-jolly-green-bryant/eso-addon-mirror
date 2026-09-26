@@ -70,5 +70,16 @@
                 </Label>
             </Controls>
         </Control>
+
+        <!-- Small grey note at the top of the Addons category (addon names are a best guess). -->
+        <Control name="CommandCodex_Note" virtual="true">
+            <Dimensions x="420" y="40" />
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontGameSmall" color="8F8B7A" verticalAlignment="CENTER" maxLineCount="2" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="6" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" />
+                </Label>
+            </Controls>
+        </Control>
     </Controls>
 </GuiXml>

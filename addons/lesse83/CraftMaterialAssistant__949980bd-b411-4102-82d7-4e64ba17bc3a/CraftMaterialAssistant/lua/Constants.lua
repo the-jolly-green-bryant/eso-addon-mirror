@@ -328,7 +328,7 @@ CMA.provisioningTopLevelWritIngredientsMap = {
     [27048] = { name = "Metheglin"},
     [27052] = { name = "Ginger"},
     [34329] = { name = "Barley"},
-    [27055] = { name = "Ginkgo"}
+    [34346] = { name = "Ginkgo"}
 }
 
 -- traitType index lookup map

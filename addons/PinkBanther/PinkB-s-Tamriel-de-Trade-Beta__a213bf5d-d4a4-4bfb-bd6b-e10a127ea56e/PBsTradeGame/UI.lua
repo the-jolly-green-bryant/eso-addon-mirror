@@ -604,7 +604,7 @@ function U:RenderTacticScene()
         self.cutinVerdict:SetScale(1+.15*(1-easeOut(t*5)))
     else self.cutinVerdict:SetScale(1) end
 end
-local popupColors={call={1,.84,.38,1},fund={.9,.87,.76,1},alert={1,.5,.44,1},tactic={.82,.7,1,1},discovery={1,.84,.38,1},day={1,.86,.55,1},
+local popupColors={call={1,.84,.38,1},fund={.9,.87,.76,1},alert={1,.5,.44,1},tactic={.82,.7,1,1},group={1,.64,.30,1},discovery={1,.84,.38,1},day={1,.86,.55,1},
     stance={.62,.84,1,1},stanceBreak={.56,1,.68,1}}
 -- Advances one popup channel: fade in, hold (shorter when more are waiting), fade out, next.
 local function stepPopup(channel,dt,hold)

@@ -197,7 +197,7 @@ for _,p in ipairs(D.properties) do indexProperty(p) end
 -- One ordinary trading company is rooted in every region.  Four established companies use
 -- their existing headquarters; the remaining regions receive a local company whose body is
 -- itself a purchasable property.  Boss organisations are added separately below.
-local legacyRegionalCompanies={stormhaven="amber",rivenspire="ash",stonefalls="iron",glenumbra="ink"}
+local legacyRegionalCompanies={stros="amber",rivenspire="ash",stonefalls="iron",glenumbra="ink"}
 local companyLabels={"商会","交易社","産業組合","共同商団","物産会"}
 local companyPersonalities={"steady","wealth","aggressive","information","subversion"}
 local companyTactics={steady="smile",wealth="gift",aggressive="messenger",information="rumor",subversion="defection"}
@@ -222,6 +222,42 @@ end
 -- company rules: one directly purchasable body and a 10–20 property starting portfolio.
 D.companies.regional_telvanni.name="テルヴァンニ家"
 D.companies.regional_telvanni.katakanaName=true
+-- Named regional powers. Keep their stable generated-company IDs so existing saves retain
+-- cash, ownership and takeover state while the displayed identities move to their new homes.
+D.companies.regional_alikr.name="砂星物産会"
+D.companies.regional_alikr.katakanaName=false
+D.companies.regional_alikr.personality="subversion"
+D.companies.regional_alikr.aggression=.69
+D.companies.regional_alikr.defense=.68
+D.companies.regional_alikr.tacticBias="defection"
+D.companies.regional_wrothgar.name="エリック社"
+D.companies.regional_wrothgar.katakanaName=true
+D.companies.regional_wrothgar.personality="aggressive"
+D.companies.regional_wrothgar.aggression=.82
+D.companies.regional_wrothgar.tacticBias="messenger"
+D.companies.regional_auridon.name="フルブライト商会"
+D.companies.regional_auridon.katakanaName=true
+D.companies.regional_highisle.name="ヴェロイーズ商会"
+D.companies.regional_highisle.katakanaName=true
+D.companies.dufort={id="dufort",name="デュフォート家",cash=43000,personality="steady",
+    aggression=.48,defense=.78,tacticBias="smile",acquisitionBias="market",minChapter=1,
+    alliances={},ordinaryCompany=true,homeZone="highisle"}
+D.companies.regional_vvardenfell.name="フラール家"
+D.companies.regional_vvardenfell.katakanaName=true
+D.companies.regional_deshaan.name="インドル家"
+D.companies.regional_deshaan.katakanaName=true
+D.companies.regional_galen.name="モーナード家"
+D.companies.regional_galen.katakanaName=true
+D.companies.regional_goldcoast.name="ゴールドコースト交易会社"
+D.companies.regional_goldcoast.katakanaName=true
+D.companies.regional_hewsbane.name="ファロラー家"
+D.companies.regional_hewsbane.katakanaName=true
+D.companies.regional_northelsweyr.name="バーンダリ商人団"
+D.companies.regional_northelsweyr.katakanaName=true
+D.companies.regional_southelsweyr.name="バーンダリ商人団・南方支部"
+D.companies.regional_southelsweyr.katakanaName=true
+D.companies.regional_stormhaven.name="タムリス家"
+D.companies.regional_stormhaven.katakanaName=true
 D.companies.veil.bossCompany=true; D.companies.worm.bossCompany=true; D.companies.molag.bossCompany=true
 local reservedBossBodyZones={grahtwood=true,deshaan=true,rivenspire=true,bangkorai=true,eastmarch=true,cyrodiil=true,
     coldharbour=true,deadlands=true,fargrave=true}
@@ -242,6 +278,13 @@ for zi,z in ipairs(D.zones) do
         elseif z.atlas=="beyond" then owner="molag"
         elseif slot==11 then owner="veil"; minChapter=3
         elseif slot==17 then owner="worm"; minChapter=4 end
+        -- High Isle has two established powers. Together they control every ordinary local
+        -- holding, while the two campaign infiltrators at slots 11 and 17 remain untouched.
+        if z.id=="highisle" then
+            if slot<=10 or slot==24 then owner="regional_highisle"
+            elseif (slot>=12 and slot<=16) or (slot>=18 and slot<=23) then owner="dufort" end
+        end
+        minChapter=math.max(minChapter,D.companies[owner] and (D.companies[owner].minChapter or 1) or 1)
         local groups=D.ThemeGroups(z,category)
         local resistances={}
         for ti,key in ipairs(tacticKeys) do
@@ -313,13 +356,18 @@ for _,z in ipairs(D.zones) do
         p.katakanaName=D.companies[company].katakanaName or false
     end
 end
+D.companyHeadquarters.dufort={"highisle_trade_23"}
+do
+    local p=assert(D.propertyById.highisle_trade_23)
+    p.name="デュフォート家"; p.owner="dufort"; p.companyBody=true; p.katakanaName=true
+end
 -- A rival can be taken over from its own chapter onward (headquarters bought earlier still count).
-D.companyTakeoverChapter={amber=1,ash=1,iron=1,ink=1,veil=3,worm=4,molag=5}
+D.companyTakeoverChapter={amber=2,ash=1,iron=1,ink=1,veil=3,worm=4,molag=5}
 for company in pairs(D.companyHeadquarters) do
-    if D.companies[company].ordinaryCompany then D.companyTakeoverChapter[company]=1 end
+    if D.companies[company].ordinaryCompany then D.companyTakeoverChapter[company]=D.companies[company].minChapter or 1 end
 end
 D.headquartersOf={}
-local ordinaryBodyNames={ink="エリック社本館",iron="鉄環輸送組合本部",ash="レイヴンウォッチ城館"}
+local ordinaryBodyNames={ink="メナント家本邸",iron="レドラン家本邸",ash="レイヴンウォッチ城館"}
 for company,ids in pairs(D.companyHeadquarters) do
     for _,id in ipairs(ids) do
         local p=assert(D.propertyById[id],"missing headquarters "..id)
@@ -334,20 +382,20 @@ for company,ids in pairs(D.companyHeadquarters) do
 end
 D.campaigns={
     {id=1,title="第1章　小さな羅針盤",subtitle="商会の足場を築く",background="chapter_1",
-        description="二つの小さな事業を束ね、八十期を見据えた商会の土台を築きます。成長する市場で買収先を見極め、総資産70億ゴールドを達成してください。",
-        objective={type="assets",target=PBTrade.Config.campaign.chapterOneAssets,minimumCycles=80}},
-    {id=2,title="第2章　琥珀帆を越えて",subtitle="大商会への挑戦",background="chapter_2",
-        description="市場は毎期複利で拡大し、琥珀帆商会も再投資を続けます。第200期と総資産5000億ゴールドを越え、大交易所を獲得してください。",
-        objective={type="properties",targets={"str_hq"},assetTarget=50000000,minimumCycles=200}},
+        description="二つの小さな事業を束ね、商会の土台を築きます。成長する市場で買収先を見極め、総資産50億ゴールドを達成してください。",
+        objective={type="assets",target=PBTrade.Config.campaign.chapterOneAssets}},
+    {id=2,title="第2章　ドフォーレ商会",subtitle="突如現れた新興勢力",background="chapter_2",
+        description="前章の決算を終えた直後、港と市場に見慣れない紋章が掲げられました。突如現れた新興勢力、ドフォーレ商会です。総資産2500億ゴールドを築き、ドフォーレ商会本社を買収して、その急拡大を止めてください。",
+        objective={type="properties",targets={"str_hq"},assetTarget=25000000}},
     {id=3,title="第3章　ベールの向こう側",subtitle="守護者連合を解体する",background="chapter_3",
-        description="長期成長した三つの中枢を奪い、第350期を越え、総資産40兆ゴールドの広域商会を築いて守護者連合を解体してください。",
-        objective={type="properties",targets={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"},assetTarget=4000000000,minimumCycles=350}},
+        description="三つの中枢を奪い、総資産10兆ゴールドの広域商会を築いて守護者連合を解体してください。",
+        objective={type="properties",targets={"grahtwood_trade_24","deshaan_trade_24","rivenspire_trade_24"},assetTarget=1000000000}},
     {id=4,title="第4章　黒繭の帳簿",subtitle="虫の教団を解体する",background="chapter_4",
-        description="黒繭交易教団は膨張した市場を直接支配します。第525期、総資産5000兆ゴールド、三中枢の支配をすべて満たしてください。",
-        objective={type="properties",targets={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},assetTarget=500000000000,minimumCycles=525}},
+        description="黒繭交易教団は膨張した市場を直接支配します。総資産500兆ゴールドと三中枢の支配をすべて満たしてください。",
+        objective={type="properties",targets={"bangkorai_trade_24","eastmarch_trade_24","cyrodiil_trade_24"},assetTarget=50000000000}},
     {id=5,title="第5章　鎖の外へ",subtitle="モラグ・バル コンツェルンとの戦い",background="chapter_5",
-        description="帳簿の最終頁はタムリエルの外へ続いていました。異界三中枢を買収すると、コンツェルン最後の物件「モラグ・バルの居城」への道が開きます。資金源の消耗と離反を抑えながら、第750期、総資産300京ゴールド、居城の買収をすべて達成してください。",
-        objective={type="properties",targets={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},assetTarget=300000000000000,minimumCycles=750}},
+        description="帳簿の最終頁はタムリエルの外へ続いていました。異界三中枢を買収すると、コンツェルン最後の物件「モラグ・バルの居城」への道が開きます。資金源の消耗と離反を抑えながら、総資産100京ゴールドと居城の買収をすべて達成してください。",
+        objective={type="properties",targets={"coldharbour_trade_24","deadlands_trade_24","fargrave_trade_24","molag_bal_citadel"},assetTarget=100000000000000}},
 }
 -- Convert the former abstract unit to gold.  Every property/company gets a deterministic
 -- lower-than-10,000 remainder; campaign milestones stay deliberately round.

@@ -153,16 +153,16 @@ end
 --]]
 function AutoCategory.CVT:assign(tblB)
 	if not tblB then return end
-  if not tblB.GetUses then return end
+  	if not tblB.GetUses then return end
 	if tblB == self then return end
 
-  if self:GetUses() ~= tblB:GetUses() then return end
+  	if self:GetUses() ~= tblB:GetUses() then return end
   
 	local ndx = self.indexValue
 	self:clear()	-- also marks as dirty
 
 	self.choices = shallowcpy(tblB.choices, self.choices)
-  if self.choicesValues then self.choicesValues = shallowcpy(tblB.choicesValues, self.choicesValues) end
+  	if self.choicesValues   then self.choicesValues = shallowcpy(tblB.choicesValues, self.choicesValues) end
 	if self.choicesTooltips then self.choicesTooltips = shallowcpy(tblB.choicesTooltips, self.choicesTooltips) end
 
 	-- select the first value as the "current" value
@@ -173,6 +173,31 @@ function AutoCategory.CVT:assign(tblB)
 		self:select(ndx)
 
 	else --if #self.choicesValues > 0 then
+		self:select()
+	end
+	return true
+end
+
+function AutoCategory.CVT:assignNE(tblB)
+	if not tblB then return end
+  	if tblB == self then return end
+	if not tblB.choices then tblB = {choices=tblB} end
+
+	local ndx = self.indexValue
+	self:clear()	-- also marks as dirty
+
+	self.choices = shallowcpy(tblB.choices, self.choices)
+  	if self.choicesValues and tblB.choicesValues  then self.choicesValues = shallowcpy(tblB.choicesValues, self.choicesValues) end
+	if self.choicesTooltips and tblB.choicesTooltips then self.choicesTooltips = shallowcpy(tblB.choicesTooltips, self.choicesTooltips) end
+
+	-- select the first value as the "current" value
+	if tblB.indexValue ~= nil then
+		self:select(tblB.indexValue)
+
+	elseif ndx ~= nil then
+		self:select(ndx)
+
+	else
 		self:select()
 	end
 	return true
@@ -335,13 +360,13 @@ function AutoCategory.CVT:updateControl()
 	if not self.controlName then return end
 	if not self.dirty then return end
 
-	logDebug("[AC_Classes] CVT:updateControl: getting control for ", self.controlName)
+	--logDebug("[AC_Classes] CVT:updateControl: getting control for ", self.controlName)
 	local dropdownCtrl = WINDOW_MANAGER:GetControlByName(self.controlName)
 	if not dropdownCtrl then return end
 
 	self.dirty = nil
 
-	logDebug("[AC_Classes] CVT:updateControl: lists changed - need to update ", self.controlName)
+	--logDebug("[AC_Classes] CVT:updateControl: lists changed - need to update ", self.controlName)
 	dropdownCtrl:UpdateChoices(
 		self.choices,
 		self.choicesValues,

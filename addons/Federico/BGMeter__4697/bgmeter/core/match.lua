@@ -441,9 +441,10 @@ function Match.geo_index_of(times, n, t)
     return idx
 end
 
-function Match.geo_spline(xs, ys, n, sub)
+function Match.geo_spline(xs, ys, n, sub, ox, oy)
     sub = sub or 3
-    local ox, oy = {}, {}
+    ox, oy = ox or {}, oy or {}
+    local o = 0
     local function at(i) i = math.max(1, math.min(n, i)); return xs[i] or 0, ys[i] or 0 end
     for i = 1, n - 1 do
         local x0, y0 = at(i - 1)
@@ -453,13 +454,15 @@ function Match.geo_spline(xs, ys, n, sub)
         for k = 0, sub - 1 do
             local u = k / sub
             local u2, u3 = u * u, u * u * u
-            ox[#ox + 1] = 0.5 * ((2 * x1) + (-x0 + x2) * u + (2 * x0 - 5 * x1 + 4 * x2 - x3) * u2 + (-x0 + 3 * x1 - 3 * x2 + x3) * u3)
-            oy[#oy + 1] = 0.5 * ((2 * y1) + (-y0 + y2) * u + (2 * y0 - 5 * y1 + 4 * y2 - y3) * u2 + (-y0 + 3 * y1 - 3 * y2 + y3) * u3)
+            o = o + 1
+            ox[o] = 0.5 * ((2 * x1) + (-x0 + x2) * u + (2 * x0 - 5 * x1 + 4 * x2 - x3) * u2 + (-x0 + 3 * x1 - 3 * x2 + x3) * u3)
+            oy[o] = 0.5 * ((2 * y1) + (-y0 + y2) * u + (2 * y0 - 5 * y1 + 4 * y2 - y3) * u2 + (-y0 + 3 * y1 - 3 * y2 + y3) * u3)
         end
     end
     local xl, yl = at(n)
-    ox[#ox + 1], oy[#oy + 1] = xl, yl
-    return ox, oy
+    o = o + 1
+    ox[o], oy[o] = xl, yl
+    return ox, oy, o
 end
 
 function Match.geo(m)
@@ -471,11 +474,16 @@ function Match.geo(m)
         local nm = r.displayName or r.charName
         if nm then team[(nm:gsub("%^.*$", ""))] = r.team end
     end
+    local lr = Match.local_row(m)
+    local twin = lr and lr.charName
+    if not (twin and twin ~= mine and tl.pos[twin] and mine and tl.pos[mine]) then twin = nil end
     local pos, teammates = {}, 0
     for nm, rec in pairs(tl.pos) do
-        pos[nm] = { x = Match.unpack_series(rec.x, n), y = Match.unpack_series(rec.y, n) }
-        if not team[nm] then team[nm] = m.localTeam end
-        if nm ~= mine then teammates = teammates + 1 end
+        if nm ~= twin then
+            pos[nm] = { x = Match.unpack_series(rec.x, n), y = Match.unpack_series(rec.y, n) }
+            if not team[nm] then team[nm] = m.localTeam end
+            if nm ~= mine then teammates = teammates + 1 end
+        end
     end
     local pins = {}
     for i, pin in ipairs(tl.pin or {}) do
@@ -494,6 +502,28 @@ function Match.geo(m)
     local startT = 0
     if m.playedMs and m.durationMs and m.durationMs > m.playedMs then startT = m.durationMs - m.playedMs end
     return { n = n, t = tl.pt, pos = pos, pins = pins, team = team, mine = mine, teammates = teammates, stepMs = stepMs, me = me, startT = startT }
+end
+
+local geo_cache = { m = nil, geo = nil, kb = 0 }
+
+function Match.geo_cached(m)
+    if m == nil then return nil end
+    if geo_cache.m == m then return geo_cache.geo end
+    collectgarbage("stop")
+    local k0 = collectgarbage("count")
+    local geo = Match.geo(m)
+    local kb = collectgarbage("count") - k0
+    collectgarbage("restart")
+    geo_cache.m, geo_cache.geo, geo_cache.kb = m, geo, (kb > 0) and kb or 0
+    return geo
+end
+
+function Match.geo_cache_clear()
+    geo_cache.m, geo_cache.geo, geo_cache.kb = nil, nil, 0
+end
+
+function Match.geo_cache_report()
+    return { held = geo_cache.geo ~= nil, bytes = math.floor(geo_cache.kb * 1024 + 0.5), m = geo_cache.m }
 end
 
 function Match.geo_index(geo, t)
@@ -836,6 +866,212 @@ function Match.first_blood(killfeed)
         if k.kn and k.dn then return k end
     end
     return nil
+end
+
+local BALANCE_CONTESTED = 0.10
+local BASE_RADIUS = 60
+local RESPAWN_MS = 12000
+local STOP_MS = 90000
+
+function Match.balance(m)
+    local tl = m and m.timeline
+    if not tl or not tl.t or #tl.t < 4 or not m.battle then return nil end
+    local n = #tl.t
+    local series = { tl.s1, tl.s2, tl.s3 }
+    local final = 0
+    for s = 1, 3 do
+        local v = (series[s] and series[s][n]) or 0
+        if v > final then final = v end
+    end
+    local sumMargin, contested, decided, leader, changed = 0, 0, 0, nil, false
+    for i = 1, n do
+        local best, second, bestS = 0, 0, nil
+        for s = 1, 3 do
+            local v = (series[s] and series[s][i]) or 0
+            if v > best then
+                second = best
+                best, bestS = v, s
+            elseif v > second then
+                second = v
+            end
+        end
+        local margin = (final > 0) and (best - second) / final or 0
+        sumMargin = sumMargin + margin
+        if margin < BALANCE_CONTESTED then contested = contested + 1 end
+        if i > 1 and tl.r and tl.r[i] ~= tl.r[i - 1] then leader = nil end
+        if bestS and best > second then
+            if leader and bestS ~= leader then
+                decided = tl.t[i]
+                changed = true
+            end
+            leader = bestS
+        end
+    end
+    local kills, teams, kmin, kmax = {}, 0, nil, 0
+    for _, r in ipairs(m.battle) do
+        local t = r.team or 0
+        if t ~= 0 then kills[t] = (kills[t] or 0) + (r.kills or 0) end
+    end
+    for _, k in pairs(kills) do
+        teams = teams + 1
+        if k > kmax then kmax = k end
+        if kmin == nil or k < kmin then kmin = k end
+    end
+    local ratio = (kmax > 0) and (kmin or 0) / kmax or 1
+    local margin = sumMargin / n
+    local cont = contested / n
+    local tspan = tl.t[n] or 0
+    local score = math.floor(100 * (ratio + (1 - margin) + cont) / 3 + 0.5)
+    local mine = m.localTeam
+    local myKills = mine and kills[mine] or nil
+    local other, otherKills = nil, -1
+    for t, k in pairs(kills) do
+        if t ~= mine and k > otherKills then other, otherKills = t, k end
+    end
+    local lean, leanTeam = 0, nil
+    if myKills and other and myKills ~= otherKills then
+        leanTeam = (myKills > otherKills) and mine or other
+        lean = (1 - score / 100) * ((myKills > otherKills) and 1 or -1)
+    elseif not myKills and other then
+        leanTeam = other
+        lean = -(1 - score / 100)
+    end
+    return {
+        score = score,
+        killRatio = ratio, margin = margin, contested = cont,
+        decidedMs = decided, decidedPct = (tspan > 0) and decided / tspan or 0,
+        leaderChanged = changed, teams = teams, tspan = tspan,
+        lean = lean, leanTeam = leanTeam, mine = mine, other = other,
+    }
+end
+
+function Match.experience(m)
+    if not m or not m.battle then return nil end
+    local teams, any = {}, false
+    for _, r in ipairs(m.battle) do
+        local t = r.team or 0
+        if t ~= 0 then
+            local e = teams[t]
+            if not e then
+                e = { team = t, n = 0, seen = 0, vet = 0, ava = 0, vetN = 0, avaN = 0 }
+                teams[t] = e
+            end
+            e.n = e.n + 1
+            if r.vet or r.ava then e.seen = e.seen + 1; any = true end
+            if r.vet then e.vet = e.vet + r.vet; e.vetN = e.vetN + 1 end
+            if r.ava then e.ava = e.ava + r.ava; e.avaN = e.avaN + 1 end
+        end
+    end
+    if not any then return nil end
+    for _, e in pairs(teams) do
+        e.vetAvg = (e.vetN > 0) and e.vet / e.vetN or nil
+        e.avaAvg = (e.avaN > 0) and e.ava / e.avaN or nil
+    end
+    local mine = m.localTeam and teams[m.localTeam] or nil
+    local other, best, bestT = nil, -1, nil
+    for t, e in pairs(teams) do
+        if t ~= m.localTeam and (e.n > best or (e.n == best and t < bestT)) then other, best, bestT = e, e.n, t end
+    end
+    return { mine = mine, other = other, teams = teams }
+end
+
+local function median_of(vals)
+    local n = #vals
+    if n == 0 then return nil end
+    table.sort(vals)
+    return vals[math.ceil(n / 2)]
+end
+
+function Match.spawn_point(m, geo)
+    local me = geo and geo.me
+    if not me or me.n < 1 then return nil end
+    local xs, ys = {}, {}
+    if (me.x[1] or 0) > 0 or (me.y[1] or 0) > 0 then xs[1], ys[1] = me.x[1], me.y[1] end
+    for _, k in ipairs(m and m.killfeed or {}) do
+        if k.kind == "death" then
+            local target = k.t + RESPAWN_MS
+            local idx = Match.geo_index_of(me.t, me.n, target)
+            if (me.t[idx] or 0) < target then idx = idx + 1 end
+            if idx <= me.n and ((me.x[idx] or 0) > 0 or (me.y[idx] or 0) > 0) then
+                xs[#xs + 1], ys[#ys + 1] = me.x[idx], me.y[idx]
+            end
+        end
+    end
+    local x, y = median_of(xs), median_of(ys)
+    if not x then return nil end
+    return { x = x, y = y, samples = #xs }
+end
+
+function Match.in_play(m, t)
+    local runs = m and m.runs
+    if not runs or #runs == 0 then return true end
+    for _, r in ipairs(runs) do
+        if t >= (r.a or 0) and (r.b == nil or t <= r.b) then return true end
+    end
+    return false
+end
+
+function Match.surrender(m, geo)
+    if not m then return nil end
+    local out = { spawn = nil, base = nil, stopped = { n = 0, of = 0, at = nil } }
+    local spawn = Match.spawn_point(m, geo)
+    if spawn and geo then
+        out.spawn = spawn
+        local near, total, mineNear, mineTotal = 0, 0, 0, 0
+        local startT = geo.startT or 0
+        for nm, s in pairs(geo.pos) do
+            if geo.team[nm] == m.localTeam or nm == geo.mine then
+                for i = 1, geo.n do
+                    local x, y = s.x[i], s.y[i]
+                    local t = geo.t[i] or 0
+                    if x and y and (x > 0 or y > 0) and t >= startT and Match.in_play(m, t) then
+                        total = total + 1
+                        local dx, dy = x - spawn.x, y - spawn.y
+                        local isNear = (dx * dx + dy * dy) <= BASE_RADIUS * BASE_RADIUS
+                        if isNear then near = near + 1 end
+                        if nm == geo.mine then
+                            mineTotal = mineTotal + 1
+                            if isNear then mineNear = mineNear + 1 end
+                        end
+                    end
+                end
+            end
+        end
+        if total > 0 then
+            out.base = { pct = near / total, mine = (mineTotal > 0) and mineNear / mineTotal or 0, samples = total }
+        end
+    end
+    local tl = m.timeline
+    if tl and tl.p and tl.t and #tl.t >= 2 then
+        local n = #tl.t
+        local tspan = tl.t[n] or 0
+        local team_of = {}
+        for _, r in ipairs(m.battle or {}) do
+            local nm = r.displayName or r.charName
+            if nm then team_of[(nm:gsub("%^.*$", ""))] = r.team end
+        end
+        local st = out.stopped
+        for nm, rec in pairs(tl.p) do
+            local team = team_of[nm] or rec.tm
+            if team and team == m.localTeam then
+                local d = rec.d or Match.unpack_series(rec.s, n)
+                local last = 0
+                if (d[1] or 0) > 0 then last = 1 end
+                for i = 2, n do
+                    if (d[i] or 0) > (d[i - 1] or 0) then last = i end
+                end
+                if last > 0 then
+                    st.of = st.of + 1
+                    local at = tl.t[last] or 0
+                    if tspan - at >= STOP_MS then
+                        st.n = st.n + 1
+                        if not st.at or at < st.at then st.at = at end
+                    end
+                end
+            end
+        end
+    end
+    return out
 end
 
 BGMeter.Match = Match
